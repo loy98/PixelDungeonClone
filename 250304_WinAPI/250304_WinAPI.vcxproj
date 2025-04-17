@@ -130,6 +130,7 @@
     <ClCompile Include="AstarScene.cpp" />
     <ClCompile Include="BattleScene.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageManager.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Button.h" />
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="D2DImage.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImageManager.h" />
