@@ -7,6 +7,7 @@
 #include "AstarScene.h"
 #include "LoadingScene.h"
 #include "D2DImage.h"
+#include "D2DImageManager.h"
 
 HRESULT MainGame::Init()
 {
@@ -30,8 +31,9 @@ HRESULT MainGame::Init()
 		return E_FAIL;
 	}
 
-	test = new D2DImage();
-	test->LoadFromFile(L"Image/banners.png", 2, 4);
+	test = D2DImageManager::GetInstance()->AddImage("banner", L"Image/banners.png", 2, 4);
+	// test = new D2DImage();
+	// test->LoadFromFile(L"Image/banners.png", 2, 4);
 	
 	return S_OK;
 }
