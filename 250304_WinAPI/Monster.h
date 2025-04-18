@@ -1,14 +1,16 @@
-﻿#pragma once
+#pragma once
+#include "config.h"
 #include "Entity.h"
 
 class Map;
-class Player : public Entity
+class Monster : public Entity
 {
 public:
-    Player(FPOINT pos);
-    virtual ~Player();
+    Monster(FPOINT pos);
+    virtual ~Monster();
 
     virtual void Act(Game* game) override;
     virtual bool NeedsInput() override;
     void Move(FPOINT delta, Map* map);
 };
+

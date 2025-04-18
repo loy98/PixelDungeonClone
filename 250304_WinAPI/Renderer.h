@@ -8,8 +8,8 @@ class Renderer
 {
 
 public:
-    HRESULT Init(HWND hWnd);
-    Renderer(Map* map, Entity* entities, Camera* camera);
-    DrawTile(int graphicId, float x, float y, float screenX, float screenY);
-    DrawImage(int graphicId, float x, float y, float screenX, float screenY);
+    //HRESULT Init(HWND hWnd);
+    //Renderer(Map* map, Entity* entities, Camera* camera);
+    //DrawTile(int graphicId, float x, float y, float screenX, float screenY);
+    //DrawImage(int graphicId, float x, float y, float screenX, float screenY);
 };

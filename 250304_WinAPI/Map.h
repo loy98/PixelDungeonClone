@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "config.h"
 
 #define TILE_WIDTH      16
 #define TILE_HEIGHT     16
@@ -12,8 +13,10 @@ class Map
     int** tiles;
 public:
     Map(int width = TILE_WIDTH, int height = TILE_HEIGHT);
-    
+
     bool Load(wchar_t* filePath);
+    bool CanGo(FPOINT nextPos);
+
     int GetTileType(int x, int y);
     inline int GetWidth(){ return width; }
     inline int GetHeight(){ return height; }

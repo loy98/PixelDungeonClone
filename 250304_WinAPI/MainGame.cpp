@@ -69,23 +69,23 @@ void MainGame::Update()
 
 void MainGame::Render()
 {
-	D2DImage::BeginDraw();
-	D2DImage::Clear(D2D1::ColorF(D2D1::ColorF::Black));
+	//D2DImage::BeginDraw();
+	//D2DImage::Clear(D2D1::ColorF(D2D1::ColorF::Black));
 
-	test->Middle_RenderFrame(WINSIZE_X/2, WINSIZE_Y/2, 0, 3, DEG_TO_RAD(135),false,false,0.5f);
+	//test->Middle_RenderFrame(WINSIZE_X/2, WINSIZE_Y/2, 0, 3, DEG_TO_RAD(135),false,false,0.5f);
 	
 	// // 백버퍼에 먼저 복사
-	// HDC hBackBufferDC = backBuffer->GetMemDC();
+	HDC hBackBufferDC = backBuffer->GetMemDC();
 	//
-	// SceneManager::GetInstance()->Render(hBackBufferDC);
+	SceneManager::GetInstance()->Render(hBackBufferDC);
 	//
 	// TimerManager::GetInstance()->Render(hBackBufferDC);
 	// wsprintf(szText, TEXT("Mouse X : %d, Y : %d"), g_ptMouse.x, g_ptMouse.y);
 	// TextOut(hBackBufferDC, 20, 60, szText, wcslen(szText));
 	//
 	// // 백버퍼에 있는 내용을 메인 hdc에 복사
-	// backBuffer->Render(hdc);
-	D2DImage::EndDraw();
+	backBuffer->Render(hdc);
+	//D2DImage::EndDraw();
 }
 
 LRESULT MainGame::MainProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
