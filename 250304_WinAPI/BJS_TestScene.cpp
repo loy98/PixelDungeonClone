@@ -91,7 +91,7 @@ void BJS_TestScene::Render(HDC hdc)
 	wsprintf(szText, TEXT("zoomScale : %d"), (int)zoomScale);
 	TextOut(hdc, 100, 20, szText, wcslen(szText));
 
-	wsprintf(szText, TEXT("deltaX : %d"), MouseManager::GetInstance()->GetDeltaX());
+	wsprintf(szText, TEXT("deltaX : %d, deltaY : %d"), MouseManager::GetInstance()->GetDeltaX(), MouseManager::GetInstance()->GetDeltaY());
 	TextOut(hdc, 100, 100, szText, wcslen(szText));
 
 	RenderRect(hdc, testRc_DnD);
