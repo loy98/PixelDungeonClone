@@ -25,6 +25,15 @@ private:
     POINT mousePos;
     Layer currLayer;
 
+    POINT dragStartP;
+    POINT dragEndP;
+    POINT prevP;
+
+    long deltaX;
+    long deltaY;
+
+    bool isDragging[4];
+
     short wheelDelta;
 
 public:
@@ -42,9 +51,16 @@ public:
 
     void SetLayer();
 
-    POINT GetMousePos() const { return mousePos; }
-    void SetMousePos(const POINT& pt) { mousePos = pt; }
+    void InitPoints();
 
-    void SetWheelDelta(short delta) { wheelDelta = delta; }
-    short GetWheelDelta() const { return wheelDelta; }
+    inline POINT GetMousePos() const { return mousePos; }
+    inline void SetMousePos(const POINT& pt) { mousePos = pt; }
+
+    inline void SetWheelDelta(short delta) { wheelDelta = delta; }
+    inline short GetWheelDelta() const { return wheelDelta; }
+
+    inline bool GetIsDragging(int button) { return isDragging[button - 1]; }
+
+    inline long GetDeltaX() { return deltaX; }
+    inline long GetDeltaY() { return deltaY; }
 };

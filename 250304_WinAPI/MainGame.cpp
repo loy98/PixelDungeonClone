@@ -9,6 +9,7 @@
 #include "D2DImage.h"
 #include "D2DImageManager.h"
 #include "MouseManager.h"
+#include "BJS_TestScene.h"
 
 HRESULT MainGame::Init()
 {
@@ -20,8 +21,9 @@ HRESULT MainGame::Init()
 	SceneManager::GetInstance()->AddScene("A*알고리즘", new AstarScene());
 	SceneManager::GetInstance()->AddScene("전투씬_1", new BattleScene());
 	SceneManager::GetInstance()->AddScene("타일맵툴", new TilemapTool());
+	SceneManager::GetInstance()->AddScene("배종성테스트", new BJS_TestScene());
 	SceneManager::GetInstance()->AddLoadingScene("로딩_1", new LoadingScene());
-	SceneManager::GetInstance()->ChangeScene("A*알고리즘");
+	SceneManager::GetInstance()->ChangeScene("배종성테스트");
 
 	hdc = GetDC(g_hWnd);
 
@@ -78,17 +80,20 @@ void MainGame::Render()
 
 	test->Middle_RenderFrame(WINSIZE_X/2, WINSIZE_Y/2, 0, 3, DEG_TO_RAD(135),false,false,0.5f);
 	
-	// // 백버퍼에 먼저 복사
-	// HDC hBackBufferDC = backBuffer->GetMemDC();
-	//
-	// SceneManager::GetInstance()->Render(hBackBufferDC);
-	//
-	// TimerManager::GetInstance()->Render(hBackBufferDC);
-	// wsprintf(szText, TEXT("Mouse X : %d, Y : %d"), g_ptMouse.x, g_ptMouse.y);
-	// TextOut(hBackBufferDC, 20, 60, szText, wcslen(szText));
-	//
-	// // 백버퍼에 있는 내용을 메인 hdc에 복사
-	// backBuffer->Render(hdc);
+	///// 
+	 // 백버퍼에 먼저 복사
+	 HDC hBackBufferDC = backBuffer->GetMemDC();
+	
+	 SceneManager::GetInstance()->Render(hBackBufferDC);
+	
+	 TimerManager::GetInstance()->Render(hBackBufferDC);
+	 wsprintf(szText, TEXT("Mouse X : %d, Y : %d"), g_ptMouse.x, g_ptMouse.y);
+	 TextOut(hBackBufferDC, 20, 60, szText, wcslen(szText));
+	
+	 // 백버퍼에 있는 내용을 메인 hdc에 복사
+	 backBuffer->Render(hdc);
+	 /////
+
 	D2DImage::EndDraw();
 }
 

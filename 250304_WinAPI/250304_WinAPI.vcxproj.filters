@@ -84,6 +84,9 @@
     <ClCompile Include="MouseManager.cpp">
       <Filter>2D Framework</Filter>
     </ClCompile>
+    <ClCompile Include="BJS_TestScene.cpp">
+      <Filter>MainGame\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -142,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="MouseManager.h">
       <Filter>2D Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="BJS_TestScene.h">
+      <Filter>MainGame\Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
