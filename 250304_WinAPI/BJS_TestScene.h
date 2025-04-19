@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include "GameObject.h"
 
-class Image;
+class D2DImage;
 class BJS_TestScene : public GameObject
 {
 private:
-	Image* backGround;
-	Image* sampleTile;
+	D2DImage* sampleTile;
 	TILE_INFO tileInfo[TILE_X * TILE_Y];
 
 	float zoomScale;

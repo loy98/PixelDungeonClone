@@ -2,27 +2,19 @@
 #include "Image.h"
 #include "CommonFunction.h"
 #include "config.h"
+#include "D2DImage.h"
+#include "D2DImageManager.h"
 
 HRESULT BJS_TestScene::Init()
 {
 	SetClientRect(g_hWnd, WINSIZE_X, TILEMAPTOOL_Y);
 
-	sampleTile = ImageManager::GetInstance()->AddImage(
-		"배틀시티_샘플타일", L"Image/mapTiles.bmp", 640, 288,
-		SAMPLE_TILE_X, SAMPLE_TILE_Y);
-
-	backGround = new Image();
-	if (FAILED(backGround->Init(TEXT("Image/BackGround.bmp"), WINSIZE_X, TILEMAPTOOL_Y)))
-	{
-		MessageBox(g_hWnd,
-			TEXT("Image/backGround.bmp 생성 실패"), TEXT("경고"), MB_OK);
-		return E_FAIL;
-	}
-
-	//Sleep(3000);
+	sampleTile = D2DImageManager::GetInstance()->AddImage(
+		"배틀시티_샘플타일", L"Image/mapTiles.bmp", SAMPLE_TILE_X, SAMPLE_TILE_Y);
+	
 	Load();
 
-	zoomScale = 0;
+	zoomScale = 1;
 
 	testRc_DnD = { 300, 300, 600, 600 };
 
@@ -34,12 +26,7 @@ HRESULT BJS_TestScene::Init()
 
 void BJS_TestScene::Release()
 {
-	if (backGround)
-	{
-		backGround->Release();
-		delete backGround;
-		backGround = nullptr;
-	}
+
 }
 
 void BJS_TestScene::Update()
@@ -79,13 +66,12 @@ void BJS_TestScene::Update()
 
 void BJS_TestScene::Render(HDC hdc)
 {
-	backGround->Render(hdc);
 	// 메인 타일 영역
 	for (int i = 0; i < TILE_X * TILE_Y; ++i)
 	{
-		sampleTile->FrameRender(hdc, tileInfo[i].rc.left,
+		sampleTile->RenderFrame(tileInfo[i].rc.left,
 			tileInfo[i].rc.top, tileInfo[i].frameX,
-			tileInfo[i].frameY, false, false);
+			tileInfo[i].frameY);
 	}
 
 	wsprintf(szText, TEXT("zoomScale : %d"), (int)zoomScale);
@@ -94,7 +80,8 @@ void BJS_TestScene::Render(HDC hdc)
 	wsprintf(szText, TEXT("deltaX : %d, deltaY : %d"), MouseManager::GetInstance()->GetDeltaX(), MouseManager::GetInstance()->GetDeltaY());
 	TextOut(hdc, 100, 100, szText, wcslen(szText));
 
-	RenderRect(hdc, testRc_DnD);
+	// RenderRect(hdc, testRc_DnD);
+	sampleTile->DrawRect({(float)testRc_DnD.left,(float)testRc_DnD.top}, {(float)testRc_DnD.right,(float)testRc_DnD.bottom}, 1, 1);
 }
 
 void BJS_TestScene::Load()
