@@ -7,6 +7,15 @@
 #define MOUSE_RIGHT   VK_RBUTTON
 #define MOUSE_MIDDLE  VK_MBUTTON
 
+typedef enum class InputLayer {
+    LEVEL,
+    UI,
+    ALARM,
+    ESC,
+    COUNT
+}Layer;
+
+
 class MouseManager : public Singleton<MouseManager>
 {
 private:
@@ -14,6 +23,7 @@ private:
     bitset<3> mouseUp;
 
     POINT mousePos;
+    Layer currLayer;
 
     short wheelDelta;
 
@@ -25,6 +35,12 @@ public:
     bool IsOnceMouseDown(int button);
     bool IsStayMouseDown(int button);
     bool IsOnceMouseUp(int button);
+
+    bool IsOnceMouseDown(int button, Layer thisLayer);
+    bool IsStayMouseDown(int button, Layer thisLayer);
+    bool IsOnceMouseUp(int button, Layer thisLayer);
+
+    void SetLayer();
 
     POINT GetMousePos() const { return mousePos; }
     void SetMousePos(const POINT& pt) { mousePos = pt; }
