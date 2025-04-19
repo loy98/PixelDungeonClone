@@ -10,8 +10,8 @@ void Level::Init()
 
 	tempTileSize = 30;
 
-	for (int i = 0; i < 20; ++i) {
-		for (int j = 0; j < 20; ++j) {
+	for (int i = 0; i < TILE_Y; ++i) {
+		for (int j = 0; j < TILE_X; ++j) {
 			tempTile[20 * i + j] = 
 			{	240+j*tempTileSize, 
 				60+i*tempTileSize,
@@ -94,9 +94,9 @@ void Level::Update()
 			long indX = (posX - mapRc.left) / tempTileSize;
 			long indY = (posY - mapRc.top) / tempTileSize;
 
-			if (indX >= 0 && indX < 20 && indY >= 0 && indY < 20)	///
+			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	///
 			{														/// 구현 하고 싶은 로직 넣는 부분
-				map[indY * 20 + indX].type = TT::COUNT;				///
+				map[indY * TILE_X + indX].type = TT::COUNT;				///
 			}														///
 
 			MouseManager::GetInstance()->InitPoints();
@@ -131,8 +131,8 @@ void Level::Render(HDC hdc)
 
 	RenderRect(hdc, mapRc);
 
-	for (int i = 0; i < 20; ++i) {
-		for (int j = 0; j < 20; ++j) {
+	for (int i = 0; i < TILE_Y; ++i) {
+		for (int j = 0; j < TILE_X; ++j) {
 			
 			switch (map[20 * i + j].type) {
 				case TT::WALL :
