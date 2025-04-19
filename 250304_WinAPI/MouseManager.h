@@ -59,7 +59,7 @@ public:
     inline void SetWheelDelta(short delta) { wheelDelta = delta; }
     inline short GetWheelDelta() const { return wheelDelta; }
 
-    inline bool GetIsDragging(int button) { return isDragging[button - 1]; }
+    inline bool GetIsDragging(int button) { return isDragging[button]; }
 
     inline long GetDeltaX() { return deltaX; }
     inline long GetDeltaY() { return deltaY; }
