@@ -60,6 +60,7 @@ void Monster::Move(Game* game)
     if (delta.Length() <= 0.5f)
     {
         position = targetPos;
+        // 테스트용이라 도착지 정하는건 수정해야함
         targetPos += { TILE_SIZE, TILE_SIZE };
         isMoving = false;
     }

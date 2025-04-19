@@ -18,9 +18,7 @@ Player::~Player()
 
 void Player::Act(Game* game)
 {
-    TurnManager* tm = game->GetTurnManager();
     KeyManager* km = KeyManager::GetInstance();
-    Map* map = game->GetMap();
 
     if (isMoving)
     {
