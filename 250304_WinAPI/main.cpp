@@ -4,17 +4,18 @@
 #include "D2DImage.h"
 #include "MainGame.h"
 
-HINSTANCE g_hInstance;	// 프로그램 인스턴스 핸들
+HINSTANCE g_hInstance;
 HWND g_hWnd;
-LPCWSTR g_lpszClassName = (LPCWSTR)TEXT("윈도우 API 사용하기");
+LPCWSTR g_lpszClassName = (LPCWSTR)TEXT("PixelDungeonClone");
 MainGame g_mainGame;
-POINT g_ptMouse;	// 마우스 좌표
+POINT g_ptMouse;
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam);
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, 
 	LPSTR lpszCmdParam, int nCmdShow)
 {
+#pragma region WINAPI_Initialize
 	g_hInstance = hInstance;
 
 	WNDCLASSEX wndClass;
@@ -43,10 +44,15 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 		NULL, NULL, g_hInstance, NULL);
 
 	ShowWindow(g_hWnd, nCmdShow);
+#pragma endregion
+
+#pragma region System_Initialize
 	D2DImage::InitD2D(g_hWnd);
 	TimerManager::GetInstance()->Init();
 	g_mainGame.Init();
+#pragma endregion
 
+#pragma region Game_Loop
 	MSG message;
 	while (true)
 	{
@@ -70,10 +76,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 	g_mainGame.Release();
 	TimerManager::GetInstance()->Release();
 
-	return message.wParam;
+	return (int)message.wParam;
+#pragma endregion
 }
 
 LRESULT WndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
 {
 	return g_mainGame.MainProc(hWnd, iMessage, wParam, lParam);
 }
+

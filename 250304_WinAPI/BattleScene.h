@@ -1,13 +1,18 @@
 #pragma once
 #include "GameObject.h"
 
-class Image;
+class D2DImage;
 class BattleScene : public GameObject
 {
 private:
-	Image* backGround;
-	Image* sampleTile;
+
+	//level 
+	D2DImage* sampleTile;
 	TILE_INFO tileInfo[TILE_X * TILE_Y];
+
+	
+	D2DImage* test;
+	
 public:
 	virtual HRESULT Init() override;
 	virtual void Release() override;
@@ -16,7 +21,7 @@ public:
 
 	void Load();
 
-	BattleScene() {};
-	virtual ~BattleScene() {};
+	BattleScene() = default;
+	virtual ~BattleScene() override = default;
 };
 
