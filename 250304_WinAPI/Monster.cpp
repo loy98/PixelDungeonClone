@@ -1,10 +1,13 @@
 ﻿#include "Monster.h"
 #include "Game.h"
+#include "Map.h"
 #include "TurnManager.h"
 
-Monster::Monster(FPOINT pos)
+Monster::Monster(FPOINT pos, float speed)
 {
     position = pos;
+    this->speed = speed;
+    targetPos = { position.x + TILE_SIZE, position.y + TILE_SIZE };
 }
 
 Monster::~Monster()
@@ -13,25 +16,51 @@ Monster::~Monster()
 
 void Monster::Act(Game* game)
 {
-    TurnManager* tm = game->GetTurnManager();
-    Map* map = game->GetMap();
 
     // 턴 이동 테스트용
-    Move({ TILE_SIZE, TILE_SIZE }, map);
+    if (isMoving)
+    {
+        Move(game);
+    }
+    else
+    {
+        isMoving = true;
+    }
 
     // tm->EndTurn();
 }
 
 bool Monster::NeedsInput()
 {
-    return false;
+    return !isMoving;
 }
 
-void Monster::Move(FPOINT delta, Map* map)
+bool Monster::IsBusy()
+{
+    return isMoving;
+}
+
+void Monster::Move(Game* game)
 {
     // 이동 순서 체크용
-    Sleep(100);
+    // Sleep(100);
+    if (!game->GetMap()->CanGo(targetPos)) return;
 
-    position.x += delta.x;
-    position.y += delta.y;
+    FPOINT delta = targetPos - position;
+
+    float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
+    delta.Normalize();
+
+    position.x += speed * deltaTime * delta.x;
+    position.y += speed * deltaTime * delta.y;
+
+    delta = targetPos - position;
+
+    // 매직넘버로,,, -> 변수로 dir 저장해두고 쓰면 Dot Product
+    if (delta.Length() <= 0.5f)
+    {
+        position = targetPos;
+        targetPos += { TILE_SIZE, TILE_SIZE };
+        isMoving = false;
+    }
 }
