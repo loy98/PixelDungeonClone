@@ -24,17 +24,30 @@ void TurnManager::ProcessTurns(Game* game)
 {
 	if (turnQueue.empty()) return;
 	Entity* actor = GetCurrentActor();
-	if (!actor || !actor->isActive)	return;
-
-	if (actor->NeedsInput())
+	if (!actor || !actor->isActive)
 	{
-		actor->Act(game);
-	}
-	else
-	{
-		actor->Act(game);
 		EndTurn();
+		return;
 	}
+	if (actor->NeedsInput()) {
+		actor->Act(game);
+	}
+	else {
+		actor->Act(game);
+		if (!actor->IsBusy()) {
+			EndTurn();
+		}
+	}
+
+	//if (!actor->NeedsInput() || !actor->IsBusy())
+	//{
+	//	actor->Act(game);
+	//}
+	//else
+	//{
+	//	actor->Act(game);
+	//	EndTurn();
+	//}
 }
 
 void TurnManager::EndTurn()

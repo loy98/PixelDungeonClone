@@ -31,11 +31,14 @@
     <Filter Include="2D Framework\UI\Button">
       <UniqueIdentifier>{57de70b7-daba-4081-817d-3bfdbbe06bf9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MainGame\GamePlay">
+      <UniqueIdentifier>{30d266c3-be7e-4517-95ec-a0d8ebb67fd6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainGame\GamePlay\Entity">
+      <UniqueIdentifier>{9894a647-a07a-4953-b416-f5afb50aafc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>2D Framework</Filter>
     </ClCompile>
@@ -99,12 +102,27 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="TurnManager.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>MainGame\GamePlay</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
-      <Filter>소스 파일</Filter>
+      <Filter>MainGame\GamePlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>MainGame\GamePlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderer.cpp">
+      <Filter>MainGame\GamePlay</Filter>
+    </ClCompile>
+    <ClCompile Include="Entity.cpp">
+      <Filter>MainGame\GamePlay\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>MainGame\GamePlay\Entity</Filter>
     </ClCompile>
     <ClCompile Include="Monster.cpp">
+      <Filter>MainGame\GamePlay\Entity</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -181,13 +199,25 @@
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="TurnManager.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>MainGame\GamePlay</Filter>
     </ClInclude>
     <ClInclude Include="Game.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>MainGame\GamePlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>MainGame\GamePlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderer.h">
+      <Filter>MainGame\GamePlay</Filter>
+    </ClInclude>
+    <ClInclude Include="Entity.h">
+      <Filter>MainGame\GamePlay\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>MainGame\GamePlay\Entity</Filter>
     </ClInclude>
     <ClInclude Include="Monster.h">
-      <Filter>헤더 파일</Filter>
+      <Filter>MainGame\GamePlay\Entity</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
