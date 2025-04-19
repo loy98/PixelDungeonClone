@@ -17,6 +17,7 @@ public:
     bool Load(wchar_t* filePath);
     bool CanGo(FPOINT nextPos);
 
+    POINT GetRandomFloorTile();
     int GetTileType(int x, int y);
     inline int GetWidth(){ return width; }
     inline int GetHeight(){ return height; }
