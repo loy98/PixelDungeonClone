@@ -133,16 +133,24 @@
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="D2DImageManager.cpp" />
+    <ClCompile Include="Dungeon.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="Image.cpp" />
     <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="KeyManager.cpp" />
+    <ClCompile Include="Level.cpp" />
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="MouseManager.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TilemapTool.cpp" />
+    <ClCompile Include="Tiles.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerManager.cpp" />
   </ItemGroup>
@@ -155,16 +163,25 @@
     <ClInclude Include="config.h" />
     <ClInclude Include="D2DImage.h" />
     <ClInclude Include="D2DImageManager.h" />
+    <ClInclude Include="Dungeon.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameScene.h" />
     <ClInclude Include="Image.h" />
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="KeyManager.h" />
+    <ClInclude Include="Level.h" />
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="MainGame.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="MouseManager.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="TilemapTool.h" />
+    <ClInclude Include="Tiles.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerManager.h" />
   </ItemGroup>
