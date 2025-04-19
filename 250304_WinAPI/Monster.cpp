@@ -30,7 +30,7 @@ bool Monster::NeedsInput()
 void Monster::Move(FPOINT delta, Map* map)
 {
     // 이동 순서 체크용
-    Sleep(100);
+    //Sleep(100);
 
     position.x += delta.x;
     position.y += delta.y;
