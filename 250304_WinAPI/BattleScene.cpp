@@ -1,4 +1,6 @@
 #include "BattleScene.h"
+
+#include "Game.h"
 #include "CommonFunction.h"
 #include "config.h"
 #include "D2DImage.h"
@@ -11,11 +13,12 @@ HRESULT BattleScene::Init()
     sampleTile = D2DImageManager::GetInstance()->AddImage("sample_tile", L"Image/tiles_sewers.png", SAMPLE_TILE_X, SAMPLE_TILE_Y);
     Load();
 
-
     test = D2DImageManager::GetInstance()->AddImage("banner", L"Image/banners.png", 2, 4);
 
+	testGame = new Game();
+	testGame->Init();
 
-    return S_OK;
+	return S_OK;
 }
 
 void BattleScene::Release()
@@ -24,10 +27,11 @@ void BattleScene::Release()
 
 void BattleScene::Update()
 {
-    if (KeyManager::GetInstance()->IsOnceKeyDown(VK_RETURN))
-    {
-        SceneManager::GetInstance()->ChangeScene("¿¸≈ıæ¿_1");
-    }
+	if (KeyManager::GetInstance()->IsOnceKeyDown(VK_RETURN))
+	{
+		SceneManager::GetInstance()->ChangeScene("Ï†ÑÌà¨Ïî¨_1");
+	}
+	testGame->Update();
 }
 
 void BattleScene::Render(HDC hdc)
@@ -44,18 +48,19 @@ void BattleScene::Render(HDC hdc)
 
 void BattleScene::Load()
 {
-    HANDLE hFile = CreateFile(
-        L"TileMapData.dat", GENERIC_READ, 0, NULL,
-        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (hFile == INVALID_HANDLE_VALUE)
-    {
-        MessageBox(g_hWnd, TEXT("∆ƒ¿œ ø≠±‚ Ω«∆–"), TEXT("∞Ê∞Ì"), MB_OK);
-        return;
-    }
-    DWORD dwByte = 0;
-    if (!ReadFile(hFile, tileInfo, sizeof(tileInfo), &dwByte, NULL))
-    {
-        MessageBox(g_hWnd, TEXT("∆ƒ¿œ ¿–±‚ Ω«∆–"), TEXT("∞Ê∞Ì"), MB_OK);
-    }
-    CloseHandle(hFile);
+	// ÌååÏùº Î°úÎìú
+	HANDLE hFile = CreateFile(
+		L"TileMapData.dat", GENERIC_READ, 0, NULL,
+		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (hFile == INVALID_HANDLE_VALUE)
+	{
+		MessageBox(g_hWnd, TEXT("ÌååÏùº Ïó¥Í∏∞ Ïã§Ìå®"), TEXT("Í≤ΩÍ≥†"), MB_OK);
+		return;
+	}
+	DWORD dwByte = 0;
+	if (!ReadFile(hFile, tileInfo, sizeof(tileInfo), &dwByte, NULL))
+	{
+		MessageBox(g_hWnd, TEXT("ÌååÏùº ÏùΩÍ∏∞ Ïã§Ìå®"), TEXT("Í≤ΩÍ≥†"), MB_OK);
+	}
+	CloseHandle(hFile);
 }

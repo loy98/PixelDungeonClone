@@ -1,7 +1,8 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 
 class D2DImage;
+class Game;
 class BattleScene : public GameObject
 {
 private:
@@ -10,9 +11,9 @@ private:
 	D2DImage* sampleTile;
 	TILE_INFO tileInfo[TILE_X * TILE_Y];
 
-	
 	D2DImage* test;
 	
+	Game* testGame;
 public:
 	virtual HRESULT Init() override;
 	virtual void Release() override;
