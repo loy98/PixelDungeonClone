@@ -274,10 +274,19 @@ FPOINT AstarScene::GetRandomFloorTile()
 {
 	// 랜덤한 타일의 center 좌표를 반환
 	// 벽이면 반환하면 안됨
+	// 플레이어 주변도 X
+
+	RECT rc;
+	rc.left = 0;
+	rc.right = ASTAR_TILE_SIZE * 2;
+	rc.top = 0;
+	rc.bottom = ASTAR_TILE_SIZE * 2;
+
+
 	int x = (rand() % ASTAR_TILE_COUNT);
 	int y = (rand() % ASTAR_TILE_COUNT);
 
-	while ((map[(int)y][(int)x].GetType() == AstarTileType::Wall))
+	while ((map[(int)y][(int)x].GetType() == AstarTileType::Wall) ||RectInRect(rc, map[(int)y][(int)x].rc))
 	{
 		x = (rand() % ASTAR_TILE_COUNT);
 		y = (rand() % ASTAR_TILE_COUNT);
@@ -290,6 +299,7 @@ FPOINT AstarScene::GetRandomFloorTile()
 
 void AstarScene::SetEntityPos()
 {
+	// entity 배치
 	FPOINT pos = GetRandomFloorTile();
 	astarGame->SetEntityOnMap(pos);
 }
