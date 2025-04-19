@@ -9,8 +9,8 @@
 HRESULT BattleScene::Init()
 {
     SetClientRect(g_hWnd, WINSIZE_X, TILEMAPTOOL_Y);
+    sampleTile = D2DImageManager::GetInstance()->AddImage("sample_tile", L"Image/tiles_sewers.png", SAMPLE_TILE_X, SAMPLE_TILE_Y);
 
-    sampleTile = D2DImageManager::GetInstance()->AddImage("sample_tile", L"Image/maptiles.bmp", SAMPLE_TILE_X, SAMPLE_TILE_Y);
     Load();
 
     test = D2DImageManager::GetInstance()->AddImage("banner", L"Image/banners.png", 2, 4);

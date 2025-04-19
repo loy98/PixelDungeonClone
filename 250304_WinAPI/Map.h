@@ -1,4 +1,4 @@
-﻿#pragma once
+#pragma once
 #include "config.h"
 
 #define TILE_WIDTH      16

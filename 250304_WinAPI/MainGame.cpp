@@ -10,6 +10,7 @@
 #include "D2DImageManager.h"
 #include "MouseManager.h"
 #include "BJS_TestScene.h"
+#include "GameScene.h"
 
 HRESULT MainGame::Init()
 {
@@ -25,11 +26,12 @@ HRESULT MainGame::Init()
 	SceneManager::GetInstance()->AddScene("전투씬_1", new BattleScene());
 	SceneManager::GetInstance()->AddScene("타일맵툴", new TilemapTool());
 	SceneManager::GetInstance()->AddScene("배종성테스트", new BJS_TestScene());
+	SceneManager::GetInstance()->AddScene("게임씬", new GameScene());
 	SceneManager::GetInstance()->AddLoadingScene("로딩_1", new LoadingScene());
-	SceneManager::GetInstance()->ChangeScene("전투씬_1");
-#pragma endregion
-	
+	SceneManager::GetInstance()->ChangeScene("게임씬");
+
 	hdc = GetDC(g_hWnd);
+#pragma endregion
 
 	return S_OK;
 }

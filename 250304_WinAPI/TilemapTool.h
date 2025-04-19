@@ -1,7 +1,6 @@
-#pragma once
+﻿#pragma once
 #include "GameObject.h"
 #include "config.h"
-
 
 class Image;
 class Button;
@@ -11,8 +10,19 @@ private:
 	Image* sampleTile;
 	RECT rcSampleTile;
 
-	TILE_INFO tileInfo[TILE_X * TILE_Y];
+	Map tileInfo[TILE_X * TILE_Y];
 	RECT rcMain;
+
+	
+	RECT tempTile[20 * 20]; //타일 이미지 넣기 전 임시 이미지 그리기용 배열
+	int tempTileSize; // 20*20 규격의 맵에 알맞은 임시 타일 사이즈
+
+	HBRUSH tBlackBrush;
+	HBRUSH tGreyBrush;
+	HBRUSH tWhiteBrush;
+	HBRUSH tRedBrush;
+
+	HBRUSH hOldBrush;
 
 	POINT selectedTile;
 
