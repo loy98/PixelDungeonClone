@@ -10,5 +10,5 @@ public:
 
     virtual void Act(Game* game) override;
     virtual bool NeedsInput() override;
-    void Move(FPOINT delta, Map* map);
+    void Move(FPOINT delta, Map* map, Game* game);
 };

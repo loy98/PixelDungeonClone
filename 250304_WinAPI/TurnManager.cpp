@@ -1,4 +1,4 @@
-#include "TurnManager.h"
+ï»¿#include "TurnManager.h"
 #include "Game.h"
 #include "Entity.h"
 
@@ -12,7 +12,7 @@ TurnManager::~TurnManager()
 
 void TurnManager::AddActor(Entity* actor)
 {
-	// Ãß°¡ÇÏ·Á´Â Entity°¡ ÀÌ¹Ì container¿¡ ÀÖ´Ù¸é return
+	// ì¶”ê°€í•˜ë ¤ëŠ” Entityê°€ ì´ë¯¸ containerì— ìˆë‹¤ë©´ return
 	auto it = find(turnQueue.begin(), turnQueue.end(), actor);
 	if (it != turnQueue.end())
 		return;

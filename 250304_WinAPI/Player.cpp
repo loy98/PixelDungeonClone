@@ -20,24 +20,24 @@ void Player::Act(Game* game)
     Map* map = game->GetMap();
 
     if (km->IsOnceKeyDown(VK_UP))
-        Move({ 0, -TILE_HEIGHT }, map);
+        Move({ 0, -TILE_SIZE }, map, game);
     else if (km->IsOnceKeyDown(VK_DOWN))
-        Move({ 0, TILE_HEIGHT }, map);
+        Move({ 0, TILE_SIZE }, map, game);
     else if (km->IsOnceKeyDown(VK_LEFT))
-        Move({ -TILE_WIDTH, 0 }, map);
+        Move({ -TILE_SIZE, 0 }, map, game);
     else if (km->IsOnceKeyDown(VK_RIGHT))
-        Move({ TILE_WIDTH, 0 }, map);
+        Move({ TILE_SIZE, 0 }, map, game);
 
     // endturn을 move 안에서..? -> 인자에 turnManager 받아야함
-    tm->EndTurn();
+    // 이동이 수행 됐을 때만 endturn
 }
 
 bool Player::NeedsInput()
 {
-    return false;
+    return true;
 }
 
-void Player::Move(FPOINT delta, Map* map)
+void Player::Move(FPOINT delta, Map* map, Game* game)
 {
     // 다음 좌표
     float nextX = position.x + delta.x;
@@ -46,5 +46,7 @@ void Player::Move(FPOINT delta, Map* map)
     if (!map->CanGo({ nextX, nextY })) return;
 
     position.x = nextX;
-    position.x = nextY;
+    position.y = nextY;
+
+    game->GetTurnManager()->EndTurn();
 }

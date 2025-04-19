@@ -1,4 +1,4 @@
-#include "Game.h"
+﻿#include "Game.h"
 
 #include "Entity.h"
 #include "Player.h"
@@ -16,15 +16,23 @@ Game::~Game()
 
 void Game::Init()
 {
-	Entity* player = new Player({8, 8});
-	Entity* monster = new Monster({24, 24});
 	KeyManager::GetInstance()->Init();
+	turnManager = new TurnManager();
+
+	// 시작 위치 테스트용 매직넘버
+	Entity* player = new Player({ TILE_SIZE / 2, TILE_SIZE  / 2});
+	Entity* monster1 = new Monster({TILE_SIZE /2 * 5, TILE_SIZE / 2 * 5 });
+	Entity* monster2 = new Monster({TILE_SIZE /2 * 9, TILE_SIZE / 2 });
 
 	AddActor(player);
-	AddActor(monster);
+	AddActor(monster1);
+	AddActor(monster2);
 
 	for (auto actor : actors)
+	{
+		if (actor)
 		turnManager->AddActor(actor);
+	}
 }
 
 void Game::Release()
@@ -46,9 +54,17 @@ void Game::Update()
 	turnManager->ProcessTurns(this);
 }
 
+void Game::Render(HDC hdc)
+{
+	for (auto actor : actors)
+	{
+		actor->Render(hdc);
+	}
+}
+
 void Game::AddActor(Entity* actor)
 {
-	// �߰��Ϸ��� Entity�� �̹� container�� �ִٸ� return
+	// 추가하려는 Entity가 이미 container에 있다면 return
 	auto it = find(actors.begin(), actors.end(), actor);
 	if (it != actors.end())
 		return;

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "config.h"
 
 class TurnManager;
@@ -20,6 +20,8 @@ public:
 	void Init();
 	void Release();
 	void Update();
+	void Render(HDC hdc);
+
 	void AddActor(Entity* actor);
 
 	Map* GetMap() { return map; }

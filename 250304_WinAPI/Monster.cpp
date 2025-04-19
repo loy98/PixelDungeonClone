@@ -1,4 +1,4 @@
-#include "Monster.h"
+﻿#include "Monster.h"
 #include "Game.h"
 #include "TurnManager.h"
 
@@ -14,8 +14,12 @@ Monster::~Monster()
 void Monster::Act(Game* game)
 {
     TurnManager* tm = game->GetTurnManager();
+    Map* map = game->GetMap();
 
-    tm->EndTurn();
+    // 턴 이동 테스트용
+    Move({ TILE_SIZE, TILE_SIZE }, map);
+
+    // tm->EndTurn();
 }
 
 bool Monster::NeedsInput()
@@ -25,4 +29,9 @@ bool Monster::NeedsInput()
 
 void Monster::Move(FPOINT delta, Map* map)
 {
+    // 이동 순서 체크용
+    Sleep(100);
+
+    position.x += delta.x;
+    position.y += delta.y;
 }

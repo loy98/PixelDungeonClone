@@ -13,6 +13,7 @@ public:
     Entity();
     virtual ~Entity();
 
+    void Render(HDC hdc);
     virtual void Act(Game* game);
     virtual bool NeedsInput() = 0;
 
