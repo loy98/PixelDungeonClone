@@ -10,7 +10,7 @@ HRESULT BattleScene::Init()
 {
     SetClientRect(g_hWnd, WINSIZE_X, TILEMAPTOOL_Y);
 
-    sampleTile = D2DImageManager::GetInstance()->AddImage("sample_tile", L"Image/tiles_sewers.png", SAMPLE_TILE_X, SAMPLE_TILE_Y);
+    sampleTile = D2DImageManager::GetInstance()->AddImage("sample_tile", L"Image/maptiles.bmp", SAMPLE_TILE_X, SAMPLE_TILE_Y);
     Load();
 
     test = D2DImageManager::GetInstance()->AddImage("banner", L"Image/banners.png", 2, 4);
@@ -44,6 +44,7 @@ void BattleScene::Render(HDC hdc)
         sampleTile->DrawRect({ (float)info.rc.left, (float)info.rc.top},{(float)info.rc.right, (float)info.rc.bottom},0,1);
     }
     test->Middle_RenderFrame(WINSIZE_X / 2, WINSIZE_Y / 2, 0, 3, DEG_TO_RAD(135), false, false, 0.5f);
+	testGame->Render(hdc);
 }
 
 void BattleScene::Load()

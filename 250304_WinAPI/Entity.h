@@ -1,11 +1,14 @@
 ﻿#pragma once
 #include "config.h"
 
+class D2DImage;
 class Game;
 class Entity
 {
 protected:
     FPOINT position;
+    //test
+    D2DImage* image;
 public:
     int graphicID;
     bool isActive;

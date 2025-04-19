@@ -26,7 +26,7 @@ HRESULT MainGame::Init()
 	SceneManager::GetInstance()->AddScene("타일맵툴", new TilemapTool());
 	SceneManager::GetInstance()->AddScene("배종성테스트", new BJS_TestScene());
 	SceneManager::GetInstance()->AddLoadingScene("로딩_1", new LoadingScene());
-	SceneManager::GetInstance()->ChangeScene("A*전투씬_1");
+	SceneManager::GetInstance()->ChangeScene("전투씬_1");
 #pragma endregion
 	
 	hdc = GetDC(g_hWnd);
@@ -46,13 +46,16 @@ void MainGame::Release()
 
 void MainGame::Update()
 {
-	SceneManager::GetInstance()->Update();
 	MouseManager::GetInstance()->Update();
+	SceneManager::GetInstance()->Update();
 	InvalidateRect(g_hWnd, NULL, false);
 }
 
 void MainGame::Render()
 {
+	D2DImage::BeginDraw();
+	D2DImage::Clear(D2D1::ColorF(D2D1::ColorF::Black));
+	
 	SceneManager::GetInstance()->Render(hdc);
 
 	D2DImage::EndDraw();
