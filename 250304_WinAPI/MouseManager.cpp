@@ -6,6 +6,18 @@ HRESULT MouseManager::Init()
     mouseDown.reset();
     mouseUp.set();
     wheelDelta = 0;
+
+    dragStartP = { 0, 0 };
+    dragEndP = { 0, 0 };
+    prevP = { 0, 0 };
+
+    deltaX = 0;
+    deltaY = 0;
+
+    for (auto& d : isDragging) {
+        d = false;
+    }
+
     return S_OK;
 }
 
@@ -23,6 +35,34 @@ void MouseManager::Update()
     for (int i = 0; i < 3; ++i)
     {
 
+        //Drag
+        if (IsOnceMouseDown(mouseVK[i])) {
+            isDragging[i] = true;
+            dragStartP = mousePos;
+            prevP = mousePos;
+        }
+
+        if (isDragging[i] && IsStayMouseDown(mouseVK[i])) {
+            
+            deltaX = mousePos.x - prevP.x;
+            deltaY = mousePos.y - prevP.y;
+
+            prevP = mousePos;
+        }
+
+        if (isDragging[i] && IsOnceMouseUp(mouseVK[i])) {
+            isDragging[i] = false;
+            dragEndP = mousePos;
+
+            deltaX = 0;
+            deltaY = 0;
+        }
+
+    }
+
+    for (int i = 0; i < 3; ++i)
+    {
+
         if (GetAsyncKeyState(mouseVK[i]) & 0x8000)
         {
             if (!mouseDown[i]) mouseDown[i] = true;
@@ -31,6 +71,7 @@ void MouseManager::Update()
         {
             mouseDown[i] = false;
         }
+
     }
 
     wheelDelta = 0;
@@ -118,6 +159,13 @@ bool MouseManager::IsOnceMouseUp(int button, Layer thisLayer)
 void MouseManager::SetLayer()
 {
     //// 조건에 따라 레이어를 선택
+}
+
+void MouseManager::InitPoints()
+{
+    dragStartP = { 0, 0 };
+    dragEndP = { 0, 0 };
+    prevP = { 0, 0 };
 }
 
 bool MouseManager::IsStayMouseDown(int button)

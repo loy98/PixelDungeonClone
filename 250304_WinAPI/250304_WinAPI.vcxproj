@@ -129,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="AstarScene.cpp" />
     <ClCompile Include="BattleScene.cpp" />
+    <ClCompile Include="BJS_TestScene.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="D2DImageManager.cpp" />
@@ -148,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="AstarScene.h" />
     <ClInclude Include="BattleScene.h" />
+    <ClInclude Include="BJS_TestScene.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="config.h" />
