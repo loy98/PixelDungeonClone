@@ -1,0 +1,121 @@
+﻿#include "MouseManager.h"
+
+// 전역 윈도우 핸들 필요 시 외부에서 정의
+extern HWND g_hWnd;
+
+HRESULT MouseManager::Init()
+{
+    wheelDelta = 0;
+
+    dragStartP = { 0, 0 };
+    dragEndP = { 0, 0 };
+    prevP = { 0, 0 };
+
+    deltaX = 0;
+    deltaY = 0;
+
+    for (int i = 0; i < 3; ++i) {
+        isDragging[i] = false;
+        prevMouseDown[i] = false;
+        currMouseDown[i] = false;
+    }
+
+    valueUsed = true;
+
+    return S_OK;
+}
+
+void MouseManager::Update()
+{
+    // 마우스 위치 추적
+    GetCursorPos(&mousePos);
+    ScreenToClient(g_hWnd, &mousePos);
+
+    // 레이어 갱신
+    SetLayer();
+
+    const int mouseVK[3] = { MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE };
+
+    // 이전 상태 저장 & 현재 상태 갱신
+    for (int i = 0; i < 3; ++i)
+    {
+        prevMouseDown[i] = currMouseDown[i];
+        currMouseDown[i] = (GetAsyncKeyState(mouseVK[i]) & 0x8000) != 0;
+    }
+
+    // 드래그 로직 처리
+    for (int i = 0; i < 3; ++i)
+    {
+        if (IsOnceMouseDown(mouseVK[i])) {
+            isDragging[i] = true;
+            dragStartP = mousePos;
+            prevP = mousePos;
+        }
+
+        if (isDragging[i] && IsStayMouseDown(mouseVK[i])) {
+            deltaX = mousePos.x - prevP.x;
+            deltaY = mousePos.y - prevP.y;
+            prevP = mousePos;
+        }
+
+        if (IsOnceMouseUp(mouseVK[i])) {
+            dragEndP = mousePos;         // ← 무조건 기록
+            valueUsed = false;         // ← 유효성 플래그도 세움
+            isDragging[i] = false;       // ← 드래그 종료
+            deltaX = 0;
+            deltaY = 0;
+        }
+    }
+
+    wheelDelta = 0;
+}
+
+bool MouseManager::IsOnceMouseDown(int button)
+{
+    int idx = (button == MOUSE_LEFT) ? 0 : (button == MOUSE_RIGHT ? 1 : 2);
+    return currMouseDown[idx] && !prevMouseDown[idx];
+}
+
+bool MouseManager::IsOnceMouseUp(int button)
+{
+    int idx = (button == MOUSE_LEFT) ? 0 : (button == MOUSE_RIGHT ? 1 : 2);
+    return !currMouseDown[idx] && prevMouseDown[idx];
+}
+
+bool MouseManager::IsStayMouseDown(int button)
+{
+    int idx = (button == MOUSE_LEFT) ? 0 : (button == MOUSE_RIGHT ? 1 : 2);
+    return currMouseDown[idx];
+}
+
+bool MouseManager::IsOnceMouseDown(int button, Layer thisLayer)
+{
+    return (thisLayer == currLayer) && IsOnceMouseDown(button);
+}
+
+bool MouseManager::IsStayMouseDown(int button, Layer thisLayer)
+{
+    return (thisLayer == currLayer) && IsStayMouseDown(button);
+}
+
+bool MouseManager::IsOnceMouseUp(int button, Layer thisLayer)
+{
+    return (thisLayer == currLayer) && IsOnceMouseUp(button);
+}
+
+void MouseManager::SetLayer()
+{
+    // TODO: 필요에 따라 레이어 갱신 로직 작성
+}
+
+void MouseManager::InitPoints()
+{
+    dragStartP = { 0, 0 };
+    dragEndP = { 0, 0 };
+    prevP = { 0, 0 };
+}
+
+void MouseManager::Release()
+{
+    ReleaseInstance();
+}

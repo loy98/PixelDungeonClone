@@ -1,4 +1,4 @@
-#include "MainGame.h"
+ï»¿#include "MainGame.h"
 #include "CommonFunction.h"
 #include "Image.h"
 #include "Timer.h"
@@ -8,25 +8,30 @@
 #include "LoadingScene.h"
 #include "D2DImage.h"
 #include "D2DImageManager.h"
+#include "MouseManager.h"
+#include "BJS_TestScene.h"
+#include "GameScene.h"
 
 HRESULT MainGame::Init()
 {
 #pragma region Manager_Initialze
 	ImageManager::GetInstance()->Init();
 	KeyManager::GetInstance()->Init();
+	MouseManager::GetInstance()->Init();
 	SceneManager::GetInstance()->Init();
 #pragma endregion
 
 #pragma region Scene_Initialize
-	SceneManager::GetInstance()->AddScene("A*¾Ë°í¸®Áò", new AstarScene());
-	SceneManager::GetInstance()->AddScene("ÀüÅõ¾À_1", new BattleScene());
-	SceneManager::GetInstance()->AddScene("Å¸ÀÏ¸ÊÅø", new TilemapTool());
-	SceneManager::GetInstance()->AddLoadingScene("·Îµù_1", new LoadingScene());
-	SceneManager::GetInstance()->ChangeScene("Å¸ÀÏ¸ÊÅø");
-#pragma endregion
-	
-	hdc = GetDC(g_hWnd);
+	SceneManager::GetInstance()->AddScene("A*ì•Œê³ ë¦¬ì¦˜", new AstarScene());
+	SceneManager::GetInstance()->AddScene("ì „íˆ¬ì”¬_1", new BattleScene());
+	SceneManager::GetInstance()->AddScene("íƒ€ì¼ë§µíˆ´", new TilemapTool());
+	SceneManager::GetInstance()->AddScene("ë°°ì¢…ì„±í…ŒìŠ¤íŠ¸", new BJS_TestScene());
+	SceneManager::GetInstance()->AddScene("ê²Œì„ì”¬", new GameScene());
+	SceneManager::GetInstance()->AddLoadingScene("ë¡œë”©_1", new LoadingScene());
+	SceneManager::GetInstance()->ChangeScene("ê²Œì„ì”¬");
 
+	hdc = GetDC(g_hWnd);
+#pragma endregion
 
 	return S_OK;
 }
@@ -35,6 +40,7 @@ void MainGame::Release()
 {
 	SceneManager::GetInstance()->Release();
 	KeyManager::GetInstance()->Release();
+	MouseManager::GetInstance()->Release();
 	ImageManager::GetInstance()->Release();
 
 	ReleaseDC(g_hWnd, hdc);
@@ -42,6 +48,7 @@ void MainGame::Release()
 
 void MainGame::Update()
 {
+	MouseManager::GetInstance()->Update();
 	SceneManager::GetInstance()->Update();
 	InvalidateRect(g_hWnd, NULL, false);
 }
@@ -54,7 +61,6 @@ void MainGame::Render()
 
 	SceneManager::GetInstance()->Render(hdc);
 
-	
 	D2DImage::EndDraw();
 }
 
@@ -62,14 +68,20 @@ LRESULT MainGame::MainProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lPara
 {
 	switch (iMessage)
 	{
+	case WM_MOUSEWHEEL:
+	{
+		short wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam); // 120 ë‹¨ìœ„ë¡œ ì˜¬ë¼ê°/ë‚´ë ¤ê°
+		MouseManager::GetInstance()->SetWheelDelta(wheelDelta);
+		break;
+	}
 	case WM_KEYDOWN:
 		switch (wParam)
 		{
 		case 'a': case 'A':
-			SceneManager::GetInstance()->ChangeScene("ÀüÅõ¾À_1");
+			SceneManager::GetInstance()->ChangeScene("ì „íˆ¬ì”¬_1");
 			break;
 		case 'd': case 'D':
-			SceneManager::GetInstance()->ChangeScene("Å¸ÀÏ¸ÊÅø");
+			SceneManager::GetInstance()->ChangeScene("íƒ€ì¼ë§µíˆ´");
 			break;
 		}
 		break;

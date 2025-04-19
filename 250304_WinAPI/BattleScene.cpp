@@ -7,10 +7,8 @@
 HRESULT BattleScene::Init()
 {
     SetClientRect(g_hWnd, WINSIZE_X, TILEMAPTOOL_Y);
-
     sampleTile = D2DImageManager::GetInstance()->AddImage("sample_tile", L"Image/tiles_sewers.png", SAMPLE_TILE_X, SAMPLE_TILE_Y);
     Load();
-
 
     test = D2DImageManager::GetInstance()->AddImage("banner", L"Image/banners.png", 2, 4);
 
@@ -26,7 +24,7 @@ void BattleScene::Update()
 {
     if (KeyManager::GetInstance()->IsOnceKeyDown(VK_RETURN))
     {
-        SceneManager::GetInstance()->ChangeScene("¿¸≈ıæ¿_1");
+        SceneManager::GetInstance()->ChangeScene("Ï†ÑÌà¨Ïî¨_1");
     }
 }
 
@@ -49,13 +47,13 @@ void BattleScene::Load()
         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE)
     {
-        MessageBox(g_hWnd, TEXT("∆ƒ¿œ ø≠±‚ Ω«∆–"), TEXT("∞Ê∞Ì"), MB_OK);
+        MessageBox(g_hWnd, TEXT("ÌååÏùº Ïó¥Í∏∞ Ïã§Ìå®"), TEXT("Í≤ΩÍ≥†"), MB_OK);
         return;
     }
     DWORD dwByte = 0;
     if (!ReadFile(hFile, tileInfo, sizeof(tileInfo), &dwByte, NULL))
     {
-        MessageBox(g_hWnd, TEXT("∆ƒ¿œ ¿–±‚ Ω«∆–"), TEXT("∞Ê∞Ì"), MB_OK);
+        MessageBox(g_hWnd, TEXT("ÌååÏùº ÏùΩÍ∏∞ Ïã§Ìå®"), TEXT("Í≤ΩÍ≥†"), MB_OK);
     }
     CloseHandle(hFile);
 }

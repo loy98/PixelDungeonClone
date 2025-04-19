@@ -1,4 +1,4 @@
-#include "TilemapTool.h"
+ï»¿#include "TilemapTool.h"
 #include "Image.h"
 #include "CommonFunction.h"
 #include "Button.h"
@@ -9,39 +9,42 @@ HRESULT TilemapTool::Init()
 	SetClientRect(g_hWnd, TILEMAPTOOL_X, TILEMAPTOOL_Y);
 
 	sampleTile = ImageManager::GetInstance()->AddImage(
-		"¹èÆ²½ÃÆ¼_»ùÇÃÅ¸ÀÏ", L"Image/mapTiles.bmp", 640, 288,
+		"ë°°í‹€ì‹œí‹°_ìƒ˜í”Œíƒ€ì¼", L"Image/mapTiles.bmp", 640, 288,
 		SAMPLE_TILE_X, SAMPLE_TILE_Y);
 
-	// »ùÇÃ Å¸ÀÏ ¿µ¿ª
+	// ìƒ˜í”Œ íƒ€ì¼ ì˜ì—­
 	rcSampleTile.left = TILEMAPTOOL_X - sampleTile->GetWidth();
 	rcSampleTile.top = 0;
 	rcSampleTile.right = TILEMAPTOOL_X;
 	rcSampleTile.bottom = sampleTile->GetHeight();
 
-	for (int i = 0; i < TILE_Y; ++i)
-	{
-		for (int j = 0; j < TILE_X; ++j)
-		{
-			tileInfo[i * TILE_X + j].frameX = 3;
-			tileInfo[i * TILE_X + j].frameY = 0;
-			tileInfo[i * TILE_X + j].rc.left = j * TILE_SIZE;
-			tileInfo[i * TILE_X + j].rc.top = i * TILE_SIZE;
-			tileInfo[i * TILE_X + j].rc.right = 
-				tileInfo[i * TILE_X + j].rc.left + TILE_SIZE;
-			tileInfo[i * TILE_X + j].rc.bottom = 
-				tileInfo[i * TILE_X + j].rc.top + TILE_SIZE;
+	tempTileSize = 30;
+
+	//Load();
+
+	// ë©”ì¸ íƒ€ì¼ ì˜ì—­
+	rcMain.left = 0;
+	rcMain.top = 0;
+	rcMain.right = TILE_X * tempTileSize;
+	rcMain.bottom = TILE_Y * tempTileSize;
+
+	for (int i = 0; i < 20; ++i) {
+		for (int j = 0; j < 20; ++j) {
+			tempTile[20 * i + j] =
+			{ rcMain.left + j * tempTileSize,
+				rcMain.top + i * tempTileSize,
+				rcMain.left + (j + 1) * tempTileSize,
+				rcMain.top + (i + 1) * tempTileSize
+			};
 		}
 	}
 
-	Load();
+	tBlackBrush = CreateSolidBrush(RGB(0, 0, 0));
+	tGreyBrush = CreateSolidBrush(RGB(100, 100, 100));
+	tWhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+	tRedBrush = CreateSolidBrush(RGB(255, 0, 0));
 
-	// ¸ŞÀÎ Å¸ÀÏ ¿µ¿ª
-	rcMain.left = 0;
-	rcMain.top = 0;
-	rcMain.right = TILE_X * TILE_SIZE;
-	rcMain.bottom = TILE_Y * TILE_SIZE;
-
-	// UI - ¹öÆ°
+	// UI - ë²„íŠ¼
 	saveButton = new Button();
 	saveButton->Init(
 		TILEMAPTOOL_X - sampleTile->GetWidth() + 180,
@@ -63,6 +66,11 @@ void TilemapTool::Release()
 		delete saveButton;
 		saveButton = nullptr;
 	}
+
+	DeleteObject(tBlackBrush);
+	DeleteObject(tGreyBrush);
+	DeleteObject(tWhiteBrush);
+	DeleteObject(tRedBrush);
 }
 
 void TilemapTool::Update()
@@ -83,10 +91,27 @@ void TilemapTool::Update()
 		{
 			int posX = g_ptMouse.x;
 			int posY = g_ptMouse.y;
-			int tileX = posX / TILE_SIZE;
-			int tileY = posY / TILE_SIZE;
-			tileInfo[tileY * TILE_X + tileX].frameX = selectedTile.x;
-			tileInfo[tileY * TILE_X + tileX].frameY = selectedTile.y;
+			int tileX = posX / tempTileSize;
+			int tileY = posY / tempTileSize;
+			tileInfo[tileY * TILE_X + tileX].type = TT::FLOOR;
+		}
+
+		if (KeyManager::GetInstance()->IsStayKeyDown(VK_RBUTTON))
+		{
+			int posX = g_ptMouse.x;
+			int posY = g_ptMouse.y;
+			int tileX = posX / tempTileSize;
+			int tileY = posY / tempTileSize;
+			tileInfo[tileY * TILE_X + tileX].type = TT::WALL;
+		}
+
+		if (KeyManager::GetInstance()->IsStayKeyDown(VK_MBUTTON))
+		{
+			int posX = g_ptMouse.x;
+			int posY = g_ptMouse.y;
+			int tileX = posX / tempTileSize;
+			int tileY = posY / tempTileSize;
+			tileInfo[tileY * TILE_X + tileX].type = TT::NONE;
 		}
 	}
 
@@ -97,18 +122,39 @@ void TilemapTool::Render(HDC hdc)
 {
 	PatBlt(hdc, 0, 0, TILEMAPTOOL_X, TILEMAPTOOL_Y, WHITENESS);
 
-	// ¸ŞÀÎ Å¸ÀÏ ¿µ¿ª
-	for (int i = 0; i < TILE_X * TILE_Y; ++i)
-	{
-		sampleTile->FrameRender(hdc, tileInfo[i].rc.left,
-			tileInfo[i].rc.top, tileInfo[i].frameX,
-			tileInfo[i].frameY, false, false);
+	// ë©”ì¸ íƒ€ì¼ ì˜ì—­
+	for (int i = 0; i < 20; ++i) {
+		for (int j = 0; j < 20; ++j) {
+
+			switch (tileInfo[20 * i + j].type) {
+			case TT::WALL:
+				hOldBrush = (HBRUSH)SelectObject(hdc, tGreyBrush);
+				RenderRect(hdc, tempTile[20 * i + j]);
+				SelectObject(hdc, hOldBrush);
+				break;
+			case TT::FLOOR:
+				hOldBrush = (HBRUSH)SelectObject(hdc, tWhiteBrush);
+				RenderRect(hdc, tempTile[20 * i + j]);
+				SelectObject(hdc, hOldBrush);
+				break;
+			case TT::NONE:
+				hOldBrush = (HBRUSH)SelectObject(hdc, tBlackBrush);
+				RenderRect(hdc, tempTile[20 * i + j]);
+				SelectObject(hdc, hOldBrush);
+				break;
+			default:
+				hOldBrush = (HBRUSH)SelectObject(hdc, tRedBrush);
+				RenderRect(hdc, tempTile[20 * i + j]);
+				SelectObject(hdc, hOldBrush);
+				break;
+			}
+		}
 	}
 
-	// »ùÇÃ Å¸ÀÏ ¿µ¿ª
+	// ìƒ˜í”Œ íƒ€ì¼ ì˜ì—­
 	sampleTile->Render(hdc, TILEMAPTOOL_X - sampleTile->GetWidth(), 0);
 
-	// ¼±ÅÃµÈ Å¸ÀÏ
+	// ì„ íƒëœ íƒ€ì¼
 	sampleTile->FrameRender(hdc, 
 		TILEMAPTOOL_X - sampleTile->GetWidth(),
 		sampleTile->GetHeight() + 100,
@@ -119,13 +165,13 @@ void TilemapTool::Render(HDC hdc)
 
 void TilemapTool::Save()
 {
-	// ÆÄÀÏ ÀúÀå
+	// íŒŒì¼ ì €ì¥
 	HANDLE hFile = CreateFile(
 		L"TileMapData.dat", GENERIC_WRITE, 0, NULL,
 		CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		MessageBox(g_hWnd, TEXT("ÆÄÀÏ »ı¼º ½ÇÆĞ"), TEXT("°æ°í"), MB_OK);
+		MessageBox(g_hWnd, TEXT("íŒŒì¼ ìƒì„± ì‹¤íŒ¨"), TEXT("ê²½ê³ "), MB_OK);
 		return;
 	}
 	DWORD dwByte = 0;
@@ -135,19 +181,19 @@ void TilemapTool::Save()
 
 void TilemapTool::Load()
 {	
-	// ÆÄÀÏ ·Îµå
+	// íŒŒì¼ ë¡œë“œ
 	HANDLE hFile = CreateFile(
 		L"TileMapData.dat", GENERIC_READ, 0, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		MessageBox(g_hWnd, TEXT("ÆÄÀÏ ¿­±â ½ÇÆĞ"), TEXT("°æ°í"), MB_OK);
+		MessageBox(g_hWnd, TEXT("íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨"), TEXT("ê²½ê³ "), MB_OK);
 		return;
 	}
 	DWORD dwByte = 0;
 	if (!ReadFile(hFile, tileInfo, sizeof(tileInfo), &dwByte, NULL))
 	{
-		MessageBox(g_hWnd, TEXT("ÆÄÀÏ ÀĞ±â ½ÇÆĞ"), TEXT("°æ°í"), MB_OK);
+		MessageBox(g_hWnd, TEXT("íŒŒì¼ ì½ê¸° ì‹¤íŒ¨"), TEXT("ê²½ê³ "), MB_OK);
 	}
 	CloseHandle(hFile);
 }
