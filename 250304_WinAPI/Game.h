@@ -26,5 +26,9 @@ public:
 
 	Map* GetMap() { return map; }
 	TurnManager* GetTurnManager() { return turnManager; }
+
+	// test. 스페이스바를 누르면 맵에 배치
+	void SetEntityOnMap(FPOINT pos);
+
 };
 

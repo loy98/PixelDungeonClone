@@ -1,6 +1,8 @@
-#include "AstarScene.h"
+ï»¿#include "AstarScene.h"
 #include "CommonFunction.h"
 #include "algorithm"
+// test
+#include "Game.h"
 
 HRESULT AstarTile::Init()
 {
@@ -96,6 +98,13 @@ HRESULT AstarScene::Init()
 	destTile->SetColor(RGB(0, 0, 255));
 	destTile->SetType(AstarTileType::End);
 
+	// test
+	astarGame = new Game;
+	astarGame->Init();
+
+	// ì•¡í„° ìœ„ì¹˜ ì„¤ì •
+
+
 	return S_OK;
 }
 
@@ -105,9 +114,14 @@ void AstarScene::Release()
 
 void AstarScene::Update()
 {
+	if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE))
+	{
+		SetEntityPos();
+	}
+
 	if (KeyManager::GetInstance()->IsStayKeyDown(VK_RBUTTON))
 	{
-		// g_ptMouse·Î ÀÎµ¦½º¸¦ °è»ê
+		// g_ptMouseë¡œ ì¸ë±ìŠ¤ë¥¼ ê³„ì‚°
 		int x, y;
 		x = g_ptMouse.x / ASTAR_TILE_SIZE;
 		y = g_ptMouse.y / ASTAR_TILE_SIZE;
@@ -124,12 +138,13 @@ void AstarScene::Update()
 		}
 	}
 
+	astarGame->Update();
 
 	// TODO 
-	if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE))
-	{
-		FindPath();
-	}
+	//if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE))
+	//{
+	//	FindPath();
+	//}
 }
 
 void AstarScene::Render(HDC hdc)
@@ -141,6 +156,8 @@ void AstarScene::Render(HDC hdc)
 			map[i][j].Render(hdc);
 		}
 	}
+
+	astarGame->Render(hdc);
 }
 
 void AstarScene::FindPath()
@@ -164,7 +181,7 @@ void AstarScene::FindPath()
 
 		if (KeyManager::GetInstance()->IsOnceKeyDown(VK_RETURN))
 		{
-			SceneManager::GetInstance()->ChangeScene("ÀüÅõ¾À_1", "·Îµù_1");
+			SceneManager::GetInstance()->ChangeScene("ì „íˆ¬ì”¬_1", "ë¡œë”©_1");
 		}
 	}
 }
@@ -188,13 +205,13 @@ void AstarScene::AddOpenList(AstarTile* currTile)
 
 		if (!isValidNeighbor(neighbor)) continue;
 
-		// ´ë°¢¼± ÀÌµ¿ ½Ã ÀÎÁ¢ º® °Ë»ç
+		// ëŒ€ê°ì„  ì´ë™ ì‹œ ì¸ì ‘ ë²½ ê²€ì‚¬
 		if (abs(dx[i]) + abs(dy[i]) == 2) {
 			bool wallX = map[currTile->idY][nx].GetType() == AstarTileType::Wall;
 			bool wallY = map[ny][currTile->idX].GetType() == AstarTileType::Wall;
 			if (wallX || wallY) continue;
 		}
-		// ÀÌµ¿ ºñ¿ë È®ÀÎ ¹× °»½Å ¿©ºÎ È®ÀÎ
+		// ì´ë™ ë¹„ìš© í™•ì¸ ë° ê°±ì‹  ì—¬ë¶€ í™•ì¸
 		UpdateNeighborCosts(neighbor, currTile, moveCost);
 	}
 
@@ -250,4 +267,29 @@ bool AstarScene::isValidNeighbor(AstarTile* neighbor)
 {
 	bool isNotClose = find(closeList.begin(), closeList.end(), neighbor) == closeList.end();
 	return neighbor->GetType() != AstarTileType::Wall && isNotClose;
+}
+
+// ë§µ í•¨ìˆ˜-ì´ ì£¼ì†Œë¡œ ì„¸íŒ…. ë ˆë²¨ì´ êµ¬í˜„ë˜ë©´ ë ˆë²¨ì—ì„œ ì´ ìž‘ì—…í•˜ë©´ ë  ê²ƒê°™ìŒ.
+FPOINT AstarScene::GetRandomFloorTile()
+{
+	// ëžœë¤í•œ íƒ€ì¼ì˜ center ì¢Œí‘œë¥¼ ë°˜í™˜
+	// ë²½ì´ë©´ ë°˜í™˜í•˜ë©´ ì•ˆë¨
+	int x = (rand() % ASTAR_TILE_COUNT);
+	int y = (rand() % ASTAR_TILE_COUNT);
+
+	while ((map[(int)y][(int)x].GetType() == AstarTileType::Wall))
+	{
+		x = (rand() % ASTAR_TILE_COUNT);
+		y = (rand() % ASTAR_TILE_COUNT);
+	}
+			
+	FPOINT pos = { map[y][x].center.x, map[y][x].center.y };
+
+	return pos;
+}
+
+void AstarScene::SetEntityPos()
+{
+	FPOINT pos = GetRandomFloorTile();
+	astarGame->SetEntityOnMap(pos);
 }

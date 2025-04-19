@@ -17,7 +17,10 @@ void Monster::Act(Game* game)
     Map* map = game->GetMap();
 
     // 턴 이동 테스트용
-    Move({ TILE_SIZE, TILE_SIZE }, map);
+    //Move({ TILE_SIZE, TILE_SIZE }, map);
+
+    // 에이스타용
+    Move({ 30, 30 }, map);
 
     // tm->EndTurn();
 }

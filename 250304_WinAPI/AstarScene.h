@@ -7,6 +7,7 @@
 
 enum class AstarTileType { Start, End, Wall, None };
 
+
 class AstarTile : public GameObject
 {
 public:
@@ -49,6 +50,8 @@ public:
 
 };
 
+// test
+class Game;
 class AstarScene : public GameObject
 {
 	AstarTile map[ASTAR_TILE_COUNT][ASTAR_TILE_COUNT];
@@ -60,6 +63,9 @@ class AstarScene : public GameObject
 
 	vector<AstarTile*> openList;
 	vector<AstarTile*> closeList;
+
+	// test
+	Game* astarGame;
 
 public:
 	virtual HRESULT Init();
@@ -77,5 +83,11 @@ public:
 	bool isValidNeighbor(AstarTile* neighbor);
 
 	virtual ~AstarScene() {};
+
+	//
+	FPOINT GetRandomFloorTile();
+	void SetEntityPos();
+
+
 };
 
