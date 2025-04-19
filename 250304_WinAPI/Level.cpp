@@ -84,7 +84,8 @@ void Level::Update()
 
 		MouseManager::GetInstance()->AlreadyUsed();
 	}*/
-	if (PtInRect(&mapRc, MouseManager::GetInstance()->GetDragEndP())) {
+	if (PtInRect(&mapRc, MouseManager::GetInstance()->GetDragEndP())) 
+	{
 		if (MouseManager::GetInstance()->GetValueUsed() == false) {
 
 			long posX = MouseManager::GetInstance()->GetDragEndP().x;
@@ -93,14 +94,16 @@ void Level::Update()
 			long indX = (posX - mapRc.left) / tempTileSize;
 			long indY = (posY - mapRc.top) / tempTileSize;
 
-			if (indX >= 0 && indX < 20 && indY >= 0 && indY < 20) {
-				map[indY * 20 + indX].type = TT::COUNT;
-			}
+			if (indX >= 0 && indX < 20 && indY >= 0 && indY < 20)	///
+			{														/// 구현 하고 싶은 로직 넣는 부분
+				map[indY * 20 + indX].type = TT::COUNT;				///
+			}														///
 
 			MouseManager::GetInstance()->InitPoints();
 			MouseManager::GetInstance()->AlreadyUsed();
 		}
-	}
+	} ///디버깅을 위해 마우스 왼쪽 버튼을 떼면 그 자리에 있는 타일이 빨간색으로 변하게 해놨습니다. 
+	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
 	
 	if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
 	{
