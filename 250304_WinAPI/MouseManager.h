@@ -1,7 +1,7 @@
-﻿// MouseManager.h
-#pragma once
+﻿#pragma once
 #include "Singleton.h"
 #include "config.h"
+#include <bitset>
 
 #define MOUSE_LEFT    VK_LBUTTON
 #define MOUSE_RIGHT   VK_RBUTTON
@@ -13,14 +13,14 @@ typedef enum class InputLayer {
     ALARM,
     ESC,
     COUNT
-}Layer;
-
+} Layer;
 
 class MouseManager : public Singleton<MouseManager>
 {
 private:
-    bitset<3> mouseDown; // [0]: Left, [1]: Right, [2]: Middle
-    bitset<3> mouseUp;
+    // 상태 관리용 배열
+    bool prevMouseDown[3]{ false, false, false };
+    bool currMouseDown[3]{ false, false, false };
 
     POINT mousePos;
     Layer currLayer;
@@ -32,7 +32,9 @@ private:
     long deltaX;
     long deltaY;
 
-    bool isDragging[4];
+    bool isDragging[3]{ false, false, false };
+
+    bool valueUsed;
 
     short wheelDelta;
 
@@ -50,7 +52,6 @@ public:
     bool IsOnceMouseUp(int button, Layer thisLayer);
 
     void SetLayer();
-
     void InitPoints();
 
     inline POINT GetMousePos() const { return mousePos; }
@@ -58,8 +59,16 @@ public:
 
     inline void SetWheelDelta(short delta) { wheelDelta = delta; }
     inline short GetWheelDelta() const { return wheelDelta; }
-    
-    inline bool GetIsDragging(int button) { return isDragging[button-1]; }
+
+    inline bool GetIsDragging(int button) {
+        int idx = (button == MOUSE_LEFT) ? 0 : (button == MOUSE_RIGHT ? 1 : 2);
+        return isDragging[idx];
+    }
+
+    inline POINT GetDragEndP() { return dragEndP; }
+
+    inline bool GetValueUsed() { return valueUsed; }
+    inline void AlreadyUsed() { valueUsed = true; }
 
     inline long GetDeltaX() { return deltaX; }
     inline long GetDeltaY() { return deltaY; }

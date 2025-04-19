@@ -70,8 +70,8 @@ void MainGame::Release()
 
 void MainGame::Update()
 {
-	SceneManager::GetInstance()->Update();
 	MouseManager::GetInstance()->Update();
+	SceneManager::GetInstance()->Update();
 	InvalidateRect(g_hWnd, NULL, false);
 }
 

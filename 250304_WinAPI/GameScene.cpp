@@ -10,7 +10,10 @@ HRESULT GameScene::Init()
 		levels[i] = nullptr;
 	}
 	levels[testLevel] = new Level;
-	levels[testLevel]->Init();
+	if (levels[testLevel]) {
+		levels[testLevel]->Init();
+	}
+	
 
 	return S_OK;
 }

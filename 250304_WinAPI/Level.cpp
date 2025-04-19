@@ -13,13 +13,15 @@ void Level::Init()
 	for (int i = 0; i < 20; ++i) {
 		for (int j = 0; j < 20; ++j) {
 			tempTile[20 * i + j] = 
-			{	280+j*tempTileSize, 
+			{	240+j*tempTileSize, 
 				60+i*tempTileSize,
-				280 + (j+1) * tempTileSize, 
+				240 + (j+1) * tempTileSize, 
 				60 + (i+1) * tempTileSize 
 			};
 		}
 	}
+
+	mapRc = { tempTile[0].left, tempTile[0].top, tempTile[399].right, tempTile[399].bottom };
 
 	BlackBrush = CreateSolidBrush(RGB(0, 0, 0));
 	GreyBrush = CreateSolidBrush(RGB(100, 100, 100));
@@ -70,10 +72,62 @@ void Level::Release()
 
 void Level::Update()
 {
+	/*if (MouseManager::GetInstance()->GetValueUsed() == false) {
+		POINT p = MouseManager::GetInstance()->GetMousePos();
+
+		if (PtInRect(&mapRc, p)) {
+			long indX = (p.x - mapRc.left) / tempTileSize;
+			long indY = (p.y - mapRc.top) / tempTileSize;
+
+			map[indY * 20 + indX].type = TT::COUNT;
+		}
+
+		MouseManager::GetInstance()->AlreadyUsed();
+	}*/
+	if (PtInRect(&mapRc, MouseManager::GetInstance()->GetDragEndP())) {
+		if (MouseManager::GetInstance()->GetValueUsed() == false) {
+
+			long posX = MouseManager::GetInstance()->GetDragEndP().x;
+			long posY = MouseManager::GetInstance()->GetDragEndP().y;
+
+			long indX = (posX - mapRc.left) / tempTileSize;
+			long indY = (posY - mapRc.top) / tempTileSize;
+
+			if (indX >= 0 && indX < 20 && indY >= 0 && indY < 20) {
+				map[indY * 20 + indX].type = TT::COUNT;
+			}
+
+			MouseManager::GetInstance()->InitPoints();
+			MouseManager::GetInstance()->AlreadyUsed();
+		}
+	}
+	
+	if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
+	{
+		long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
+		long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
+
+		for (auto& t : tempTile) {
+			t.left += tempDeltaX;
+			t.right += tempDeltaX;
+			t.top += tempDeltaY;
+			t.bottom += tempDeltaY;
+		}
+
+		mapRc.left += tempDeltaX;
+		mapRc.right += tempDeltaX;
+		mapRc.top += tempDeltaY;
+		mapRc.bottom += tempDeltaY;
+
+	}
 }
 
 void Level::Render(HDC hdc)
 {
+	PatBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, WHITENESS);
+
+	RenderRect(hdc, mapRc);
+
 	for (int i = 0; i < 20; ++i) {
 		for (int j = 0; j < 20; ++j) {
 			
@@ -107,7 +161,7 @@ void Level::FileLoad()
 {
 	// 파일 로드
 	HANDLE hFile = CreateFile(
-		L"TilemapDatas/TestMap_Heart.dat", GENERIC_READ, 0, NULL,
+		L"TileMapData.dat", GENERIC_READ, 0, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{

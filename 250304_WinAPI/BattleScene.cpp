@@ -1,4 +1,4 @@
-#include "BattleScene.h"
+ï»¿#include "BattleScene.h"
 #include "Image.h"
 #include "CommonFunction.h"
 #include "config.h"
@@ -8,14 +8,14 @@ HRESULT BattleScene::Init()
 	SetClientRect(g_hWnd, WINSIZE_X, TILEMAPTOOL_Y);
 
 	sampleTile = ImageManager::GetInstance()->AddImage(
-		"¹èÆ²½ÃÆ¼_»ùÇÃÅ¸ÀÏ", L"Image/mapTiles.bmp", 640, 288,
+		"ë°°í‹€ì‹œí‹°_ìƒ˜í”Œíƒ€ì¼", L"Image/mapTiles.bmp", 640, 288,
 		SAMPLE_TILE_X, SAMPLE_TILE_Y);
 
 	backGround = new Image();
 	if (FAILED(backGround->Init(TEXT("Image/BackGround.bmp"), WINSIZE_X, TILEMAPTOOL_Y)))
 	{
 		MessageBox(g_hWnd,
-			TEXT("Image/backGround.bmp »ı¼º ½ÇÆĞ"), TEXT("°æ°í"), MB_OK);
+			TEXT("Image/backGround.bmp ìƒì„± ì‹¤íŒ¨"), TEXT("ê²½ê³ "), MB_OK);
 		return E_FAIL;
 	}
 
@@ -39,14 +39,15 @@ void BattleScene::Update()
 {
 	if (KeyManager::GetInstance()->IsOnceKeyDown(VK_RETURN))
 	{
-		SceneManager::GetInstance()->ChangeScene("ÀüÅõ¾À_1", "·Îµù_1");
+		SceneManager::GetInstance()->ChangeScene("ì „íˆ¬ì”¬_1", "ë¡œë”©_1");
 	}
 }
 
 void BattleScene::Render(HDC hdc)
 {
-	backGround->Render(hdc);
-	// ¸ŞÀÎ Å¸ÀÏ ¿µ¿ª
+	PatBlt(hdc, 0, 0, WINSIZE_X, TILEMAPTOOL_Y, WHITENESS);
+
+	// ë©”ì¸ íƒ€ì¼ ì˜ì—­
 	for (int i = 0; i < TILE_X * TILE_Y; ++i)
 	{
 		sampleTile->FrameRender(hdc, tileInfo[i].rc.left,
@@ -57,19 +58,19 @@ void BattleScene::Render(HDC hdc)
 
 void BattleScene::Load()
 {
-	// ÆÄÀÏ ·Îµå
+	// íŒŒì¼ ë¡œë“œ
 	HANDLE hFile = CreateFile(
 		L"TileMapData.dat", GENERIC_READ, 0, NULL,
 		OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (hFile == INVALID_HANDLE_VALUE)
 	{
-		MessageBox(g_hWnd, TEXT("ÆÄÀÏ ¿­±â ½ÇÆĞ"), TEXT("°æ°í"), MB_OK);
+		MessageBox(g_hWnd, TEXT("íŒŒì¼ ì—´ê¸° ì‹¤íŒ¨"), TEXT("ê²½ê³ "), MB_OK);
 		return;
 	}
 	DWORD dwByte = 0;
 	if (!ReadFile(hFile, tileInfo, sizeof(tileInfo), &dwByte, NULL))
 	{
-		MessageBox(g_hWnd, TEXT("ÆÄÀÏ ÀĞ±â ½ÇÆĞ"), TEXT("°æ°í"), MB_OK);
+		MessageBox(g_hWnd, TEXT("íŒŒì¼ ì½ê¸° ì‹¤íŒ¨"), TEXT("ê²½ê³ "), MB_OK);
 	}
 	CloseHandle(hFile);
 }
