@@ -6,6 +6,7 @@ class Entity
 {
 protected:
     FPOINT position;
+    float speed;
 public:
     int graphicID;
     bool isActive;

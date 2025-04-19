@@ -5,7 +5,7 @@ class Map;
 class Player : public Entity
 {
 public:
-    Player(FPOINT pos);
+    Player(FPOINT pos, float speed);
     virtual ~Player();
 
     virtual void Act(Game* game) override;

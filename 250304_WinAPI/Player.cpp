@@ -3,10 +3,12 @@
 #include "Game.h"
 #include "TurnManager.h"
 #include "KeyManager.h"
+#include "TimerManager.h"
 
-Player::Player(FPOINT pos)
+Player::Player(FPOINT pos, float speed)
 {
     position = pos;
+    this->speed = speed;
 }
 
 Player::~Player()
@@ -45,8 +47,14 @@ void Player::Move(FPOINT delta, Map* map, Game* game)
 
     if (!map->CanGo({ nextX, nextY })) return;
 
-    position.x = nextX;
-    position.y = nextY;
+    float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
+    delta.Normalize();
 
-    game->GetTurnManager()->EndTurn();
+    position.x += speed * deltaTime * delta.x;
+    position.y += speed * deltaTime * delta.y;
+    
+    if (position == FPOINT{ nextX, nextY })
+        game->GetTurnManager()->EndTurn();
+    else
+        Move(delta, map, game);
 }
