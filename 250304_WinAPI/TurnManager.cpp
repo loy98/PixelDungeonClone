@@ -1,7 +1,7 @@
 ﻿#include "TurnManager.h"
 #include "Entity.h"
 
-TurnManager::TurnManager() : currentTime(0.f)
+TurnManager::TurnManager()/* : currentTime(0.f)*/
 {
 }
 
@@ -11,15 +11,16 @@ TurnManager::~TurnManager()
 
 void TurnManager::Init()
 {
-	while (!schedule.empty()) schedule.pop();
-	
+	//에너지 턴 개념 test (시간)
+	//while (!schedule.empty()) schedule.pop();
+	//
 
-	// 모든 액터를 시뮬레이션 시간 0에서 시작
-	for (auto actor : turnQueue) {
-		if (actor && actor->isActive) {
-			schedule.push({ 0.0, actor });
-		}
-	}
+	//// 모든 액터를 시뮬레이션 시간 0에서 시작
+	//for (auto actor : turnQueue) {
+	//	if (actor && actor->isActive) {
+	//		schedule.push({ 0.0, actor });
+	//	}
+	//}
 }
 
 void TurnManager::AddActor(Entity* actor)
@@ -105,6 +106,7 @@ void TurnManager::ProcessTurns(Level* level)
 void TurnManager::EndTurn()
 {
 	if (turnQueue.empty()) return;
+	// 턴 종료되면, 한 턴 분량의 에너지 추가
 	turnQueue[currentActorIndex]->AddEnergy();
 	currentActorIndex = (currentActorIndex + 1) % turnQueue.size();
 }
