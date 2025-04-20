@@ -50,14 +50,14 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			float centerSlope = dx/dy;
 			
 			if (centerSlope > startSlope || centerSlope < endSlope)
-				continue;
+				break;
 
 			tile->isVisible = true;
 
 			// 타일이 벽이라면
 			if (tile->GetType() == AstarTileType::Wall)
 			{
-				Calculate(map, tileIdX, tileIdY, checkRow + 1, nextStartSlope, centerSlope, direction);
+				Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
 				isBlock = true;
 				// 다음에도 벽이면 벽 아닐때까지 넘김
 			}
@@ -69,7 +69,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 				isBlock = false;
 
 				// 벽이 아닌 타일로 새로운 시작 기울기를 구함.
-				nextStartSlope = centerSlope;
+				nextStartSlope = startSlope;
 			}
 
 			tile->SetColor(RGB(0, 255, 0));
