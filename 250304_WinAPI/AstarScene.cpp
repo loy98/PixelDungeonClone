@@ -331,7 +331,6 @@ void AstarScene::SetVisibleTile()
 	//// 시야 리셋
 	ResetVisibleTile();
 
-
 	// 임시 좌표-플레이어 좌표
 	map[10][10].SetColor(RGB(200, 200, 0));
 	map[10][10].SetType(AstarTileType::Visible);
