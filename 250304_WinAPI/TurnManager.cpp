@@ -28,25 +28,31 @@ void TurnManager::ProcessTurns(Level* level)
 		EndTurn();
 		return;
 	}
-	if (actor->NeedsInput()) {
-		actor->Act(level);
-	}
-	else {
-		actor->Act(level);
-		if (!actor->IsBusy()) {
-			EndTurn();
-		}
-	}
+	// m2_merge code
+	//  if (actor->NeedsInput()) {
+	//  	actor->Act(level);
+	//  }
+	//  else {
+	//  	actor->Act(level);
+	//  	if (!actor->IsBusy()) {
+	//  		EndTurn();
+	//  	}
+	//  }
 
-	//if (!actor->NeedsInput() || !actor->IsBusy())
-	//{
-	//	actor->Act(game);
-	//}
-	//else
-	//{
-	//	actor->Act(game);
-	//	EndTurn();
-	//}
+
+	// 이전 상태 저장
+	EntityState prevState = actor->GetState();
+
+	// 실제 행동 호출 (state가 MOVE나 ATTACK으로 바뀝니다)
+	actor->Act(game);
+
+	// 이전에는 바쁜 상태였다가, 지금 Idle로 돌아왔다면 턴 종료
+	bool wasBusy = (prevState != EntityState::IDLE);
+	bool nowIdle = (actor->GetState() == EntityState::IDLE);
+	if (wasBusy && nowIdle) 
+	{
+		EndTurn();
+	}
 }
 
 void TurnManager::EndTurn()

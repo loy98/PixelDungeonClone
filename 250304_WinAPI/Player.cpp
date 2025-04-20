@@ -5,11 +5,19 @@
 #include "Level.h"
 #include "TimerManager.h"
 
-Player::Player(FPOINT pos, float speed)
+Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
     position = pos;
     this->speed = speed;
+    this->hp = hp;
+    this->maxHp = hp;
+    this->attackDmg = attDmg;
+    this->defense = defense;
     isMoving = false;
+    isActive = true;
+
+    type = EntityType::PLAYER;
+    curState = EntityState::IDLE;
 }
 
 Player::~Player()
@@ -18,14 +26,35 @@ Player::~Player()
 
 void Player::Act(Level* level)
 {
-    KeyManager* km = KeyManager::GetInstance();
-
-    if (isMoving)
+    switch (curState)
     {
+    case EntityState::IDLE:
+        ActIdle(level);
+        return;
+    case EntityState::MOVE:
         Move(level);
         return;
+    case EntityState::ATTACK:
+        Attack(level);
+        return;
+    case EntityState::DEAD:
+        // player는 죽은채로 계속 애니메이션 돼야함
+        return;
     }
+}
 
+void Player::Attack(Level* level)
+{
+    if (target)
+    {
+        game->ProcessCombat(this, target);
+        curState = EntityState::IDLE;
+    }
+}
+
+void Player::ActIdle(Level* level)
+{
+    KeyManager* km = KeyManager::GetInstance();
     if (km->IsOnceKeyDown(VK_UP))
         targetPos = { position.x, position.y - TILE_SIZE };
     else if (km->IsOnceKeyDown(VK_DOWN))
@@ -37,16 +66,13 @@ void Player::Act(Level* level)
     else return;
 
     isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
-}
-
-bool Player::NeedsInput()
-{
-    return !isMoving;
-}
-
-bool Player::IsBusy()
-{
-    return isMoving;
+    target = game->GetActorAt(targetPos);
+    if (target)
+    {
+        curState = EntityState::ATTACK;
+        return;
+    }
+    curState = EntityState::MOVE;
 }
 
 void Player::Move(Level* level)
@@ -67,6 +93,6 @@ void Player::Move(Level* level)
     if (delta.Length() <= 0.5f)
     {
         position = targetPos;
-        isMoving = false;
+        curState = EntityState::IDLE;
     }
 }
