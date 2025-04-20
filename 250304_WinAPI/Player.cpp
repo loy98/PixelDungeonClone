@@ -36,7 +36,7 @@ void Player::Act(Level* level)
         targetPos = { position.x + TILE_SIZE, position.y };
     else return;
 
-    isMoving = true;
+    isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
 }
 
 bool Player::NeedsInput()

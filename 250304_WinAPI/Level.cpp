@@ -170,14 +170,14 @@ void Level::Render(HDC hdc)
 					break;
 				case TT::FLOOR:
 					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
-						static_cast<int>(tempTile[20 * i + j].top), 0, 0);
+						static_cast<int>(tempTile[20 * i + j].top), 3, 0);
 					// hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
 					// RenderRect(hdc, tempTile[20 * i + j]);
 					// SelectObject(hdc, hOldBrush);
 					break;
 				case TT::NONE:
 					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
-						static_cast<int>(tempTile[20 * i + j].top), 3, 0);
+						static_cast<int>(tempTile[20 * i + j].top), 0, 0);
 					// hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
 					// RenderRect(hdc, tempTile[20 * i + j]);
 					// SelectObject(hdc, hOldBrush);
