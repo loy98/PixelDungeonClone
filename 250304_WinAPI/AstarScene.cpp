@@ -139,11 +139,14 @@ void AstarScene::Update()
 				map[y][x].SetType(AstarTileType::Wall);
 			}
 		}
+		
 	}
+
+	SetVisibleTile();
 
 	astarGame->Update();
 
-	SetVisibleTile();
+	
 
 	// TODO 
 	//if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE))
@@ -316,10 +319,12 @@ void AstarScene::ResetVisibleTile()
 	{
 		for (int j = 0; j < ASTAR_TILE_COUNT; j++)
 		{
-			if (map[i][j].GetType() == AstarTileType::Visible)
+			if (map[i][j].isVisible == true)
 			{
+				if (map[i][j].GetType() == AstarTileType::Wall)
+					continue;
 				map[i][j].SetColor(RGB(100, 100, 100));
-				map[i][j].SetType(AstarTileType::None);
+				map[i][j].isVisible = false;
 			}
 		}
 	}
@@ -333,11 +338,13 @@ void AstarScene::SetVisibleTile()
 
 	// 임시 좌표-플레이어 좌표
 	map[10][10].SetColor(RGB(200, 200, 0));
-	map[10][10].SetType(AstarTileType::Visible);
+	map[10][10].isVisible = true;
 
 	/*for(int i = 0; i< 8; i++)*/
 	{
-		fov->Calculate(map, 10, 10, 0, 1.0f, 0.0f, scanDirections[0]);
+		fov->Calculate(reinterpret_cast<AstarTile(&)[20][20]>(map), 10, 10, 0, 
+			1.0f, 0.0f, scanDirections[7]);
+		int a = 0;
 	}
 
 }

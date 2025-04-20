@@ -75,3 +75,11 @@ struct ScanDirection
 		: horizonX(hX), verticalX(vX), horizonY(hY), verticalY(vY) {
 	}
 };
+
+struct DirectionSlope
+{
+	float startSlope;
+	float endSlope;
+
+	DirectionSlope(float start, float end) : startSlope(start), endSlope(end) {}
+};

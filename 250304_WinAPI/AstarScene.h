@@ -6,7 +6,7 @@
 #define ASTAR_TILE_COUNT	20
 
 //enum class AstarTileType { Start, End, Wall, None};
-enum class AstarTileType { Start, End, Wall, None, Visible };	// fov test용
+enum class AstarTileType { Start, End, Wall, None };	// fov test용
 
 class AstarTile : public GameObject
 {
@@ -28,6 +28,8 @@ public:
 	HBRUSH hBrush;
 	HBRUSH hOldBrush;
 
+	// fov test
+	bool isVisible = false;
 
 	virtual HRESULT Init();
 	HRESULT Init(int idX, int idY);
@@ -71,16 +73,41 @@ class AstarScene : public GameObject
 
 	// FoV
 	FieldOfView* fov;
+	//ScanDirection scanDirections[8] =
+	//{
+	//	{1, 0, 0, 1},
+	//	{-1, 0, 0, 1},
+	//	{0, 1, 1, 0},
+	//	{0, 1, -1, 0},
+	//	{-1, 0, 0, -1},
+	//	{1, 0, 0, -1},
+	//	{0, -1, 1, 0},
+	//	{0, -1, -1, 0}
+	//};
+
+	// config
 	ScanDirection scanDirections[8] =
 	{
-		{1, 0, 0, 1},
-		{-1, 0, 0, 1},
-		{0, 1, 1, 0},
-		{0, 1, -1, 0},
-		{-1, 0, 0, -1},
 		{1, 0, 0, -1},
+		{-1, 0, 0, -1},
+		{0, 1, 1, 0},
 		{0, -1, 1, 0},
-		{0, -1, -1, 0}
+		{-1, 0, 0, 1},
+		{1, 0, 0, 1},
+		{0, -1, -1, 0},
+		{0, 1, -1, 0}
+	};
+
+	DirectionSlope directionSlope[8] =
+	{
+		{-1.0f, 0.0f},
+		{1.0f, 0.0f},
+		{-1.0f,0.0f },
+		{1.0f, 0.0f},
+		{-1.0f, 0.0f},
+		{1.0f, 0.0f},
+		{-1.0f, 0.0f},
+		{1.0f, 0.0f}
 	};
 
 public:
