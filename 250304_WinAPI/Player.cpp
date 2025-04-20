@@ -1,5 +1,6 @@
 ﻿#include "Player.h"
 // #include "Game.h"
+#include "D2DImageManager.h"
 #include "TurnManager.h"
 #include "KeyManager.h"
 #include "Level.h"
@@ -10,6 +11,7 @@ Player::Player(FPOINT pos, float speed)
     position = pos;
     this->speed = speed;
     isMoving = false;
+    image = D2DImageManager::GetInstance()->AddImage("player", L"Image/rocket.bmp"); 
 }
 
 Player::~Player()

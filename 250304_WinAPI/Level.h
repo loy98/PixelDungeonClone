@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "config.h"
+#include "DungeonGenerator.h"
 
 class D2DImage;
 class TurnManager;
@@ -32,6 +33,15 @@ private:
 	vector<Entity*> monsters;
 
 	D2DImage* sampleTile;
+
+	std::vector<std::vector<int>> mapData;
+    
+	// 던전 생성기
+	DungeonGenerator dungeonGenerator;
+    
+	// 맵 크기
+	int mapWidth;
+	int mapHeight;
 	
 	// HBRUSH BlackBrush;
 	// HBRUSH GreyBrush;
@@ -60,6 +70,13 @@ public:
 	
 	void FileLoad();
 
+	void GenerateMap(int width, int height);
+    
+	// 맵 정보 조회 메서드
+	int GetTileType(int x, int y) const;
+	bool IsSolid(int x, int y) const;
+	FPOINT GetRandomFloorTile() const;
+	
 	Level();
 	~Level();
 };
