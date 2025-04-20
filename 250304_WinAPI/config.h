@@ -9,6 +9,7 @@
 #include <bitset>
 #include <map>
 #include <vector>
+#include<random>
 
 using namespace std;
 
@@ -33,6 +34,9 @@ typedef struct tagFPOINT
 	float x;
 	float y;
 
+	tagFPOINT operator+(const tagFPOINT& other) {
+		return { x + other.x , y + other.y };
+	}
 	tagFPOINT operator-(const tagFPOINT& other) {
 		return { x - other.x , y - other.y };
 	}

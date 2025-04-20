@@ -3,10 +3,20 @@
 #include "Map.h"
 #include "TurnManager.h"
 
-Monster::Monster(FPOINT pos, float speed)
+Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
     position = pos;
     this->speed = speed;
+    this->hp = hp;
+    this->maxHp = hp;
+    this->attackDmg = attDmg;
+    this->defense = defense;
+    isMoving = false;
+    isActive = true;
+
+    type = EntityType::MONSTER;
+    curState = EntityState::IDLE;
+
     targetPos = { position.x + TILE_SIZE, position.y + TILE_SIZE };
 }
 
@@ -16,28 +26,42 @@ Monster::~Monster()
 
 void Monster::Act(Game* game)
 {
-
-    // 턴 이동 테스트용
-    if (isMoving)
+    switch (curState)
     {
+    case EntityState::IDLE:
+        ActIdle(game);
+        return;
+    case EntityState::MOVE:
         Move(game);
+        return;
+    case EntityState::ATTACK:
+        Attack(game);
+        return;
+    case EntityState::DEAD:
+        // 애니메이션 끝나면 actor 목록에서 지워야함
+        return;
     }
-    else
+}
+
+void Monster::Attack(Game* game)
+{
+    if (target)
     {
-        isMoving = true;
+        game->ProcessCombat(this, target);
+        SetRandomTargetPos();
+        curState = EntityState::IDLE;
     }
-
-    // tm->EndTurn();
 }
 
-bool Monster::NeedsInput()
+void Monster::ActIdle(Game* game)
 {
-    return !isMoving;
-}
-
-bool Monster::IsBusy()
-{
-    return isMoving;
+    target = game->GetActorAt(targetPos);
+    if (target)
+    {
+        curState = EntityState::ATTACK;
+        return;
+    }
+    curState = EntityState::MOVE;
 }
 
 void Monster::Move(Game* game)
@@ -61,7 +85,22 @@ void Monster::Move(Game* game)
     {
         position = targetPos;
         // 테스트용이라 도착지 정하는건 수정해야함
-        targetPos += { TILE_SIZE, TILE_SIZE };
-        isMoving = false;
+        SetRandomTargetPos();
+        curState = EntityState::IDLE;
     }
+}
+
+void Monster::SetRandomTargetPos()
+{
+    // 랜덤으로 시드 생성
+    random_device rd;
+
+    // 고성능 엔진을 시드(rd())로 초기화
+    mt19937_64 eng(rd());
+
+    // 범위 설정
+    uniform_int_distribution<int> dist(0, 3);
+    FPOINT dir[] = { {-TILE_SIZE, 0}, {TILE_SIZE, 0}, {0, TILE_SIZE}, {0, -TILE_SIZE} };
+
+    targetPos = position + dir[dist(eng)];
 }

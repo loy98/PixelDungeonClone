@@ -23,7 +23,9 @@ public:
 	void Render(HDC hdc);
 
 	void AddActor(Entity* actor);
+	void ProcessCombat(Entity* attacker, Entity* defender);
 
+	Entity* GetActorAt(FPOINT pos);
 	Map* GetMap() { return map; }
 	TurnManager* GetTurnManager() { return turnManager; }
 };
