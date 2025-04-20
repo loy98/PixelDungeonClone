@@ -18,6 +18,10 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 
     type = EntityType::PLAYER;
     curState = EntityState::IDLE;
+
+    // 에너지 test
+    actionCost = 10.f;
+    energyPerTurn = 10.0f;
 }
 
 Player::~Player()
@@ -47,7 +51,7 @@ void Player::Attack(Level* level)
 {
     if (target)
     {
-        game->ProcessCombat(this, target);
+        //level->ProcessCombat(this, target);
         curState = EntityState::IDLE;
     }
 }
@@ -66,19 +70,24 @@ void Player::ActIdle(Level* level)
     else return;
 
     isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
-    target = game->GetActorAt(targetPos);
+    target = level->GetActorAt(targetPos);
     if (target)
     {
         curState = EntityState::ATTACK;
         return;
-    }
+    }    
+    if (!level->GetMap(targetPos.x, targetPos.y)->CanGo()) return;
+
     curState = EntityState::MOVE;
 }
 
 void Player::Move(Level* level)
 {
-    if (!level->GetMap(targetPos.x, targetPos.y)->CanGo()) return;
-
+    //if (!level->GetMap(targetPos.x, targetPos.y)->CanGo())
+    //{
+    //    curState = EntityState::IDLE;
+    //    return;
+    //}
     FPOINT delta = targetPos - position;
 
     float deltaTime = TimerManager::GetInstance()->GetDeltaTime();

@@ -58,9 +58,9 @@ void Level::Init()
 	FileLoad();
 
 	// 시작 위치 테스트용 매직넘버
-	Entity* player = new Player(GetPosByGridIndex(3, 3), 100.f);
-	Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 100.f);
-	Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 100.f);
+	Entity* player = new Player(GetPosByGridIndex(3, 3), 100.f, 20, 5, 2);
+	Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 100.f, 15, 4, 3);
+	Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 100.f, 15, 4, 3);
 
 	AddActor(player);
 	AddActor(monster1);
@@ -71,6 +71,7 @@ void Level::Init()
 		if (actor)
 			turnManager->AddActor(actor);
 	}
+	turnManager->Init();
 	
 }
 
@@ -224,6 +225,18 @@ Level::Level()
 
 Level::~Level()
 {
+}
+
+Entity* Level::GetActorAt(FPOINT pos)
+{
+	if (actors.empty()) return nullptr;
+
+	for (auto actor : actors)
+	{
+		if (actor && actor->GetPosition() == pos)
+			return actor;
+	}
+	return nullptr;
 }
 
 

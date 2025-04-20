@@ -24,7 +24,6 @@ class Entity
 protected:
     //test
     D2DImage* image;
-	FPOINT position;
 
     // 공통 속성
     EntityType type;
@@ -38,6 +37,11 @@ protected:
     int hp, maxHp;
     int attackDmg, defense;
     Entity* target;
+
+    //에너지 턴 test
+    float energy = 10.f;
+    float actionCost;
+    float energyPerTurn = 10.0f;
 public:
     int graphicID;
     bool isActive;
@@ -53,7 +57,7 @@ public:
 
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;
-    bool IsAlive() { return curState == EntityState::DEAD; }
+    bool IsAlive() { return curState != EntityState::DEAD; }
 
     void TakeDamage(int dmg);
 
@@ -63,5 +67,12 @@ public:
     inline int GetAttDmg() const { return attackDmg; }
     inline int GetDefense() const { return defense; }
     inline EntityState GetState() const { return curState; }
+    inline float GetSpeed() const { return speed; }
+    inline EntityType GetType() const { return type; }
+
+    //에너지 관련 함수
+    inline bool CanAct() const { return energy >= actionCost; }
+    void AddEnergy() { energy += energyPerTurn; }
+    void UseEnergy() { energy -= actionCost; }
 
 };

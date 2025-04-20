@@ -20,6 +20,10 @@ Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
 
     targetPos = { position.x + TILE_SIZE, position.y + TILE_SIZE };
     // targetPos = pos
+
+    // 에너지 test
+    actionCost = 6.f;
+    energyPerTurn = 10.0f;
 }
 
 Monster::~Monster()
@@ -31,13 +35,13 @@ void Monster::Act(Level* level)
     switch (curState)
     {
     case EntityState::IDLE:
-        ActIdle(game);
+        ActIdle(level);
         return;
     case EntityState::MOVE:
-        Move(game);
+        Move(level);
         return;
     case EntityState::ATTACK:
-        Attack(game);
+        Attack(level);
         return;
     case EntityState::DEAD:
         // 애니메이션 끝나면 actor 목록에서 지워야함
@@ -45,19 +49,19 @@ void Monster::Act(Level* level)
     }
 }
 
-void Monster::Attack(Game* game)
+void Monster::Attack(Level* level)
 {
     if (target)
     {
-        game->ProcessCombat(this, target);
+        //level->ProcessCombat(this, target);
         SetRandomTargetPos();
         curState = EntityState::IDLE;
     }
 }
 
-void Monster::ActIdle(Game* game)
+void Monster::ActIdle(Level* level)
 {
-    target = game->GetActorAt(targetPos);
+    target = level->GetActorAt(targetPos);
     if (target)
     {
         curState = EntityState::ATTACK;
@@ -74,13 +78,15 @@ void Monster::Move(Level* level)
     int a = 0;
     auto map = level->GetMap(targetPos.x, targetPos.y);
     
-    if (map)
+    if (map && !map->CanGo())
     {
-        if (!map->CanGo()) return;
+        SetRandomTargetPos();
+        curState = EntityState::IDLE;
+        return;
     }
     // if (!level->GetMap(targetPos.x, targetPos.x)->CanGo()) return;
 
-    FPOINT delta = position - position;
+    FPOINT delta = targetPos - position;
 
     float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
     delta.Normalize();
@@ -88,7 +94,7 @@ void Monster::Move(Level* level)
     position.x += speed * deltaTime * delta.x;
     position.y += speed * deltaTime * delta.y;
 
-    delta = position - position;
+    delta = targetPos - position;
 
     // 매직넘버로,,, -> 변수로 dir 저장해두고 쓰면 Dot Product
     if (delta.Length() <= 0.5f)
