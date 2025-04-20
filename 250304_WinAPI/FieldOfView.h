@@ -1,5 +1,5 @@
 ﻿#pragma once
-
+#include "config.h"	// ScanDirection
 /* 검사진행 방향
   --->				   <---
   ㅡㅡㅡㅡㅡㅡ|ㅡㅡㅡㅡㅡㅡ
@@ -18,33 +18,12 @@ V |      \    |    \      | V
   --->				   <---
 */
 
-struct ScanDirection
-{
-	int horizonX;
-	int verticalX;
-	int horizonY;
-	int verticalY;
-
-	ScanDirection(int hX, int vX, int hY, int vY)
-		: horizonX(hX), verticalX(vX), horizonY(hY), verticalY(vY) {}
-};
-
-class AstarScene;
+class AstarTile;
 class FieldOfView
 {
 public:
-	ScanDirection scanDirections[8] =
-	{
-		{1, 0, 0, 1},
-		{-1, 0, 0, 1},
-		{0, 1, 1, 0},
-		{0, 1, -1, 0},
-		{-1, 0, 0, -1},
-		{1, 0, 0, -1},
-		{0, -1, 1, 0},
-		{0, -1, -1, 0}
-	};
 
-	void Calculate(AstarScene& map, int row, float startSlope, float endSlope, ScanDirection direction);
+	// 2차원 배열을 넘기려면 이렇게 넘겨야 함... 마음에 들지 않음
+	void Calculate(AstarTile map[][20/*ASTAR_TILE_COUNT*/], int tileIdX, int tileIdY, int checkRow, float startSlope, float endSlope, ScanDirection direction);
 };
 

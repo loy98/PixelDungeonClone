@@ -4,6 +4,9 @@
 // test
 #include "Game.h"
 
+// Fov
+#include "FieldOfView.h"
+
 HRESULT AstarTile::Init()
 {
 	return E_NOTIMPL;
@@ -102,8 +105,8 @@ HRESULT AstarScene::Init()
 	astarGame = new Game;
 	astarGame->Init();
 
-	// 액터 위치 설정
-
+	// fov test
+	fov = new FieldOfView;
 
 	return S_OK;
 }
@@ -139,6 +142,8 @@ void AstarScene::Update()
 	}
 
 	astarGame->Update();
+
+	SetVisibleTile();
 
 	// TODO 
 	//if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE))
@@ -302,4 +307,38 @@ void AstarScene::SetEntityPos()
 	// entity 배치
 	FPOINT pos = GetRandomFloorTile();
 	astarGame->SetEntityOnMap(pos);
+}
+
+void AstarScene::ResetVisibleTile()
+{
+	// 시야 리셋-모든 타일 검사. 맵이 커지면 비효율적일수도 있을 것 같음.
+	for (int i = 0; i < ASTAR_TILE_COUNT; i++)
+	{
+		for (int j = 0; j < ASTAR_TILE_COUNT; j++)
+		{
+			if (map[i][j].GetType() == AstarTileType::Visible)
+			{
+				map[i][j].SetColor(RGB(100, 100, 100));
+				map[i][j].SetType(AstarTileType::None);
+			}
+		}
+	}
+}
+
+void AstarScene::SetVisibleTile()
+{
+	//// 시야 설정-시야에 드는 타일은 색을 다르게 함.
+	//// 시야 리셋
+	ResetVisibleTile();
+
+
+	// 임시 좌표-플레이어 좌표
+	map[10][10].SetColor(RGB(200, 200, 0));
+	map[10][10].SetType(AstarTileType::Visible);
+
+	/*for(int i = 0; i< 8; i++)*/
+	{
+		fov->Calculate(map, 10, 10, 0, 1.0f, 0.0f, scanDirections[0]);
+	}
+
 }

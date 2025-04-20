@@ -5,8 +5,8 @@
 #define ASTAR_TILE_SIZE		30
 #define ASTAR_TILE_COUNT	20
 
-enum class AstarTileType { Start, End, Wall, None };
-
+//enum class AstarTileType { Start, End, Wall, None};
+enum class AstarTileType { Start, End, Wall, None, Visible };	// fov test용
 
 class AstarTile : public GameObject
 {
@@ -50,6 +50,8 @@ public:
 
 };
 
+// Fov -> 추후 레벨로 이동
+class FieldOfView;
 // test
 class Game;
 class AstarScene : public GameObject
@@ -66,6 +68,20 @@ class AstarScene : public GameObject
 
 	// test
 	Game* astarGame;
+
+	// FoV
+	FieldOfView* fov;
+	ScanDirection scanDirections[8] =
+	{
+		{1, 0, 0, 1},
+		{-1, 0, 0, 1},
+		{0, 1, 1, 0},
+		{0, 1, -1, 0},
+		{-1, 0, 0, -1},
+		{1, 0, 0, -1},
+		{0, -1, 1, 0},
+		{0, -1, -1, 0}
+	};
 
 public:
 	virtual HRESULT Init();
@@ -88,6 +104,8 @@ public:
 	FPOINT GetRandomFloorTile();
 	void SetEntityPos();
 
-
+	// Fov용
+	void ResetVisibleTile();
+	void SetVisibleTile();
 };
 

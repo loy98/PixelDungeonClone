@@ -62,3 +62,16 @@ typedef struct tagTile
 	int frameX;
 	int frameY;
 } TILE_INFO;
+
+// FoV Direction
+struct ScanDirection
+{
+	int horizonX;
+	int verticalX;
+	int horizonY;
+	int verticalY;
+
+	ScanDirection(int hX, int vX, int hY, int vY)
+		: horizonX(hX), verticalX(vX), horizonY(hY), verticalY(vY) {
+	}
+};
