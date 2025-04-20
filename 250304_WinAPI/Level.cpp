@@ -1,32 +1,42 @@
 ﻿#include "Level.h"
 #include "CommonFunction.h"
+#include "D2DImage.h"
+#include "D2DImageManager.h"
+#include "Entity.h"
+#include "Monster.h"
+#include "Player.h"
+#include "TurnManager.h"
 
 void Level::Init()
 {
+	turnManager = new TurnManager();
 
-	nowZoomScale = 0.0f;
+	sampleTile = D2DImageManager::GetInstance()->AddImage(
+		"배틀시티_샘플타일", L"Image/mapTiles.bmp",
+		SAMPLE_TILE_X, SAMPLE_TILE_Y);
 
-	player = nullptr;
+	
+	// nowZoomScale = 0.0f;
 
 	tempTileSize = 30;
 
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
-			tempTile[20 * i + j] = 
-			{	240+j*tempTileSize, 
-				60+i*tempTileSize,
-				240 + (j+1) * tempTileSize, 
-				60 + (i+1) * tempTileSize 
+			tempTile[TILE_X * i + j] = 
+			{	GRID_POS_OFFSET.x + j*tempTileSize, 
+				GRID_POS_OFFSET.y + i*tempTileSize,
+				GRID_POS_OFFSET.x + (j+1) * tempTileSize, 
+				GRID_POS_OFFSET.y + (i+1) * tempTileSize 
 			};
 		}
 	}
 
 	mapRc = { tempTile[0].left, tempTile[0].top, tempTile[399].right, tempTile[399].bottom };
 
-	BlackBrush = CreateSolidBrush(RGB(0, 0, 0));
-	GreyBrush = CreateSolidBrush(RGB(100, 100, 100));
-	WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-	RedBrush = CreateSolidBrush(RGB(255, 0, 0));
+	// BlackBrush = CreateSolidBrush(RGB(0, 0, 0));
+	// GreyBrush = CreateSolidBrush(RGB(100, 100, 100));
+	// WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+	// RedBrush = CreateSolidBrush(RGB(255, 0, 0));
 
 
 
@@ -45,29 +55,41 @@ void Level::Init()
 		i = true;
 	}
 
-	/*for (int i = 0; i < 5; ++i) {
-		zoomedSampleTile[i] = ImageManager::GetInstance()->AddZoomedImage(
-			"PixelDungeon_Tile0", L"Image/tiles0.bmp", 256, 64,
-			SAMPLE_TILE_X, SAMPLE_TILE_Y, zoomScales[i]);
-	}*/
-
-	//Sleep(3000);
 	FileLoad();
 
-	/*for (int i = 0; i < TILE_Y; ++i) {
-		for (int j = 0; j < TILE_X; ++j) {
-			tiles[i * TILE_X + j] = new Tile(j, i, tileInfo[i * TILE_X + j].tileCode);
-		}
-	}*/
+	// 시작 위치 테스트용 매직넘버
+	Entity* player = new Player(GetPosByGridIndex(3, 3), 100.f);
+	Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 100.f);
+	Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 100.f);
 
+	AddActor(player);
+	AddActor(monster1);
+	AddActor(monster2);
+
+	for (auto actor : actors)
+	{
+		if (actor)
+			turnManager->AddActor(actor);
+	}
+	
 }
 
 void Level::Release()
 {
-	DeleteObject(BlackBrush);
-	DeleteObject(GreyBrush);
-	DeleteObject(WhiteBrush);
-	DeleteObject(RedBrush);
+	// DeleteObject(BlackBrush);
+	// DeleteObject(GreyBrush);
+	// DeleteObject(WhiteBrush);
+	// DeleteObject(RedBrush);
+	
+	for (auto actor : actors)
+	{
+		if (actor)
+		{
+			// actor->Release();
+			delete actor;
+			actor = nullptr;
+		}
+	}
 }
 
 void Level::Update()
@@ -123,40 +145,57 @@ void Level::Update()
 		mapRc.bottom += tempDeltaY;
 
 	}
+
+	turnManager->ProcessTurns(this);
+
 }
 
 void Level::Render(HDC hdc)
 {
-	PatBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, WHITENESS);
+	// PatBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, WHITENESS);
 
-	RenderRect(hdc, mapRc);
-
+	// RenderRect(hdc, mapRc);
+	sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
+	
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
 			
 			switch (map[20 * i + j].type) {
 				case TT::WALL :
-					hOldBrush = (HBRUSH)SelectObject(hdc, GreyBrush);
-					RenderRect(hdc, tempTile[20 * i + j]);
-					SelectObject(hdc, hOldBrush);
+					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+						static_cast<int>(tempTile[20 * i + j].top), 1, 0);
+					// hOldBrush = (HBRUSH)SelectObject(hdc, GreyBrush);
+					// RenderRect(hdc, tempTile[20 * i + j]);
+					// SelectObject(hdc, hOldBrush);
 					break;
 				case TT::FLOOR:
-					hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
-					RenderRect(hdc, tempTile[20 * i + j]);
-					SelectObject(hdc, hOldBrush);
+					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+						static_cast<int>(tempTile[20 * i + j].top), 0, 0);
+					// hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
+					// RenderRect(hdc, tempTile[20 * i + j]);
+					// SelectObject(hdc, hOldBrush);
 					break;
 				case TT::NONE:
-					hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
-					RenderRect(hdc, tempTile[20 * i + j]);
-					SelectObject(hdc, hOldBrush);
+					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+						static_cast<int>(tempTile[20 * i + j].top), 3, 0);
+					// hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
+					// RenderRect(hdc, tempTile[20 * i + j]);
+					// SelectObject(hdc, hOldBrush);
 					break;
-				default: 
-					hOldBrush = (HBRUSH)SelectObject(hdc, RedBrush);
-					RenderRect(hdc, tempTile[20 * i + j]);
-					SelectObject(hdc, hOldBrush);
+				default:
+					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+						static_cast<int>(tempTile[20 * i + j].top), 1, 0); 
+					// hOldBrush = (HBRUSH)SelectObject(hdc, RedBrush);
+					// RenderRect(hdc, tempTile[20 * i + j]);
+					// SelectObject(hdc, hOldBrush);
 					break;
 			}
 		}
+	}
+
+	for (auto actor : actors)
+	{
+		actor->Render(hdc);
 	}
 }
 
@@ -185,4 +224,15 @@ Level::Level()
 
 Level::~Level()
 {
+}
+
+
+void Level::AddActor(Entity* actor)
+{
+	// 추가하려는 Entity가 이미 container에 있다면 return
+	auto it = find(actors.begin(), actors.end(), actor);
+	if (it != actors.end())
+		return;
+
+	actors.push_back(actor);
 }

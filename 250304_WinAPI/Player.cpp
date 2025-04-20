@@ -1,8 +1,8 @@
 ﻿#include "Player.h"
-#include "Map.h"
-#include "Game.h"
+// #include "Game.h"
 #include "TurnManager.h"
 #include "KeyManager.h"
+#include "Level.h"
 #include "TimerManager.h"
 
 Player::Player(FPOINT pos, float speed)
@@ -16,13 +16,13 @@ Player::~Player()
 {
 }
 
-void Player::Act(Game* game)
+void Player::Act(Level* level)
 {
     KeyManager* km = KeyManager::GetInstance();
 
     if (isMoving)
     {
-        Move(game);
+        Move(level);
         return;
     }
 
@@ -49,9 +49,9 @@ bool Player::IsBusy()
     return isMoving;
 }
 
-void Player::Move(Game* game)
+void Player::Move(Level* level)
 {
-    if (!game->GetMap()->CanGo(targetPos)) return;
+    if (!level->GetMap(targetPos.x, targetPos.y)->CanGo()) return;
 
     FPOINT delta = targetPos - position;
 

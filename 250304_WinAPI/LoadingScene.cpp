@@ -1,10 +1,14 @@
 #include "LoadingScene.h"
-#include "Image.h"
+
+#include "D2DImage.h"
+#include "D2DImageManager.h"
+// #include "Image.h"
 
 HRESULT LoadingScene::Init()
 {
-    bg = ImageManager::GetInstance()->AddImage("로딩_1", L"Image/loading.bmp", 852, 480);
-
+    bg = D2DImageManager::GetInstance()->AddImage("로딩_1", L"Image/loading.bmp");
+    
+    
     return S_OK;
 }
 
@@ -20,6 +24,6 @@ void LoadingScene::Render(HDC hdc)
 {
     if(bg)
     {
-        bg->Render(hdc);
+        bg->Render(0,0);
     }
 }

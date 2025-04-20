@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "config.h"
 
+class Level;
 class D2DImage;
 class Game;
 class Entity
@@ -21,7 +22,7 @@ public:
     virtual ~Entity();
 
     void Render(HDC hdc);
-    virtual void Act(Game* game);
+    virtual void Act(Level* level);
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;
 

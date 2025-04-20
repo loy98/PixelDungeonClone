@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include <functional>
 
+
 /*
 	함수 포인터 : 함수의 메모리 주소를 저장할 수 있는 변수
 	(변수)포인터 : 변수의 메모리 주소를 저장할 수 있는 변수
@@ -27,12 +28,14 @@ enum class ButtonState
 	None, Down, Up
 };
 
-class Image;
+// class Image;
+class D2DImage;
 class Button : public GameObject
 {
 private:
 	ButtonState state;
-	Image* image;
+	// Image* image;
+	D2DImage* image;
 	RECT rc;
 	POINT pos;
 

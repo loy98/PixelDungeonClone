@@ -2,17 +2,17 @@
 #include "config.h"
 #include "Entity.h"
 
-class Map;
+class Level;
 class Monster : public Entity
 {
 public:
     Monster(FPOINT pos, float speed);
     virtual ~Monster();
 
-    virtual void Act(Game* game) override;
+    virtual void Act(Level* level) override;
     virtual bool NeedsInput() override;
     bool IsBusy() override;
 
-    void Move(Game* game);
+    void Move(Level* level);
 };
 

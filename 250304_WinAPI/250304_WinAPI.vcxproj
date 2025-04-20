@@ -127,9 +127,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AstarScene.cpp" />
-    <ClCompile Include="BattleScene.cpp" />
-    <ClCompile Include="BJS_TestScene.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="D2DImageManager.cpp" />
@@ -137,11 +134,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="Image.cpp" />
-    <ClCompile Include="ImageManager.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="Level.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -150,7 +144,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="MouseManager.cpp" />
-    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SceneManager.cpp" />
@@ -163,23 +156,14 @@
     <ClCompile Include="TurnManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AstarScene.h" />
-    <ClInclude Include="BattleScene.h" />
-    <ClInclude Include="BJS_TestScene.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="D2DImage.h" />
     <ClInclude Include="D2DImageManager.h" />
-    <ClInclude Include="Dungeon.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="Entity.h" />
-    <ClInclude Include="Game.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="Image.h" />
-    <ClInclude Include="ImageManager.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="Level.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -187,7 +171,6 @@
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MouseManager.h" />
-    <ClInclude Include="Map.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SceneManager.h" />

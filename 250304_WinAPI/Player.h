@@ -1,16 +1,16 @@
 ﻿#pragma once
 #include "Entity.h"
 
-class Map;
+class Level;
 class Player : public Entity
 {
 public:
     Player(FPOINT pos, float speed);
     virtual ~Player();
 
-    virtual void Act(Game* game) override;
+    virtual void Act(Level* level) override;
     virtual bool NeedsInput() override;
     bool IsBusy() override;
 
-    void Move(Game* game);
+    void Move(Level* level);
 };

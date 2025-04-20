@@ -2,12 +2,13 @@
 #include "GameObject.h"
 #include "config.h"
 
-class Image;
+class D2DImage;
+// class Image;
 class Button;
 class TilemapTool : public GameObject
 {
 private:
-	Image* sampleTile;
+	D2DImage* sampleTile;
 	RECT rcSampleTile;
 
 	Map tileInfo[TILE_X * TILE_Y];
@@ -17,12 +18,12 @@ private:
 	RECT tempTile[20 * 20]; //타일 이미지 넣기 전 임시 이미지 그리기용 배열
 	int tempTileSize; // 20*20 규격의 맵에 알맞은 임시 타일 사이즈
 
-	HBRUSH tBlackBrush;
-	HBRUSH tGreyBrush;
-	HBRUSH tWhiteBrush;
-	HBRUSH tRedBrush;
-
-	HBRUSH hOldBrush;
+	// HBRUSH tBlackBrush;
+	// HBRUSH tGreyBrush;
+	// HBRUSH tWhiteBrush;
+	// HBRUSH tRedBrush;
+	//
+	// HBRUSH hOldBrush;
 
 	POINT selectedTile;
 

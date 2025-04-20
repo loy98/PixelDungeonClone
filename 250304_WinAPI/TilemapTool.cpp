@@ -1,15 +1,18 @@
 ﻿#include "TilemapTool.h"
-#include "Image.h"
+// #include "Image.h"
 #include "CommonFunction.h"
 #include "Button.h"
 #include <functional>
+
+#include "D2DImage.h"
+#include "D2DImageManager.h"
 
 HRESULT TilemapTool::Init()
 {
 	SetClientRect(g_hWnd, TILEMAPTOOL_X, TILEMAPTOOL_Y);
 
-	sampleTile = ImageManager::GetInstance()->AddImage(
-		"배틀시티_샘플타일", L"Image/mapTiles.bmp", 640, 288,
+	sampleTile = D2DImageManager::GetInstance()->AddImage(
+		"배틀시티_샘플타일", L"Image/mapTiles.bmp",
 		SAMPLE_TILE_X, SAMPLE_TILE_Y);
 
 	// 샘플 타일 영역
@@ -28,8 +31,8 @@ HRESULT TilemapTool::Init()
 	rcMain.right = TILE_X * tempTileSize;
 	rcMain.bottom = TILE_Y * tempTileSize;
 
-	for (int i = 0; i < 20; ++i) {
-		for (int j = 0; j < 20; ++j) {
+	for (int i = 0; i < TILE_Y; ++i) {
+		for (int j = 0; j < TILE_X; ++j) {
 			tempTile[20 * i + j] =
 			{ rcMain.left + j * tempTileSize,
 				rcMain.top + i * tempTileSize,
@@ -39,10 +42,12 @@ HRESULT TilemapTool::Init()
 		}
 	}
 
-	tBlackBrush = CreateSolidBrush(RGB(0, 0, 0));
-	tGreyBrush = CreateSolidBrush(RGB(100, 100, 100));
-	tWhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-	tRedBrush = CreateSolidBrush(RGB(255, 0, 0));
+	// tBlackBrush = CreateSolidBrush(RGB(0, 0, 0));
+	// tGreyBrush = CreateSolidBrush(RGB(100, 100, 100));
+	// tWhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+	// tRedBrush = CreateSolidBrush(RGB(255, 0, 0));
+
+	Load();
 
 	// UI - 버튼
 	saveButton = new Button();
@@ -67,10 +72,10 @@ void TilemapTool::Release()
 		saveButton = nullptr;
 	}
 
-	DeleteObject(tBlackBrush);
-	DeleteObject(tGreyBrush);
-	DeleteObject(tWhiteBrush);
-	DeleteObject(tRedBrush);
+	// DeleteObject(tBlackBrush);
+	// DeleteObject(tGreyBrush);
+	// DeleteObject(tWhiteBrush);
+	// DeleteObject(tRedBrush);
 }
 
 void TilemapTool::Update()
@@ -120,7 +125,7 @@ void TilemapTool::Update()
 
 void TilemapTool::Render(HDC hdc)
 {
-	PatBlt(hdc, 0, 0, TILEMAPTOOL_X, TILEMAPTOOL_Y, WHITENESS);
+	// PatBlt(hdc, 0, 0, TILEMAPTOOL_X, TILEMAPTOOL_Y, WHITENESS);
 
 	// 메인 타일 영역
 	for (int i = 0; i < 20; ++i) {
@@ -128,37 +133,45 @@ void TilemapTool::Render(HDC hdc)
 
 			switch (tileInfo[20 * i + j].type) {
 			case TT::WALL:
-				hOldBrush = (HBRUSH)SelectObject(hdc, tGreyBrush);
-				RenderRect(hdc, tempTile[20 * i + j]);
-				SelectObject(hdc, hOldBrush);
+				sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+				static_cast<int>(tempTile[20 * i + j].top), 1, 0);
+				// hOldBrush = (HBRUSH)SelectObject(hdc, tGreyBrush);
+				// RenderRect(hdc, tempTile[20 * i + j]);
+				// SelectObject(hdc, hOldBrush);
 				break;
 			case TT::FLOOR:
-				hOldBrush = (HBRUSH)SelectObject(hdc, tWhiteBrush);
-				RenderRect(hdc, tempTile[20 * i + j]);
-				SelectObject(hdc, hOldBrush);
+				// hOldBrush = (HBRUSH)SelectObject(hdc, tWhiteBrush);
+				// RenderRect(hdc, tempTile[20 * i + j]);
+				// SelectObject(hdc, hOldBrush);
+				sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+					static_cast<int>(tempTile[20 * i + j].top), 3, 0);
 				break;
 			case TT::NONE:
-				hOldBrush = (HBRUSH)SelectObject(hdc, tBlackBrush);
-				RenderRect(hdc, tempTile[20 * i + j]);
-				SelectObject(hdc, hOldBrush);
+				// hOldBrush = (HBRUSH)SelectObject(hdc, tBlackBrush);
+				// RenderRect(hdc, tempTile[20 * i + j]);
+				// SelectObject(hdc, hOldBrush);
+				sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+					static_cast<int>(tempTile[20 * i + j].top), 0, 0);
 				break;
 			default:
-				hOldBrush = (HBRUSH)SelectObject(hdc, tRedBrush);
-				RenderRect(hdc, tempTile[20 * i + j]);
-				SelectObject(hdc, hOldBrush);
+				// hOldBrush = (HBRUSH)SelectObject(hdc, tRedBrush);
+				// RenderRect(hdc, tempTile[20 * i + j]);
+				// SelectObject(hdc, hOldBrush);
+				sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+					static_cast<int>(tempTile[20 * i + j].top), 1, 0);
 				break;
 			}
 		}
 	}
 
 	// 샘플 타일 영역
-	sampleTile->Render(hdc, TILEMAPTOOL_X - sampleTile->GetWidth(), 0);
+	sampleTile->Render(TILEMAPTOOL_X - sampleTile->GetWidth(), 0);
 
 	// 선택된 타일
-	sampleTile->FrameRender(hdc, 
+	sampleTile->RenderFrame( 
 		TILEMAPTOOL_X - sampleTile->GetWidth(),
 		sampleTile->GetHeight() + 100,
-		selectedTile.x, selectedTile.y, false, false);
+		selectedTile.x, selectedTile.y);
 
 	if (saveButton) saveButton->Render(hdc);
 }

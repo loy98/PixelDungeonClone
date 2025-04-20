@@ -1,5 +1,5 @@
 ﻿#include "Entity.h"
-
+#include "Level.h"
 #include "D2DImage.h"
 #include "D2DImageManager.h"
 
@@ -20,6 +20,6 @@ void Entity::Render(HDC hdc)
 	image->Middle_RenderFrame(position.x, position.y,0,0 );
 }
 
-void Entity::Act(Game* game)
+void Entity::Act(Level* level)
 {
 }

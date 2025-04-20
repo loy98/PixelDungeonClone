@@ -1,5 +1,4 @@
 ﻿#include "TurnManager.h"
-#include "Game.h"
 #include "Entity.h"
 
 TurnManager::TurnManager()
@@ -20,7 +19,7 @@ void TurnManager::AddActor(Entity* actor)
 	turnQueue.push_back(actor);
 }
 
-void TurnManager::ProcessTurns(Game* game)
+void TurnManager::ProcessTurns(Level* level)
 {
 	if (turnQueue.empty()) return;
 	Entity* actor = GetCurrentActor();
@@ -30,10 +29,10 @@ void TurnManager::ProcessTurns(Game* game)
 		return;
 	}
 	if (actor->NeedsInput()) {
-		actor->Act(game);
+		actor->Act(level);
 	}
 	else {
-		actor->Act(game);
+		actor->Act(level);
 		if (!actor->IsBusy()) {
 			EndTurn();
 		}

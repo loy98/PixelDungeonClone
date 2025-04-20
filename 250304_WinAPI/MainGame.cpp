@@ -1,31 +1,28 @@
 ﻿#include "MainGame.h"
 #include "CommonFunction.h"
-#include "Image.h"
+// #include "Image.h"
 #include "Timer.h"
-#include "BattleScene.h"
 #include "TilemapTool.h"
-#include "AstarScene.h"
+// #include "AstarScene.h"
 #include "LoadingScene.h"
 #include "D2DImage.h"
 #include "D2DImageManager.h"
 #include "MouseManager.h"
-#include "BJS_TestScene.h"
+// #include "BJS_TestScene.h"
 #include "GameScene.h"
 
 HRESULT MainGame::Init()
 {
 #pragma region Manager_Initialze
-	ImageManager::GetInstance()->Init();
+	// ImageManager::GetInstance()->Init();
+	D2DImageManager::GetInstance()->Init();
 	KeyManager::GetInstance()->Init();
 	MouseManager::GetInstance()->Init();
 	SceneManager::GetInstance()->Init();
 #pragma endregion
 
 #pragma region Scene_Initialize
-	SceneManager::GetInstance()->AddScene("A*알고리즘", new AstarScene());
-	SceneManager::GetInstance()->AddScene("전투씬_1", new BattleScene());
 	SceneManager::GetInstance()->AddScene("타일맵툴", new TilemapTool());
-	SceneManager::GetInstance()->AddScene("배종성테스트", new BJS_TestScene());
 	SceneManager::GetInstance()->AddScene("게임씬", new GameScene());
 	SceneManager::GetInstance()->AddLoadingScene("로딩_1", new LoadingScene());
 	SceneManager::GetInstance()->ChangeScene("게임씬");
@@ -41,7 +38,8 @@ void MainGame::Release()
 	SceneManager::GetInstance()->Release();
 	KeyManager::GetInstance()->Release();
 	MouseManager::GetInstance()->Release();
-	ImageManager::GetInstance()->Release();
+	D2DImageManager::GetInstance()->Release();
+	// ImageManager::GetInstance()->Release();
 
 	ReleaseDC(g_hWnd, hdc);
 }
