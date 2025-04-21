@@ -40,8 +40,8 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			//tile->SetColor(RGB(255, 255, 255));
 
 			// 접점 기울기-dy에 -+0.5 left, right 바꾸면 다르게 나옴 
-			float leftSlope = ((float)dx +0.5f) / ((float)dy - 0.5f);
-			float rightSlope = ((float)dx - 0.5f) / ((float)dy + 0.5f);
+			float leftSlope = ((float)dx +0.5f) / ((float)dy + 0.5f);
+			float rightSlope = ((float)dx - 0.5f) / ((float)dy - 0.5f);
 
 			if (rightSlope - startSlope > FLT_EPSILON) {
 
