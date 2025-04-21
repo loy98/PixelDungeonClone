@@ -1,7 +1,10 @@
 ﻿#pragma once
 #include "config.h"
 #include "DungeonGenerator.h"
+#include "IntegratedDungeonSystem.h"
+#include "Monster.h"
 
+class Monster;
 class D2DImage;
 class TurnManager;
 class Entity;
@@ -55,7 +58,7 @@ private:
 	
 	vector<Entity*> actors;
 	// int startInd;
-
+	IntegratedDungeonSystem dungeonSystem;
 public:
 	void Init();
 	void Release();
@@ -79,5 +82,35 @@ public:
 	
 	Level();
 	~Level();
+
+	void SetMapData(const std::vector<std::vector<int>>& mapData)
+	{
+		this->mapData = mapData;
+		int i = 0;
+		for (const auto& vec : mapData)
+		{
+			for (auto m : vec)
+			{
+				this->map[i] = Map(m);
+				i++;
+			}
+		}
+		
+	}
+	void SetFrameMapData(const std::vector<std::vector<POINT>>& frameMapData){}
+	void AddMonsters(const std::vector<Monster*>& monsters)
+	{
+		for (Entity* monster : monsters) {
+			actors.push_back(static_cast<Entity*>(monster));
+		}
+	}
+	std::vector<std::vector<int>> GetMapData() const
+	{
+		return mapData;
+	}
+	void SetTile(int x, int y, int tileType)
+	{
+		map[y * TILE_X + x].type = tileType;
+	}
 };
 

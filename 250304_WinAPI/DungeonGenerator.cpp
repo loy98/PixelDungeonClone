@@ -55,14 +55,14 @@ std::vector<std::vector<int>> DungeonGenerator::Generate(int width, int height) 
     // 7. 특수 방 배치
     PlaceSpecialRooms(map, roomNodes);
     
-    // // 8. 숨겨진 방 배치
-    // PlaceHiddenRooms(map, roomNodes);
+    // 8. 방과 복도 사이에 문 배치
+    PlaceDoorsAtRoomBorders(map, roomNodes);
     
-    // 9. 방과 복도 사이에 문 배치
-    // PlaceDoorsAtRoomBorders(map, roomNodes);
-    
-    // 10. 맵 정리
+    // 9. 맵 정리
     CleanupWalls(map);
+    
+    // 10. 타일 변형 적용
+    ApplyTileVariations(map);
     
     return map;
 }
@@ -405,31 +405,55 @@ void DungeonGenerator::CreateCorridor(std::vector<std::vector<int>>& map, int x1
     
     int corridorType = coinFlip(gen);
     
+    auto placeCorridor = [&](int x, int y) {
+        if (map[y][x] == TILE_WALL) {
+            map[y][x] = TILE_FLOOR;
+            
+            // 주변에 벽 배치 (복도 주변을 벽으로 감싸기)
+            for (int dy = -1; dy <= 1; dy++) {
+                for (int dx = -1; dx <= 1; dx++) {
+                    int newY = y + dy;
+                    int newX = x + dx;
+                    
+                    // 맵 범위 체크
+                    if (newY >= 0 && newY < map.size() && newX >= 0 && newX < map[0].size()) {
+                        // 대각선 방향은 항상 벽으로
+                        if (dx != 0 && dy != 0) {
+                            if (map[newY][newX] == TILE_WALL) {
+                                continue; // 이미 벽이면 스킵
+                            }
+                            if (map[newY][newX] == TILE_FLOOR) {
+                                continue; // 이미 바닥이면 스킵 (다른 복도나 방과 연결)
+                            }
+                            map[newY][newX] = TILE_WALL;
+                        }
+                        // 상하좌우는 기존 타일이 벽일 경우에만 벽으로
+                        else if (map[newY][newX] == TILE_WALL) {
+                            continue; // 이미 벽이면 유지
+                        }
+                    }
+                }
+            }
+        }
+    };
+    
     if (corridorType == 0) {
         // L자형 복도 (수평 먼저)
         for (int x = std::min(x1, x2); x <= std::max(x1, x2); x++) {
-            if (map[y1][x] == TILE_WALL) {
-                map[y1][x] = TILE_FLOOR;
-            }
+            placeCorridor(x, y1);
         }
 
         for (int y = std::min(y1, y2); y <= std::max(y1, y2); y++) {
-            if (map[y][x2] == TILE_WALL) {
-                map[y][x2] = TILE_FLOOR;
-            }
+            placeCorridor(x2, y);
         }
     } else if (corridorType == 1) {
         // L자형 복도 (수직 먼저)
         for (int y = std::min(y1, y2); y <= std::max(y1, y2); y++) {
-            if (map[y][x1] == TILE_WALL) {
-                map[y][x1] = TILE_FLOOR;
-            }
+            placeCorridor(x1, y);
         }
         
         for (int x = std::min(x1, x2); x <= std::max(x1, x2); x++) {
-            if (map[y2][x] == TILE_WALL) {
-                map[y2][x] = TILE_FLOOR;
-            }
+            placeCorridor(x, y2);
         }
     } else {
         // Z자형 복도 (중간 지점 경유)
@@ -438,28 +462,20 @@ void DungeonGenerator::CreateCorridor(std::vector<std::vector<int>>& map, int x1
         
         // 첫 번째 L자형 (시작점 -> 중간점)
         for (int x = std::min(x1, midX); x <= std::max(x1, midX); x++) {
-            if (map[y1][x] == TILE_WALL) {
-                map[y1][x] = TILE_FLOOR;
-            }
+            placeCorridor(x, y1);
         }
         
         for (int y = std::min(y1, midY); y <= std::max(y1, midY); y++) {
-            if (map[y][midX] == TILE_WALL) {
-                map[y][midX] = TILE_FLOOR;
-            }
+            placeCorridor(midX, y);
         }
         
         // 두 번째 L자형 (중간점 -> 끝점)
         for (int x = std::min(midX, x2); x <= std::max(midX, x2); x++) {
-            if (map[midY][x] == TILE_WALL) {
-                map[midY][x] = TILE_FLOOR;
-            }
+            placeCorridor(x, midY);
         }
         
         for (int y = std::min(midY, y2); y <= std::max(midY, y2); y++) {
-            if (map[y][x2] == TILE_WALL) {
-                map[y][x2] = TILE_FLOOR;
-            }
+            placeCorridor(x2, y);
         }
     }
 }
@@ -702,104 +718,190 @@ void DungeonGenerator::PlaceDoorsAtRoomBorders(std::vector<std::vector<int>>& ma
     int height = map.size();
     int width = map[0].size();
     
-    // 복도 끝점에 문 배치
-    for (int y = 1; y < height - 1; y++) {
-        for (int x = 1; x < width - 1; x++) {
-            // 복도 타일인 경우
-            if (map[y][x] == TILE_FLOOR) {
-                // 복도 끝점 확인 (한쪽만 복도이고 다른 쪽은 벽인 경우)
-                bool isEndPoint = false;
-                int wallX = -1, wallY = -1;
-                
-                // 위쪽이 벽이고 아래쪽이 복도인 경우
-                if (map[y-1][x] == TILE_WALL && map[y+1][x] == TILE_FLOOR) {
-                    isEndPoint = true;
-                    wallX = x;
-                    wallY = y-1;
+    // Helper function to check if a position is a valid door location
+    auto isValidDoorLocation = [&](int x, int y) -> bool {
+        // Must be currently a wall
+        if (map[y][x] != TILE_WALL) return false;
+        
+        // Check if this is a single-width corridor connecting to a room
+        bool isVerticalCorridor = (map[y-1][x] == TILE_FLOOR && map[y+1][x] == TILE_FLOOR &&
+                                 map[y][x-1] == TILE_WALL && map[y][x+1] == TILE_WALL);
+                                 
+        bool isHorizontalCorridor = (map[y][x-1] == TILE_FLOOR && map[y][x+1] == TILE_FLOOR &&
+                                   map[y-1][x] == TILE_WALL && map[y+1][x] == TILE_WALL);
+
+        // Additional check to ensure one side is a room and the other is a corridor
+        if (isVerticalCorridor) {
+            // Count floor tiles in a 3x3 area above and below
+            int floorTilesAbove = 0;
+            int floorTilesBelow = 0;
+            
+            for (int dx = -1; dx <= 1; dx++) {
+                if (y-2 >= 0 && x+dx >= 0 && x+dx < width) {
+                    if (map[y-2][x+dx] == TILE_FLOOR) floorTilesAbove++;
                 }
-                // 아래쪽이 벽이고 위쪽이 복도인 경우
-                else if (map[y+1][x] == TILE_WALL && map[y-1][x] == TILE_FLOOR) {
-                    isEndPoint = true;
-                    wallX = x;
-                    wallY = y+1;
-                }
-                // 왼쪽이 벽이고 오른쪽이 복도인 경우
-                else if (map[y][x-1] == TILE_WALL && map[y][x+1] == TILE_FLOOR) {
-                    isEndPoint = true;
-                    wallX = x-1;
-                    wallY = y;
-                }
-                // 오른쪽이 벽이고 왼쪽이 복도인 경우
-                else if (map[y][x+1] == TILE_WALL && map[y][x-1] == TILE_FLOOR) {
-                    isEndPoint = true;
-                    wallX = x+1;
-                    wallY = y;
-                }
-                
-                // 복도 끝점에 문 배치
-                if (isEndPoint) {
-                    map[wallY][wallX] = TILE_DOOR;
+                if (y+2 < height && x+dx >= 0 && x+dx < width) {
+                    if (map[y+2][x+dx] == TILE_FLOOR) floorTilesBelow++;
                 }
             }
+            
+            // One side should be a room (3 floor tiles) and the other a corridor (1 floor tile)
+            return (floorTilesAbove == 3 && floorTilesBelow == 1) || 
+                   (floorTilesAbove == 1 && floorTilesBelow == 3);
         }
-    }
+        else if (isHorizontalCorridor) {
+            // Count floor tiles in a 3x3 area left and right
+            int floorTilesLeft = 0;
+            int floorTilesRight = 0;
+            
+            for (int dy = -1; dy <= 1; dy++) {
+                if (y+dy >= 0 && y+dy < height) {
+                    if (x-2 >= 0 && map[y+dy][x-2] == TILE_FLOOR) floorTilesLeft++;
+                    if (x+2 < width && map[y+dy][x+2] == TILE_FLOOR) floorTilesRight++;
+                }
+            }
+            
+            // One side should be a room (3 floor tiles) and the other a corridor (1 floor tile)
+            return (floorTilesLeft == 3 && floorTilesRight == 1) || 
+                   (floorTilesLeft == 1 && floorTilesRight == 3);
+        }
+        
+        return false;
+    };
     
-    // 특수 방 유형에 따른 추가 처리
+    // Process each room
     for (const auto& node : roomNodes) {
         const Room& room = node.room;
+        std::vector<std::pair<int, int>> doorPositions;
         
-        if (node.type == ENTRANCE) {
-            // 입구 방은 항상 문이 있어야 함
-            for (int x = room.left; x <= room.right; x++) {
-                if (room.top > 0 && map[room.top][x] == TILE_WALL && 
-                    room.top + 1 < height && map[room.top + 1][x] == TILE_FLOOR) {
-                    map[room.top][x] = TILE_DOOR;
-                }
+        // Check each border tile of the room
+        // Top border
+        for (int x = room.left + 1; x < room.right; x++) {
+            if (isValidDoorLocation(x, room.top)) {
+                doorPositions.push_back({x, room.top});
             }
-        } else if (node.type == EXIT) {
-            // 출구 방은 항상 문이 있어야 함
-            for (int x = room.left; x <= room.right; x++) {
-                if (room.bottom < height - 1 && map[room.bottom][x] == TILE_WALL && 
-                    room.bottom > 0 && map[room.bottom - 1][x] == TILE_FLOOR) {
-                    map[room.bottom][x] = TILE_DOOR;
-                }
+        }
+        
+        // Bottom border
+        for (int x = room.left + 1; x < room.right; x++) {
+            if (isValidDoorLocation(x, room.bottom)) {
+                doorPositions.push_back({x, room.bottom});
+            }
+        }
+        
+        // Left border
+        for (int y = room.top + 1; y < room.bottom; y++) {
+            if (isValidDoorLocation(room.left, y)) {
+                doorPositions.push_back({room.left, y});
+            }
+        }
+        
+        // Right border
+        for (int y = room.top + 1; y < room.bottom; y++) {
+            if (isValidDoorLocation(room.right, y)) {
+                doorPositions.push_back({room.right, y});
+            }
+        }
+        
+        // Place doors at valid positions
+        for (const auto& pos : doorPositions) {
+            // Always place doors at entrance and exit rooms
+            if (node.type == ENTRANCE || node.type == EXIT) {
+                map[pos.second][pos.first] = TILE_DOOR;
+            }
+            // For regular rooms, place doors with very high probability
+            else if (GetRandomBool(0.95f)) {
+                map[pos.second][pos.first] = TILE_DOOR;
+            }
+        }
+    }
+}
+
+// 타일 변형 적용 함수
+void DungeonGenerator::ApplyTileVariations(std::vector<std::vector<int>>& map) {
+    int height = map.size();
+    int width = map[0].size();
+    
+    // 임시 맵에 변형을 저장 (원본 맵을 참조하면서 수정하기 위함)
+    std::vector<std::vector<int>> tempMap = map;
+    
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (map[y][x] == TILE_WALL) {
+                tempMap[y][x] = DetermineWallVariation(map, x, y);
+            }
+            else if (map[y][x] == TILE_FLOOR) {
+                tempMap[y][x] = DetermineFloorVariation(map, x, y);
             }
         }
     }
     
-    // 복도 교차점에 문 배치 (선택적)
-    for (int y = 1; y < height - 1; y++) {
-        for (int x = 1; x < width - 1; x++) {
-            // 복도 교차점 확인 (T자형 또는 십자형)
-            if (map[y][x] == TILE_FLOOR) {
-                int floorCount = 0;
-                int wallCount = 0;
-                
-                // 주변 4방향 검사
-                if (map[y-1][x] == TILE_FLOOR) floorCount++;
-                if (map[y+1][x] == TILE_FLOOR) floorCount++;
-                if (map[y][x-1] == TILE_FLOOR) floorCount++;
-                if (map[y][x+1] == TILE_FLOOR) floorCount++;
-                
-                if (map[y-1][x] == TILE_WALL) wallCount++;
-                if (map[y+1][x] == TILE_WALL) wallCount++;
-                if (map[y][x-1] == TILE_WALL) wallCount++;
-                if (map[y][x+1] == TILE_WALL) wallCount++;
-                
-                // T자형 또는 십자형 교차점인 경우
-                if (floorCount >= 2 && wallCount >= 1) {
-                    // 주변 벽 중 하나에 문 배치
-                    if (map[y-1][x] == TILE_WALL) {
-                        map[y-1][x] = TILE_DOOR;
-                    } else if (map[y+1][x] == TILE_WALL) {
-                        map[y+1][x] = TILE_DOOR;
-                    } else if (map[y][x-1] == TILE_WALL) {
-                        map[y][x-1] = TILE_DOOR;
-                    } else if (map[y][x+1] == TILE_WALL) {
-                        map[y][x+1] = TILE_DOOR;
-                    }
+    // 변형이 적용된 맵을 원본에 복사
+    map = tempMap;
+}
+
+// 벽 타일 변형 결정 함수
+int DungeonGenerator::DetermineWallVariation(const std::vector<std::vector<int>>& map, int x, int y) {
+    int height = map.size();
+    int width = map[0].size();
+    
+    // 주변 8방향의 타일 확인
+    bool hasFloorAbove = (y > 0 && (map[y-1][x] == TILE_FLOOR || map[y-1][x] >= TILE_FLOOR_NORMAL));
+    bool hasFloorBelow = (y < height-1 && (map[y+1][x] == TILE_FLOOR || map[y+1][x] >= TILE_FLOOR_NORMAL));
+    bool hasFloorLeft = (x > 0 && (map[y][x-1] == TILE_FLOOR || map[y][x-1] >= TILE_FLOOR_NORMAL));
+    bool hasFloorRight = (x < width-1 && (map[y][x+1] == TILE_FLOOR || map[y][x+1] >= TILE_FLOOR_NORMAL));
+    
+    bool hasFloorTopLeft = (y > 0 && x > 0 && (map[y-1][x-1] == TILE_FLOOR || map[y-1][x-1] >= TILE_FLOOR_NORMAL));
+    bool hasFloorTopRight = (y > 0 && x < width-1 && (map[y-1][x+1] == TILE_FLOOR || map[y-1][x+1] >= TILE_FLOOR_NORMAL));
+    bool hasFloorBottomLeft = (y < height-1 && x > 0 && (map[y+1][x-1] == TILE_FLOOR || map[y+1][x-1] >= TILE_FLOOR_NORMAL));
+    bool hasFloorBottomRight = (y < height-1 && x < width-1 && (map[y+1][x+1] == TILE_FLOOR || map[y+1][x+1] >= TILE_FLOOR_NORMAL));
+    
+    // 모서리 벽 결정
+    if (hasFloorBelow && hasFloorRight && !hasFloorBottomRight) return TILE_WALL_CORNER_BR;
+    if (hasFloorBelow && hasFloorLeft && !hasFloorBottomLeft) return TILE_WALL_CORNER_BL;
+    if (hasFloorAbove && hasFloorRight && !hasFloorTopRight) return TILE_WALL_CORNER_TR;
+    if (hasFloorAbove && hasFloorLeft && !hasFloorTopLeft) return TILE_WALL_CORNER_TL;
+    
+    // 일반 벽 결정
+    if (hasFloorAbove && !hasFloorBelow) return TILE_WALL_BOTTOM;
+    if (!hasFloorAbove && hasFloorBelow) return TILE_WALL_TOP;
+    if (hasFloorLeft && !hasFloorRight) return TILE_WALL_RIGHT;
+    if (!hasFloorLeft && hasFloorRight) return TILE_WALL_LEFT;
+    
+    // 기본 벽
+    return TILE_WALL;
+}
+
+// 바닥 타일 변형 결정 함수
+int DungeonGenerator::DetermineFloorVariation(const std::vector<std::vector<int>>& map, int x, int y) {
+    // 방의 중앙부에는 장식된 바닥을 배치할 확률이 높게
+    bool isNearWall = false;
+    for (int dy = -1; dy <= 1; dy++) {
+        for (int dx = -1; dx <= 1; dx++) {
+            int newY = y + dy;
+            int newX = x + dx;
+            if (newY >= 0 && newY < map.size() && newX >= 0 && newX < map[0].size()) {
+                if (map[newY][newX] == TILE_WALL || (map[newY][newX] >= TILE_WALL_TOP && map[newY][newX] <= TILE_WALL_CORNER_BR)) {
+                    isNearWall = true;
+                    break;
                 }
             }
         }
+        if (isNearWall) break;
     }
+    
+    float random = static_cast<float>(rand()) / RAND_MAX;
+    
+    if (!isNearWall) {
+        // 벽에서 멀리 떨어진 바닥
+        if (random < 0.15f) return TILE_FLOOR_FANCY;
+        if (random < 0.25f) return TILE_FLOOR_CRACKED;
+        if (random < 0.35f) return TILE_FLOOR_MOSSY;
+    } else {
+        // 벽 근처의 바닥
+        if (random < 0.1f) return TILE_FLOOR_CRACKED;
+        if (random < 0.2f) return TILE_FLOOR_MOSSY;
+    }
+    
+    return TILE_FLOOR_NORMAL;
 }

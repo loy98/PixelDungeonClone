@@ -6,6 +6,7 @@
 #include "D2DImage.h"
 #include "D2DImageManager.h"
 #include "Entity.h"
+#include "IntegratedDungeonSystem.h"
 #include "Monster.h"
 #include "Player.h"
 #include "TurnManager.h"
@@ -70,8 +71,11 @@ void Level::Init()
     mapHeight = TILE_Y;
 
     // 절차적 맵 생성
-    GenerateMap(mapWidth, mapHeight);
+    // GenerateMap(mapWidth, mapHeight);
 
+
+    dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 1);
+    
     // 플레이어 배치
     FPOINT playerPos = GetRandomFloorTile();
     Player* player = new Player(playerPos, 50.0f); // 속도 5.0f 가정
@@ -177,6 +181,7 @@ void Level::Update()
     }
 
     turnManager->ProcessTurns(this);
+    dungeonSystem.UpdateEnvironmentalEffects(this, TimerManager::GetInstance()->GetDeltaTime());
 }
 
 void Level::Render(HDC hdc)
@@ -359,7 +364,11 @@ FPOINT Level::GetRandomFloorTile() const
     // 랜덤 바닥 타일 선택
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, floorTiles.size() - 1);
+    if (floorTiles.size() > 0)
+    {
+        std::uniform_int_distribution<> dist(0, floorTiles.size() - 1);
 
-    return floorTiles[dist(gen)];
+        return floorTiles[dist(gen)];
+    }
+    return floorTiles[0];
 }
