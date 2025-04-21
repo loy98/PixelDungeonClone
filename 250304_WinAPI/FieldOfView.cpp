@@ -33,7 +33,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			int idY = tileIdY + (-dx * direction.verticalX) + (dy * direction.verticalY);
 
 			if (idX < 0 || idX >= ASTAR_TILE_COUNT || idY < 0 || idY >= ASTAR_TILE_COUNT)
-				break;
+				continue;
 	
 			// 타일이 시야 내에 있는지 확인
 			float centerSlope = (float)dx / (float)dy;
@@ -41,8 +41,8 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			float leftSlope = ((float)dx + 0.5f) / ((float)dy + 0.5f);
 			float rightSlope = ((float)dx - 0.5f) / ((float)dy - 0.5f);
 
-			// 시작기울기보다 크거나 같다면-startslope이 고정되어있음;;
-			if (rightSlope - startSlope > FLT_EPSILON)
+			// 시작기울기보다 크거나 같다면-startslope이 고정되어있음;; 수정완료
+			if (rightSlope - startSlope >= FLT_EPSILON)
 			{
 				// 센터가 시작기울기보다 크다면
 				if (centerSlope - startSlope > FLT_EPSILON)
@@ -53,7 +53,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 	
 			if (leftSlope - endSlope <= FLT_EPSILON)
 			{
-				if (centerSlope - endSlope < FLT_EPSILON)
+				if (centerSlope - endSlope <= FLT_EPSILON)
 				{
 					break;
 				}
@@ -96,13 +96,12 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 					if (dx == 0)
 					{
 						nextStartSlope = 0.0f;
-						startSlope = nextStartSlope;
 					}
 					else
 					{
 						nextStartSlope = rightSlope;
-						startSlope = nextStartSlope;
 					}
+					startSlope = nextStartSlope;
 					isBlock = false;
 				}
 			}
@@ -110,19 +109,17 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			{
 				if (tile->GetType() == AstarTileType::Wall)
 				{	
-					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
-					/*매 타일마다 초기화해야 다음 행에서 재귀탐색한 영역까지 재탐색하지 않음*/
-					nextStartSlope = rightSlope;
-					
-					if (dx > 0) {
-						isBlock = true;
-					}
 
+					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
+					
 					if (dx == 0)
 					{
 						return;
 					}
-					
+
+					/*매 타일마다 초기화해야 다음 행에서 재귀탐색한 영역까지 재탐색하지 않음*/
+					nextStartSlope = rightSlope;
+					isBlock = true;
 					continue;
 				}
 			}
