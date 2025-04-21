@@ -3,6 +3,7 @@
 
 class Level;
 class D2DImage;
+class PathFinder;
 
 enum class EntityState
 {
@@ -24,6 +25,8 @@ class Entity
 protected:
     //test
     D2DImage* image;
+    int curAnimFrame;
+    float curTime;
 
     // 공통 속성
     EntityType type;
@@ -42,6 +45,11 @@ protected:
     float energy = 10.f;
     float actionCost;
     float energyPerTurn = 10.0f;
+
+    //길찾기
+    vector<FPOINT> path;
+    PathFinder* finder;
+    FPOINT destPos;
 public:
     int graphicID;
     bool isActive;
@@ -51,6 +59,7 @@ public:
     Entity();
     virtual ~Entity();
 
+    void Update();
     void Render(HDC hdc);
     virtual void Act(Level* level);
     virtual void Attack(Level* level) {};
@@ -75,4 +84,5 @@ public:
     void AddEnergy() { energy += energyPerTurn; }
     void UseEnergy() { energy -= actionCost; }
 
+    void Stop() { destPos = position; }
 };

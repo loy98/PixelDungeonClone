@@ -147,6 +147,7 @@
     <ClCompile Include="MainGame.cpp" />
     <ClCompile Include="MouseManager.cpp" />
     <ClCompile Include="Monster.cpp" />
+    <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TilemapTool.cpp" />
@@ -175,6 +176,7 @@
     <ClInclude Include="MainGame.h" />
     <ClInclude Include="MouseManager.h" />
     <ClInclude Include="Monster.h" />
+    <ClInclude Include="PathFinder.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />

@@ -3,6 +3,8 @@
 // #include "Map.h"
 #include "Level.h"
 #include "TurnManager.h"
+#include "PathFinder.h"
+#include "CombatSyetem.h"
 
 Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -53,7 +55,7 @@ void Monster::Attack(Level* level)
 {
     if (target)
     {
-        //level->ProcessCombat(this, target);
+        CombatSyetem::GetInstance()->ProcessAttack(this, target);
         SetRandomTargetPos();
         curState = EntityState::IDLE;
     }
@@ -64,8 +66,11 @@ void Monster::ActIdle(Level* level)
     target = level->GetActorAt(targetPos);
     if (target)
     {
-        curState = EntityState::ATTACK;
-        return;
+        if (target->GetType() == EntityType::PLAYER)
+        {
+            curState = EntityState::ATTACK;
+            return;
+        }
     }
     curState = EntityState::MOVE;
 }
@@ -78,7 +83,7 @@ void Monster::Move(Level* level)
     int a = 0;
     auto map = level->GetMap(targetPos.x, targetPos.y);
     
-    if (map && !map->CanGo())
+    if ((map && !map->CanGo()) || level->GetActorAt(targetPos))
     {
         SetRandomTargetPos();
         curState = EntityState::IDLE;
@@ -97,7 +102,7 @@ void Monster::Move(Level* level)
     delta = targetPos - position;
 
     // 매직넘버로,,, -> 변수로 dir 저장해두고 쓰면 Dot Product
-    if (delta.Length() <= 0.5f)
+    if (delta.Length() <= 1.f)
     {
         position = targetPos;
         // 테스트용이라 도착지 정하는건 수정해야함

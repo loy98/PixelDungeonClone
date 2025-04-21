@@ -11,16 +11,6 @@ TurnManager::~TurnManager()
 
 void TurnManager::Init()
 {
-	//에너지 턴 개념 test (시간)
-	//while (!schedule.empty()) schedule.pop();
-	//
-
-	//// 모든 액터를 시뮬레이션 시간 0에서 시작
-	//for (auto actor : turnQueue) {
-	//	if (actor && actor->isActive) {
-	//		schedule.push({ 0.0, actor });
-	//	}
-	//}
 }
 
 void TurnManager::AddActor(Entity* actor)
@@ -35,39 +25,6 @@ void TurnManager::AddActor(Entity* actor)
 
 void TurnManager::ProcessTurns(Level* level)
 {
-	//if (turnQueue.empty()) return;
-	//Entity* actor = GetCurrentActor();
-	//if (!actor || !actor->isActive)
-	//{
-	//	EndTurn();
-	//	return;
-	//}
-	// m2_merge code
-	//  if (actor->NeedsInput()) {
-	//  	actor->Act(level);
-	//  }
-	//  else {
-	//  	actor->Act(level);
-	//  	if (!actor->IsBusy()) {
-	//  		EndTurn();
-	//  	}
-	//  }
-
-
-	//// 이전 상태 저장
-	//EntityState prevState = actor->GetState();
-
-	//// 실제 행동 호출 (state가 MOVE나 ATTACK으로 바뀝니다)
-	//actor->Act(level);
-
-	//// 이전에는 바쁜 상태였다가, 지금 Idle로 돌아왔다면 턴 종료
-	//bool wasBusy = (prevState != EntityState::IDLE);
-	//bool nowIdle = (actor->GetState() == EntityState::IDLE);
-	//if (wasBusy && nowIdle) 
-	//{
-	//	EndTurn();
-	//}
-	// 
 	// 에너지 test
 	if (turnQueue.empty()) return;
 	Entity* actor = GetCurrentActor();

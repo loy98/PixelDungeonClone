@@ -11,6 +11,7 @@
 #include <vector>
 #include <random>
 #include <queue>
+#include <functional>
 
 using namespace std;
 
@@ -59,6 +60,20 @@ typedef struct tagFPOINT
 	}
 	bool operator!=(const tagFPOINT& other) {
 		return x != other.x || y != other.y;
+	}
+	bool operator<(const tagFPOINT& other) const
+	{
+		if (x != other.x)
+			return x < other.x;
+
+		return y < other.y;
+	}
+	bool operator>(const tagFPOINT& other) const
+	{ 
+		if (x != other.x)
+			return x > other.x;
+
+		return y > other.y;
 	}
 
 	float LengthSquared()

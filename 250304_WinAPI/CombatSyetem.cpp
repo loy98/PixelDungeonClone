@@ -9,6 +9,7 @@ int CombatSyetem::CalculateDmg(Entity* attacker, Entity* defender)
 void CombatSyetem::ProcessAttack(Entity* attacker, Entity* defender)
 {
 	if (!attacker || !defender)	return;
+	if (attacker->GetType() == defender->GetType())	return;
 
 	int dmg = CalculateDmg(attacker, defender);
 	defender->TakeDamage(dmg);

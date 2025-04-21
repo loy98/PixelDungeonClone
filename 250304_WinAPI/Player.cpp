@@ -4,6 +4,8 @@
 #include "KeyManager.h"
 #include "Level.h"
 #include "TimerManager.h"
+#include "PathFinder.h"
+#include "CombatSyetem.h"
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -22,6 +24,10 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     // 에너지 test
     actionCost = 10.f;
     energyPerTurn = 10.0f;
+
+    //길찾기
+    finder = new PathFinder();
+    destPos = position;
 }
 
 Player::~Player()
@@ -51,25 +57,20 @@ void Player::Attack(Level* level)
 {
     if (target)
     {
-        //level->ProcessCombat(this, target);
+        CombatSyetem::GetInstance()->ProcessAttack(this, target);
+        Stop();
         curState = EntityState::IDLE;
     }
 }
 
 void Player::ActIdle(Level* level)
 {
-    KeyManager* km = KeyManager::GetInstance();
-    if (km->IsOnceKeyDown(VK_UP))
-        targetPos = { position.x, position.y - TILE_SIZE };
-    else if (km->IsOnceKeyDown(VK_DOWN))
-        targetPos = { position.x, position.y + TILE_SIZE };
-    else if (km->IsOnceKeyDown(VK_LEFT))
-        targetPos = { position.x - TILE_SIZE, position.y };
-    else if (km->IsOnceKeyDown(VK_RIGHT))
-        targetPos = { position.x + TILE_SIZE, position.y };
-    else return;
+    if (finder->FindPath(position, destPos, level, OUT path))
+        targetPos = path[1];
+    if (position == destPos) return;
 
-    isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
+    //isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
+
     target = level->GetActorAt(targetPos);
     if (target)
     {
@@ -88,6 +89,7 @@ void Player::Move(Level* level)
     //    curState = EntityState::IDLE;
     //    return;
     //}
+    
     FPOINT delta = targetPos - position;
 
     float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
@@ -99,7 +101,7 @@ void Player::Move(Level* level)
     delta = targetPos - position;
 
     // 매직넘버로,,, -> 변수로 dir 저장해두고 쓰면 Dot Product
-    if (delta.Length() <= 0.5f)
+    if (delta.Length() <= 1.f)
     {
         position = targetPos;
         curState = EntityState::IDLE;

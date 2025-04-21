@@ -2,6 +2,7 @@
 #include "Entity.h"
 
 class Level;
+class PathFinder;
 class Player : public Entity
 {
 public:
@@ -15,4 +16,8 @@ public:
 
     bool NeedsInput() override { return true; }
     bool IsBusy() override { return curState != EntityState::IDLE; }
+
+    void SetNextPos(FPOINT pos) { destPos = pos; }
+private:
+
 };

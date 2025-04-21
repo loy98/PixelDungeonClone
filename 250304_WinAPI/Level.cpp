@@ -58,9 +58,9 @@ void Level::Init()
 	FileLoad();
 
 	// 시작 위치 테스트용 매직넘버
-	Entity* player = new Player(GetPosByGridIndex(3, 3), 100.f, 20, 5, 2);
-	Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 100.f, 15, 4, 3);
-	Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 100.f, 15, 4, 3);
+	Entity* player = new Player(GetPosByGridIndex(3, 3), 300.f, 20, 5, 2);
+	Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 300.f, 15, 4, 3);
+	Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 300.f, 15, 4, 3);
 
 	AddActor(player);
 	AddActor(monster1);
@@ -119,7 +119,9 @@ void Level::Update()
 
 			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	///
 			{														/// 구현 하고 싶은 로직 넣는 부분
-				map[indY * TILE_X + indX].type = TT::COUNT;				///
+				//map[indY * TILE_X + indX].type = TT::COUNT;
+				if (map[indY * TILE_X + indX].CanGo())
+					dynamic_cast<Player*>(actors[0])->SetNextPos(GetPosByGridIndex(indX, indY));	
 			}														///
 
 			MouseManager::GetInstance()->InitPoints();
@@ -148,7 +150,10 @@ void Level::Update()
 	}
 
 	turnManager->ProcessTurns(this);
-
+	for (auto actor : actors)
+	{
+		if (actor) actor->Update();
+	}
 }
 
 void Level::Render(HDC hdc)
