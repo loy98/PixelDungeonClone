@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CombatSyetem.cpp" />
+    <ClCompile Include="Consumable.cpp" />
     <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="D2DImageManager.cpp" />
     <ClCompile Include="Dungeon.cpp">
@@ -138,6 +139,9 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="HealPotion.cpp" />
+    <ClCompile Include="Inventory.cpp" />
+    <ClCompile Include="Item.cpp" />
     <ClCompile Include="KeyManager.cpp" />
     <ClCompile Include="Level.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
@@ -163,11 +167,15 @@
     <ClInclude Include="CombatSyetem.h" />
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="Consumable.h" />
     <ClInclude Include="D2DImage.h" />
     <ClInclude Include="D2DImageManager.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="HealPotion.h" />
+    <ClInclude Include="Inventory.h" />
+    <ClInclude Include="Item.h" />
     <ClInclude Include="KeyManager.h" />
     <ClInclude Include="Level.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>

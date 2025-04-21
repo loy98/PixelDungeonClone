@@ -50,6 +50,8 @@ bool PathFinder::FindPath(FPOINT src, FPOINT dest, Level* level, vector<FPOINT>&
             // 이동 불가 타일이면 건너뛰기
             if (!level->GetMap(next.x, next.y)->CanGo())
                 continue;
+            if (level->GetActorAt({ next.x, next.y }) && next != dest)
+                continue;
 
             bool isDiag = (d.x != 0 && d.y != 0);
 
