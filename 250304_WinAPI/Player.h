@@ -8,6 +8,7 @@ public:
     Player(FPOINT pos, float speed);
     virtual ~Player();
 
+    void Render(HDC hdc) override;
     virtual void Act(Level* level) override;
     virtual bool NeedsInput() override;
     bool IsBusy() override;

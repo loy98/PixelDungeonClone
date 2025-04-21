@@ -26,7 +26,7 @@ private:
 	bool hasExplored[TILE_Y * TILE_X]; //인덱스별 해금되었는지 여부 저장하는 배열
 	bool isSeen[TILE_Y * TILE_X]; //인덱스별 시야 안에 들어왔는지 여부 저장하는 배열
 
-	const POINT GRID_POS_OFFSET = {240, 60};
+	const POINT GRID_POS_OFFSET = {0, 60};
 
 	vector<Biome*> bioms;
 	vector<Item*> items;

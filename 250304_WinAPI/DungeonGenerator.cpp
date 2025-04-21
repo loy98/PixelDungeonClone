@@ -55,10 +55,13 @@ std::vector<std::vector<int>> DungeonGenerator::Generate(int width, int height) 
     // 7. 특수 방 배치
     PlaceSpecialRooms(map, roomNodes);
     
-    // 8. 숨겨진 방 배치
-    PlaceHiddenRooms(map, roomNodes);
+    // // 8. 숨겨진 방 배치
+    // PlaceHiddenRooms(map, roomNodes);
     
-    // 9. 맵 정리
+    // 9. 방과 복도 사이에 문 배치
+    // PlaceDoorsAtRoomBorders(map, roomNodes);
+    
+    // 10. 맵 정리
     CleanupWalls(map);
     
     return map;
@@ -409,16 +412,11 @@ void DungeonGenerator::CreateCorridor(std::vector<std::vector<int>>& map, int x1
                 map[y1][x] = TILE_FLOOR;
             }
         }
-        
+
         for (int y = std::min(y1, y2); y <= std::max(y1, y2); y++) {
             if (map[y][x2] == TILE_WALL) {
                 map[y][x2] = TILE_FLOOR;
             }
-        }
-        
-        // 복도 교차점에 문 추가 (확률적)
-        if (GetRandomBool(0.3f)) {
-            map[y1][x2] = TILE_DOOR;
         }
     } else if (corridorType == 1) {
         // L자형 복도 (수직 먼저)
@@ -432,11 +430,6 @@ void DungeonGenerator::CreateCorridor(std::vector<std::vector<int>>& map, int x1
             if (map[y2][x] == TILE_WALL) {
                 map[y2][x] = TILE_FLOOR;
             }
-        }
-        
-        // 복도 교차점에 문 추가 (확률적)
-        if (GetRandomBool(0.3f)) {
-            map[y2][x1] = TILE_DOOR;
         }
     } else {
         // Z자형 복도 (중간 지점 경유)
@@ -467,14 +460,6 @@ void DungeonGenerator::CreateCorridor(std::vector<std::vector<int>>& map, int x1
             if (map[y][x2] == TILE_WALL) {
                 map[y][x2] = TILE_FLOOR;
             }
-        }
-        
-        // 복도 교차점에 문 추가 (확률적)
-        if (GetRandomBool(0.3f)) {
-            map[y1][midX] = TILE_DOOR;
-        }
-        if (GetRandomBool(0.3f)) {
-            map[midY][x2] = TILE_DOOR;
         }
     }
 }
@@ -530,27 +515,27 @@ void DungeonGenerator::PlaceSpecialRooms(std::vector<std::vector<int>>& map, std
                 // 실제로는 더 복잡한 로직이 필요할 수 있음
                 if (std::abs(x1 - x2) > std::abs(y1 - y2)) {
                     // 수평 방향으로 더 멀리 떨어져 있음
-                    int doorX = (x1 + x2) / 2;
+                    int doorX = x2;
                     int doorY = y1;
                     
                     // 문 주변이 바닥인지 확인
                     if (map[doorY][doorX] == TILE_FLOOR) {
-                        // 30% 확률로 문 배치
-                        if (GetRandomBool(0.3f)) {
-                            map[doorY][doorX] = TILE_DOOR;
-                        }
+                        // // 30% 확률로 문 배치
+                        // if (GetRandomBool(1.f)) {
+                        //     map[doorY][doorX] = TILE_DOOR;
+                        // }
                     }
                 } else {
                     // 수직 방향으로 더 멀리 떨어져 있음
                     int doorX = x1;
-                    int doorY = (y1 + y2) / 2;
+                    int doorY = y2;
                     
                     // 문 주변이 바닥인지 확인
                     if (map[doorY][doorX] == TILE_FLOOR) {
-                        // 30% 확률로 문 배치
-                        if (GetRandomBool(0.3f)) {
-                            map[doorY][doorX] = TILE_DOOR;
-                        }
+                        // // 30% 확률로 문 배치
+                        // if (GetRandomBool(1.f)) {
+                        //     map[doorY][doorX] = TILE_DOOR;
+                        // }
                     }
                 }
             }
@@ -710,4 +695,111 @@ int DungeonGenerator::GetRandomInt(int min, int max) {
 // 랜덤 불리언 생성 함수
 bool DungeonGenerator::GetRandomBool(float probability) {
     return (static_cast<float>(rand()) / RAND_MAX) < probability;
+}
+
+// 방과 복도 사이에 문 배치 메서드
+void DungeonGenerator::PlaceDoorsAtRoomBorders(std::vector<std::vector<int>>& map, const std::vector<RoomNode>& roomNodes) {
+    int height = map.size();
+    int width = map[0].size();
+    
+    // 복도 끝점에 문 배치
+    for (int y = 1; y < height - 1; y++) {
+        for (int x = 1; x < width - 1; x++) {
+            // 복도 타일인 경우
+            if (map[y][x] == TILE_FLOOR) {
+                // 복도 끝점 확인 (한쪽만 복도이고 다른 쪽은 벽인 경우)
+                bool isEndPoint = false;
+                int wallX = -1, wallY = -1;
+                
+                // 위쪽이 벽이고 아래쪽이 복도인 경우
+                if (map[y-1][x] == TILE_WALL && map[y+1][x] == TILE_FLOOR) {
+                    isEndPoint = true;
+                    wallX = x;
+                    wallY = y-1;
+                }
+                // 아래쪽이 벽이고 위쪽이 복도인 경우
+                else if (map[y+1][x] == TILE_WALL && map[y-1][x] == TILE_FLOOR) {
+                    isEndPoint = true;
+                    wallX = x;
+                    wallY = y+1;
+                }
+                // 왼쪽이 벽이고 오른쪽이 복도인 경우
+                else if (map[y][x-1] == TILE_WALL && map[y][x+1] == TILE_FLOOR) {
+                    isEndPoint = true;
+                    wallX = x-1;
+                    wallY = y;
+                }
+                // 오른쪽이 벽이고 왼쪽이 복도인 경우
+                else if (map[y][x+1] == TILE_WALL && map[y][x-1] == TILE_FLOOR) {
+                    isEndPoint = true;
+                    wallX = x+1;
+                    wallY = y;
+                }
+                
+                // 복도 끝점에 문 배치
+                if (isEndPoint) {
+                    map[wallY][wallX] = TILE_DOOR;
+                }
+            }
+        }
+    }
+    
+    // 특수 방 유형에 따른 추가 처리
+    for (const auto& node : roomNodes) {
+        const Room& room = node.room;
+        
+        if (node.type == ENTRANCE) {
+            // 입구 방은 항상 문이 있어야 함
+            for (int x = room.left; x <= room.right; x++) {
+                if (room.top > 0 && map[room.top][x] == TILE_WALL && 
+                    room.top + 1 < height && map[room.top + 1][x] == TILE_FLOOR) {
+                    map[room.top][x] = TILE_DOOR;
+                }
+            }
+        } else if (node.type == EXIT) {
+            // 출구 방은 항상 문이 있어야 함
+            for (int x = room.left; x <= room.right; x++) {
+                if (room.bottom < height - 1 && map[room.bottom][x] == TILE_WALL && 
+                    room.bottom > 0 && map[room.bottom - 1][x] == TILE_FLOOR) {
+                    map[room.bottom][x] = TILE_DOOR;
+                }
+            }
+        }
+    }
+    
+    // 복도 교차점에 문 배치 (선택적)
+    for (int y = 1; y < height - 1; y++) {
+        for (int x = 1; x < width - 1; x++) {
+            // 복도 교차점 확인 (T자형 또는 십자형)
+            if (map[y][x] == TILE_FLOOR) {
+                int floorCount = 0;
+                int wallCount = 0;
+                
+                // 주변 4방향 검사
+                if (map[y-1][x] == TILE_FLOOR) floorCount++;
+                if (map[y+1][x] == TILE_FLOOR) floorCount++;
+                if (map[y][x-1] == TILE_FLOOR) floorCount++;
+                if (map[y][x+1] == TILE_FLOOR) floorCount++;
+                
+                if (map[y-1][x] == TILE_WALL) wallCount++;
+                if (map[y+1][x] == TILE_WALL) wallCount++;
+                if (map[y][x-1] == TILE_WALL) wallCount++;
+                if (map[y][x+1] == TILE_WALL) wallCount++;
+                
+                // T자형 또는 십자형 교차점인 경우
+                if (floorCount >= 2 && wallCount >= 1) {
+                    // 주변 벽 중 하나에 문 배치
+                    if (map[y-1][x] == TILE_WALL) {
+                        map[y-1][x] = TILE_DOOR;
+                    } else if (map[y+1][x] == TILE_WALL) {
+                        map[y+1][x] = TILE_DOOR;
+                    } else if (map[y][x-1] == TILE_WALL) {
+                        map[y][x-1] = TILE_DOOR;
+                    } else if (map[y][x+1] == TILE_WALL) {
+                        map[y][x+1] = TILE_DOOR;
+                    }
+                }
+            }
+        }
+    }
 }

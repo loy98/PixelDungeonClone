@@ -64,6 +64,9 @@ private:
     // 벽 정리 함수 (불필요한 벽 제거)
     void CleanupWalls(std::vector<std::vector<int>>& map);
 
+    // 방과 복도 사이에 문 배치 함수
+    void PlaceDoorsAtRoomBorders(std::vector<std::vector<int>>& map, const std::vector<RoomNode>& roomNodes);
+
     // 상수 정의
     enum TileType {
         TILE_WALL = 0,   // 벽

@@ -1,5 +1,6 @@
 ﻿#include "Player.h"
 // #include "Game.h"
+#include "D2DImage.h"
 #include "D2DImageManager.h"
 #include "TurnManager.h"
 #include "KeyManager.h"
@@ -11,11 +12,17 @@ Player::Player(FPOINT pos, float speed)
     position = pos;
     this->speed = speed;
     isMoving = false;
-    image = D2DImageManager::GetInstance()->AddImage("player", L"Image/rocket.bmp"); 
+    image = D2DImageManager::GetInstance()->AddImage("player", L"Image/warrior.png", 21, 7); 
 }
 
 Player::~Player()
 {
+}
+
+void Player::Render(HDC hdc)
+{
+    if (image)
+        image->RenderFrameScale(position.x, position.y, 2.f, 2.f, 1, 1);
 }
 
 void Player::Act(Level* level)
