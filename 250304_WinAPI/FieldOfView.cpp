@@ -35,35 +35,25 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			if (idX < 0 || idX >= ASTAR_TILE_COUNT || idY < 0 || idY >= ASTAR_TILE_COUNT)
 				break;
 	
+			// 타일이 시야 내에 있는지 확인
+			float centerSlope = (float)dx / (float)dy;
 			// 접점 기울기-dy에 -+0.5 left, right 바꾸면 다르게 나옴 
-			float leftSlope = ((float)dx +0.5f) / ((float)dy + 0.5f);
+			float leftSlope = ((float)dx + 0.5f) / ((float)dy + 0.5f);
 			float rightSlope = ((float)dx - 0.5f) / ((float)dy - 0.5f);
 
-			if (rightSlope - startSlope > FLT_EPSILON)
-				continue;
+			if ((centerSlope - startSlope > FLT_EPSILON) || (centerSlope - endSlope <= FLT_EPSILON)) {
+				if (rightSlope - startSlope > FLT_EPSILON)
+					continue;
 
-			if (leftSlope - endSlope <= FLT_EPSILON)
-				break;
-			
-			AstarTile* tile = &map[idY][idX];
+				if (leftSlope - endSlope <= FLT_EPSILON)
+					break;
+			}
 
+			AstarTile* tile ;
 			tile = &map[idY][idX];
 
 			if (!tile)
 				continue;
-
-			// 타일이 시야 내에 있는지 확인
-			float centerSlope = (float)dx / (float)dy;
-			
-			if (centerSlope - startSlope > FLT_EPSILON ) {
-				if(centerSlope - endSlope <= FLT_EPSILON){
-					break;
-				}
-				else {
-					continue;
-				}
-				
-			}
 	
 			tile->isVisible = true;
 
@@ -89,8 +79,8 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			{
 				if (tile->GetType() == AstarTileType::Wall)
 				{	
-					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
-				
+					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);;
+
 					if (dx > 0) {
 						isBlock = true;
 					}
@@ -100,6 +90,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 						return;
 					}
 					nextStartSlope = rightSlope;
+					/*매 타일마다 초기화해야 다음 행에서 재귀탐색한 영역까지 재탐색하지 않음*/
 					continue;
 				}
 			}
