@@ -1,5 +1,6 @@
 ﻿#include "Level.h"
-
+#include "DungeonGenerator.h"
+#include "config.h"
 #include <random>
 
 #include "CommonFunction.h"
@@ -19,9 +20,6 @@ void Level::Init()
         "배틀시티_샘플타일", L"Image/tiles_sewers.png",
         16, 16);
 
-
-    // nowZoomScale = 0.0f;
-
     tempTileSize = 30;
 
     for (int i = 0; i < TILE_Y; ++i)
@@ -40,12 +38,6 @@ void Level::Init()
 
     mapRc = {tempTile[0].left, tempTile[0].top, tempTile[399].right, tempTile[399].bottom};
 
-    // BlackBrush = CreateSolidBrush(RGB(0, 0, 0));
-    // GreyBrush = CreateSolidBrush(RGB(100, 100, 100));
-    // WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-    // RedBrush = CreateSolidBrush(RGB(255, 0, 0));
-
-
     for (auto& s : shouldBeRender)
     {
         s = true;
@@ -61,64 +53,69 @@ void Level::Init()
         i = true;
     }
 
+    // Initialize frame map data
+    std::vector<std::vector<POINT>> frameMapData;
+    frameMapData.resize(50);  // Reserve space for all tile types
+
+    // Water animation frames
+    frameMapData[36] = {
+        {10, 1}, {11, 1}, {12, 1}, {13, 1}  // Water animation sequence
+    };
+
+    // Torch animation frames
+    frameMapData[31] = {
+        {5, 1}, {5, 2}, {6, 2}, {5, 2}  // Torch animation sequence
+    };
+
+    // Door animation frames (for opening/closing)
+    frameMapData[2] = {
+        {8, 3}, {9, 3}, {10, 3}, {11, 3}  // Door animation sequence
+    };
+
+    // Set the frame map data
+    SetFrameMapData(frameMapData);
+
     FileLoad();
 
-    // 턴 매니저 초기화
+    // Initialize turn manager
     turnManager = new TurnManager();
 
-    // 맵 크기 설정
+    // Set map dimensions
     mapWidth = TILE_X;
     mapHeight = TILE_Y;
 
-    // 절차적 맵 생성
-    // GenerateMap(mapWidth, mapHeight);
-
-
+    // Generate dungeon
     dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 1);
     
-    // 플레이어 배치
+    // Place player
     FPOINT playerPos = GetRandomFloorTile();
-    Player* player = new Player(playerPos, 50.0f); // 속도 5.0f 가정
+    Player* player = new Player(playerPos, 50.0f);
     AddActor(player);
-    // 플레이어 추가 코드...
 
-    // 몬스터 배치
+    // Place monsters
     for (int i = 0; i < 5; i++)
     {
-        // 5마리 몬스터 예시
         FPOINT monsterPos = GetRandomFloorTile();
-        Monster* monster = new Monster(monsterPos, 3.0f); // 속도 3.0f 가정
+        Monster* monster = new Monster(monsterPos, 3.0f);
         AddActor(monster);
     }
 
-    // // 시작 위치 테스트용 매직넘버
-    // Entity* player = new Player(GetPosByGridIndex(3, 3), 100.f);
-    // Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 100.f);
-    // Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 100.f);
-
-    // AddActor(player);
-    // AddActor(monster1);
-    // AddActor(monster2);
-
+    // Add actors to turn manager
     for (auto actor : actors)
     {
         if (actor)
             turnManager->AddActor(actor);
     }
+
+    frameTimer = 0.0f;  // Initialize frame timer
 }
 
 void Level::Release()
 {
-    // DeleteObject(BlackBrush);
-    // DeleteObject(GreyBrush);
-    // DeleteObject(WhiteBrush);
-    // DeleteObject(RedBrush);
-
     for (auto actor : actors)
     {
         if (actor)
         {
-            // actor->Release();
             delete actor;
             actor = nullptr;
         }
@@ -127,18 +124,6 @@ void Level::Release()
 
 void Level::Update()
 {
-    /*if (MouseManager::GetInstance()->GetValueUsed() == false) {
-        POINT p = MouseManager::GetInstance()->GetMousePos();
-
-        if (PtInRect(&mapRc, p)) {
-            long indX = (p.x - mapRc.left) / tempTileSize;
-            long indY = (p.y - mapRc.top) / tempTileSize;
-
-            map[indY * 20 + indX].type = TT::COUNT;
-        }
-
-        MouseManager::GetInstance()->AlreadyUsed();
-    }*/
     if (PtInRect(&mapRc, MouseManager::GetInstance()->GetDragEndP()))
     {
         if (MouseManager::GetInstance()->GetValueUsed() == false)
@@ -149,17 +134,15 @@ void Level::Update()
             long indX = (posX - mapRc.left) / tempTileSize;
             long indY = (posY - mapRc.top) / tempTileSize;
 
-            if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y) ///
+            if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)
             {
-                /// 구현 하고 싶은 로직 넣는 부분
-                map[indY * TILE_X + indX].type = static_cast<int>(TT::COUNT); ///
-            } ///
+                map[indY * TILE_X + indX].type = static_cast<int>(TT::COUNT);
+            }
 
             MouseManager::GetInstance()->InitPoints();
             MouseManager::GetInstance()->AlreadyUsed();
         }
-    } ///디버깅을 위해 마우스 왼쪽 버튼을 떼면 그 자리에 있는 타일이 빨간색으로 변하게 해놨습니다. 
-	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
+    }
 
     if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
     {
@@ -180,58 +163,34 @@ void Level::Update()
         mapRc.bottom += tempDeltaY;
     }
 
+    // Update frame animation
+    UpdateFrameAnimation(TimerManager::GetInstance()->GetDeltaTime());
+
     turnManager->ProcessTurns(this);
     dungeonSystem.UpdateEnvironmentalEffects(this, TimerManager::GetInstance()->GetDeltaTime());
 }
 
 void Level::Render(HDC hdc)
 {
-    // PatBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, WHITENESS);
-
-    // RenderRect(hdc, mapRc);
     sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
 
     for (int i = 0; i < TILE_Y; ++i)
     {
         for (int j = 0; j < TILE_X; ++j)
         {
-            switch (map[TILE_X * i + j].type)
-            {
-            case 0:
-                sampleTile->Middle_RenderFrameScale(static_cast<int>(tempTile[TILE_X * i + j].left),
-                                             static_cast<int>(tempTile[TILE_X * i + j].top), 2.f, 2.f, 0, 3);
-                break;
-            case 1:
-                sampleTile->Middle_RenderFrameScale(static_cast<int>(tempTile[TILE_X * i + j].left),
-                                             static_cast<int>(tempTile[TILE_X * i + j].top), 2.f, 2.f, 0, 0);
-                break;
-            case 2:
-                sampleTile->Middle_RenderFrameScale(static_cast<int>(tempTile[TILE_X * i + j].left),
-                                             static_cast<int>(tempTile[TILE_X * i + j].top), 2.f, 2.f, 8, 3);
-                break;
-            case 3:
-                sampleTile->Middle_RenderFrameScale(static_cast<int>(tempTile[TILE_X * i + j].left),
-                                             static_cast<int>(tempTile[TILE_X * i + j].top), 2.f, 2.f, 0, 1);
-                break;
-            case 4:
-                sampleTile->Middle_RenderFrameScale(static_cast<int>(tempTile[TILE_X * i + j].left),
-                                             static_cast<int>(tempTile[TILE_X * i + j].top), 2.f, 2.f, 1, 1);
-                break;
-            case 5:
-                sampleTile->Middle_RenderFrameScale(static_cast<int>(tempTile[TILE_X * i + j].left),
-                                             static_cast<int>(tempTile[TILE_X * i + j].top), 2.f, 2.f, 13, 3);
-                break;
-            case 6:
-                sampleTile->Middle_RenderFrameScale(static_cast<int>(tempTile[TILE_X * i + j].left),
-                             static_cast<int>(tempTile[TILE_X * i + j].top), 2.f, 2.f, 0, 9);
-                break;
-            default:
-                sampleTile->Middle_RenderFrameScale(static_cast<int>(tempTile[TILE_X * i + j].left),
-                                             static_cast<int>(tempTile[TILE_X * i + j].top), 2.f, 2.f, 4, 0);
-            }
+            int tileType = map[TILE_X * i + j].type;
+            int tileX = static_cast<int>(tempTile[TILE_X * i + j].left);
+            int tileY = static_cast<int>(tempTile[TILE_X * i + j].top);
+
+            // Get the current frame coordinates for this tile type
+            POINT frame = GetCurrentFrame(tileType);
+            
+            // Render the tile using the frame coordinates
+            sampleTile->Middle_RenderFrameScale(tileX, tileY, 2.f, 2.f, frame.x, frame.y);
         }
     }
 
+    // Render actors
     for (auto actor : actors)
     {
         actor->Render(hdc);
@@ -265,7 +224,6 @@ Level::~Level()
 {
 }
 
-
 void Level::AddActor(Entity* actor)
 {
     // 추가하려는 Entity가 이미 container에 있다면 return
@@ -292,9 +250,6 @@ void Level::GenerateMap(int width, int height)
         }
     }
 
-    // // 맵 생성
-    // mapData = dungeonGenerator.Generate(width, height);
-    //
     // 생성된 맵을 기반으로 tempTile 및 shouldBeRender, hasExplored, isSeen 배열 초기화
     for (int y = 0; y < height; y++)
     {
@@ -345,30 +300,89 @@ FPOINT Level::GetRandomFloorTile() const
 {
     std::vector<FPOINT> floorTiles;
 
+    // Check if map is initialized
+    if (mapData.empty() || mapHeight <= 0 || mapWidth <= 0) {
+        // Return a default position if map is not initialized
+        return {static_cast<float>(GRID_POS_OFFSET.x + tempTileSize), 
+                static_cast<float>(GRID_POS_OFFSET.y + tempTileSize)};
+    }
+
     // 모든 바닥 타일 위치 수집
     for (int y = 0; y < mapHeight; y++)
     {
         for (int x = 0; x < mapWidth; x++)
         {
-            if (mapData[y][x] == 1)
+            int tileType = mapData[y][x];
+            // Check for any floor tile type (including variations)
+            if (tileType == 1 || // TILE_FLOOR
+                (tileType >= 20 && tileType <= 23)) // TILE_FLOOR_NORMAL to TILE_FLOOR_MOSSY
             {
-                // TILE_FLOOR
                 FPOINT pos;
-                pos.x = GRID_POS_OFFSET.x + x * tempTileSize + tempTileSize / 2;
-                pos.y = GRID_POS_OFFSET.y + y * tempTileSize + tempTileSize / 2;
+                pos.x = static_cast<float>(GRID_POS_OFFSET.x + x * tempTileSize + tempTileSize / 2);
+                pos.y = static_cast<float>(GRID_POS_OFFSET.y + y * tempTileSize + tempTileSize / 2);
                 floorTiles.push_back(pos);
             }
         }
     }
 
-    // 랜덤 바닥 타일 선택
+    // If no floor tiles found, return a default position
+    if (floorTiles.empty()) {
+        return {static_cast<float>(GRID_POS_OFFSET.x + tempTileSize), 
+                static_cast<float>(GRID_POS_OFFSET.y + tempTileSize)};
+    }
+
+    // 랜덤하게 하나 선택
     std::random_device rd;
     std::mt19937 gen(rd());
-    if (floorTiles.size() > 0)
-    {
-        std::uniform_int_distribution<> dist(0, floorTiles.size() - 1);
+    std::uniform_int_distribution<> dis(0, floorTiles.size() - 1);
+    return floorTiles[dis(gen)];
+}
 
-        return floorTiles[dist(gen)];
+// Add GetCurrentFrame implementation
+POINT Level::GetCurrentFrame(int tileType) const
+{
+    // // If we have frame data for this tile type
+    // if (tileType >= 0 && tileType < frameMap.size() && !frameMap[tileType].empty())
+    // {
+    //     // Calculate current frame index based on time
+    //     int frameIndex = static_cast<int>((frameTimer / FRAME_CHANGE_TIME) * frameMap[tileType].size()) % frameMap[tileType].size();
+    //     return frameMap[tileType][frameIndex];
+    // }
+
+    // Default frames for basic tiles if no frame data exists
+    switch (tileType)
+    {
+    case 0:  // Wall
+        return {0, 3};
+    case 1:  // Floor
+        return {0, 0};
+    case 2:  // Door
+        return {8, 3};
+    case 3:  // Entrance
+        return {0, 1};
+    case 4:  // Exit
+        return {1, 1};
+    case 5:  // Hidden door
+        return {13, 3};
+    case 6:  // Empty space
+        return {0, 9};
+    case 10: // Top wall
+        return {0, 6};
+    case 11: // Bottom wall
+        return {0, 12};
+    case 12: // Left wall
+        return {2, 9};
+    case 13: // Right wall
+        return {4, 9};
+    case 14: // Top-left corner
+        return {9, 6};
+    case 15: // Top-right corner
+        return {6, 3};
+    case 16: // Bottom-left corner
+        return {3, 13};
+    case 17: // Bottom-right corner
+        return {0, 13};
+    default:
+        return {0, 5}; // Default/unknown tile
     }
-    return floorTiles[0];
 }

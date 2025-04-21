@@ -21,8 +21,11 @@ private:
 	RECT tempTile[TILE_Y * TILE_X]; //타일 이미지 넣기 전 임시 이미지 그리기용 배열
 	int tempTileSize; // 20*20 규격의 맵에 알맞은 임시 타일 사이즈
 
-	// Image* zoomedSampleTile[5];
-	// const float zoomScales[5] = { 1.0f, 1.5f, 2.0f, 2.5f, 3.0f };
+	// Frame map data for tile animations/variants
+	std::vector<std::vector<POINT>> frameMap;  // Stores frame coordinates for each tile type
+	float frameTimer;                          // Timer for frame animation
+	const float FRAME_CHANGE_TIME = 0.2f;      // Time between frame changes
+
 	float nowZoomScale;
 
 	bool shouldBeRender[TILE_Y * TILE_X]; //인덱스별 렌더해야하는지 여부 저장하는 배열
@@ -59,6 +62,10 @@ private:
 	vector<Entity*> actors;
 	// int startInd;
 	IntegratedDungeonSystem dungeonSystem;
+
+	// Helper method to get current frame for a tile type
+	POINT GetCurrentFrame(int tileType) const;
+
 public:
 	void Init();
 	void Release();
@@ -97,7 +104,11 @@ public:
 		}
 		
 	}
-	void SetFrameMapData(const std::vector<std::vector<POINT>>& frameMapData){}
+	void SetFrameMapData(const std::vector<std::vector<POINT>>& frameMapData)
+	{
+		frameMap = frameMapData;
+		frameTimer = 0.0f;
+	}
 	void AddMonsters(const std::vector<Monster*>& monsters)
 	{
 		for (Entity* monster : monsters) {
@@ -111,6 +122,16 @@ public:
 	void SetTile(int x, int y, int tileType)
 	{
 		map[y * TILE_X + x].type = tileType;
+	}
+
+	void UpdateFrameAnimation(float deltaTime)
+	{
+		frameTimer += deltaTime;
+		if (frameTimer >= FRAME_CHANGE_TIME)
+		{
+			frameTimer = 0.0f;
+			// Frame update logic will be handled in GetCurrentFrame
+		}
 	}
 };
 

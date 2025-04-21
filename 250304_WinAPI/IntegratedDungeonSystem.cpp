@@ -20,11 +20,11 @@ void IntegratedDungeonSystem::GenerateDungeon(Level* level, int width, int heigh
     currentMapData = dungeonGenerator.Generate(width, height);
     
     // 2. 타일 변형 결정
-    // currentFrameMapData = tileVariationManager.ProcessTileMap(currentMapData);
+    currentFrameMapData = tileVariationManager.ProcessTileMap(currentMapData);
     
     // 3. 레벨에 맵 데이터 설정
     level->SetMapData(currentMapData);
-    // level->SetFrameMapData(currentFrameMapData);
+    level->SetFrameMapData(currentFrameMapData);
     
     // 4. 몬스터 생성
     std::vector<Monster*> monsters = GenerateMonsters(level, floorLevel);
