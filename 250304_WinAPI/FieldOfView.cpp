@@ -4,23 +4,17 @@
 
 void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, int checkRow, float startSlope, float endSlope, ScanDirection direction)
 {
-	int b = 0;
 	// 한 분면 검사
-	if (endSlope > startSlope)
-		return;
-	int a = 0;
 	/*
 	기울기
 	(y1-y2) / (x1-x2)
 	y값 증가량에 대한 x값을 알아야 하기 때문에 역수로 계산한다.(x = 1/m * y)
 	*/
+
+	if (endSlope > startSlope)
+		return;
+	
 	float nextStartSlope = startSlope;
-	//float nextEndSlope = endSlope;
-
-	// 시작점
-	//float oriCenterX = map[tileIdY][tileIdX].center.x;
-	//float oriCenterY = map[tileIdY][tileIdX].center.y;
-
 	bool isBlock = false;
 
 	// dy 맵 크기를 벗어나면 나올 수 없는 범위의 좌표가 나옴->왼쪽부터 차례대로...
@@ -41,33 +35,63 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			float leftSlope = ((float)dx + 0.5f) / ((float)dy + 0.5f);
 			float rightSlope = ((float)dx - 0.5f) / ((float)dy - 0.5f);
 
-			// 시작기울기보다 크거나 같다면-startslope이 고정되어있음;; 수정완료
-			if (rightSlope - startSlope >= FLT_EPSILON)
+			if (rightSlope > startSlope)
 			{
-				// 센터가 시작기울기보다 크다면
-				if (centerSlope - startSlope > FLT_EPSILON)
-				{
-					continue;
-				}
+				continue;
 			}
+			
+			if (leftSlope < endSlope)
+			{
+				break;
+			}
+
+			if (centerSlope > startSlope)
+			{
+				continue;
+			}
+
+			if (centerSlope < endSlope)
+			{
+				break;
+			}
+
+			// 타일의 leftSlope은 dy+1 타일의 rightSlope과 같다.-시야처리하면 안됨 몰겟다
+			if (endSlope == rightSlope)
+			{
+				endSlope = leftSlope;
+				//endSlope = centerSlope;
+				break;
+			}
+
+			//// 시작기울기보다 크거나 같다면
+			//if (rightSlope  >= startSlope)
+			//{
+			//	// 센터가 시작기울기보다 크거나 같다면
+			//	if (centerSlope - startSlope >= FLT_EPSILON)
+			//	{
+			//		continue;
+			//	}
+			//}
+			////rightSlope >= leftSlope이면 포함시킨다?
+
 	
-			if (leftSlope - endSlope <= FLT_EPSILON)
-			{
-				if (centerSlope - endSlope <= FLT_EPSILON)
-				{
-					break;
-				}
-			}
-				
+			//if (leftSlope - endSlope <= FLT_EPSILON)
+			//{
+			//	if (centerSlope - endSlope < FLT_EPSILON)
+			//	{
+			//		break;
+			//	}
+
+			//}
 
 			// centerSlope이 시작기울기와 끝기울기에 겹쳤거나 벗어났다면
-			/*if ((centerSlope - startSlope >= FLT_EPSILON) || (centerSlope - endSlope <= FLT_EPSILON)) {
-				if (rightSlope - startSlope >= FLT_EPSILON)
-					continue;
+			//if ((centerSlope - startSlope >= FLT_EPSILON) || (centerSlope - endSlope <= FLT_EPSILON)) {
+			//	if (rightSlope - startSlope >= FLT_EPSILON)
+			//		continue;
 
-				if (leftSlope - endSlope <= FLT_EPSILON)
-					break;
-			*/
+			//	if (leftSlope - endSlope <= FLT_EPSILON)
+			//		break;
+			//}
 
 			AstarTile* tile ;
 			tile = &map[idY][idX];
@@ -82,12 +106,11 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			{
 				if (tile->GetType() == AstarTileType::Wall)
 				{
-					nextStartSlope = rightSlope;
-
 					if (dx == 0)
 					{
 						return;
 					}
+					nextStartSlope = rightSlope;
 					continue;
 				}
 				else
@@ -109,16 +132,12 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			{
 				if (tile->GetType() == AstarTileType::Wall)
 				{	
-
 					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
-					
+
 					if (dx == 0)
 					{
 						return;
 					}
-
-					/*매 타일마다 초기화해야 다음 행에서 재귀탐색한 영역까지 재탐색하지 않음*/
-					nextStartSlope = rightSlope;
 					isBlock = true;
 					continue;
 				}
