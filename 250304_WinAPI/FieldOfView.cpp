@@ -15,11 +15,11 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 	y값 증가량에 대한 x값을 알아야 하기 때문에 역수로 계산한다.(x = 1/m * y)
 	*/
 	float nextStartSlope = startSlope;
-	float nextEndSlope = endSlope;
+	//float nextEndSlope = endSlope;
 
 	// 시작점
-	float oriCenterX = map[tileIdY][tileIdX].center.x;
-	float oriCenterY = map[tileIdY][tileIdX].center.y;
+	//float oriCenterX = map[tileIdY][tileIdX].center.x;
+	//float oriCenterY = map[tileIdY][tileIdX].center.y;
 
 	bool isBlock = false;
 
@@ -42,7 +42,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			if (rightSlope - startSlope > FLT_EPSILON)
 				continue;
 
-			if (leftSlope - nextEndSlope < FLT_EPSILON)
+			if (leftSlope - endSlope <= FLT_EPSILON)
 				break;
 			
 			AstarTile* tile = &map[idY][idX];
@@ -72,6 +72,11 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			{
 				if (tile->GetType() == AstarTileType::Wall)
 				{
+					if (dx == 0)
+					{
+						return;
+					}
+					nextStartSlope = rightSlope;
 					continue;
 				}
 				else
@@ -94,6 +99,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 					{
 						return;
 					}
+					nextStartSlope = rightSlope;
 					continue;
 				}
 			}
