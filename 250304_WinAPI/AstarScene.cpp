@@ -325,9 +325,9 @@ void AstarScene::ResetVisibleTile()
 			if (map[i][j].isVisible == true)
 			{
 				//map[i][j].SetColor(RGB(100, 100, 100));
-				if (map[i][j].GetType() == AstarTileType::Wall ||
+				if (map[i][j].GetType() == AstarTileType::Wall/* ||
 					map[i][j].GetType() == AstarTileType::Start ||
-					map[i][j].GetType() == AstarTileType::End)
+					map[i][j].GetType() == AstarTileType::End*/)
 				{
 					map[i][j].isVisible = false;
 					continue;
@@ -346,14 +346,14 @@ void AstarScene::SetVisibleTile()
 	ResetVisibleTile();
 
 	// 임시 좌표-플레이어 좌표
-	map[10][10].SetColor(RGB(200, 200, 0));
+	//map[10][10].SetColor(RGB(200, 200, 0));
 	map[10][10].isVisible = true;
 
-	/*for(int i = 0; i< 8; i++)*/
+	for(int i = 0; i< 8; i++)
 	{
 		fov->Calculate(reinterpret_cast<AstarTile(&)[20][20]>(map), 10, 10, 0, 
-			1.0f, 0.0f, scanDirections[0]);
+			1.0f, 0.0f, scanDirections[i]);
 		int a = 0;
 	}
-
+	map[10][10].SetColor(RGB(200, 200, 0));
 }
