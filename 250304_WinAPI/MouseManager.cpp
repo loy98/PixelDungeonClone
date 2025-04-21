@@ -1,5 +1,5 @@
 ﻿#include "MouseManager.h"
-
+#include "CommonFunction.h"
 // 전역 윈도우 핸들 필요 시 외부에서 정의
 extern HWND g_hWnd;
 
@@ -15,6 +15,9 @@ HRESULT MouseManager::Init()
     dragStartP = { 0, 0 };
     dragEndP = { 0, 0 };
     prevP = { 0, 0 };
+    clickedP = { 0, 0 };
+
+    dragElapsedTime = 0.0f;
 
     deltaX = 0;
     deltaY = 0;
@@ -25,7 +28,8 @@ HRESULT MouseManager::Init()
         currMouseDown[i] = false;
     }
 
-    valueUsed = true;
+    dragEndPUsed = true;
+    clickedPUsed = true;
 
     return S_OK;
 }
@@ -36,6 +40,9 @@ void MouseManager::Update()
     GetCursorPos(&mousePos);
     ScreenToClient(g_hWnd, &mousePos);
 
+    dragEndPUsed = true;
+    clickedPUsed = true;
+
     // 레이어 갱신
     SetLayer();
 
@@ -44,7 +51,7 @@ void MouseManager::Update()
     // 이전 상태 저장 & 현재 상태 갱신
  
 
-    // 드래그 로직 처리
+    // 드래그 및 클릭 로직 처리
     for (int i = 0; i < 3; ++i)
     {
 
@@ -56,7 +63,7 @@ void MouseManager::Update()
             isDragging[i] = true;
             dragStartP = mousePos;
             prevP = mousePos;
-        }
+                    }
 
         if (isDragging[i] && IsStayMouseDown(mouseVK[i])) {
             const int MAX_DELTA = 30; // 프레임당 이동 제한
@@ -64,19 +71,35 @@ void MouseManager::Update()
             int rawDeltaX = mousePos.x - prevP.x;
             int rawDeltaY = mousePos.y - prevP.y;
 
-            deltaX = Clamp(rawDeltaX, -MAX_DELTA, MAX_DELTA);
-            deltaY = Clamp(rawDeltaY, -MAX_DELTA, MAX_DELTA);
+            deltaX = Clamp(rawDeltaX, -MAX_DELTA, MAX_DELTA); //
+            deltaY = Clamp(rawDeltaY, -MAX_DELTA, MAX_DELTA); //걸어놓은 제한 밖의 값이 들어올 시 제한 값으로 변환
 
             std::string msg = "[Camera] deltaX: " + std::to_string(deltaX) + ", deltaY: " + std::to_string(deltaY) + "\n";
             OutputDebugStringA(msg.c_str());
 
             prevP = mousePos;
+
+            dragElapsedTime += TimerManager::GetInstance()->GetDeltaTime();
+
         }
 
         if (IsOnceMouseUp(mouseVK[i])) {
-            dragEndP = mousePos;         // ← 무조건 기록
-            valueUsed = false;         // ← 유효성 플래그도 세움
-            isDragging[i] = false;       // ← 드래그 종료
+            dragEndP = mousePos;
+            clickedP = mousePos;     
+            isDragging[i] = false;
+
+            float dragDistance = GetDistance(dragStartP, dragEndP);
+            if (dragDistance <= 20.0f && dragElapsedTime <= 0.1f)
+            {
+                //클릭으로 간주
+                clickedPUsed = false;
+            }
+            else //드래그로 간주
+            {
+                dragEndPUsed = false;
+            }
+
+            dragElapsedTime = 0.0f;
             deltaX = 0;
             deltaY = 0;
         }
@@ -128,6 +151,7 @@ void MouseManager::InitPoints()
     dragStartP = { 0, 0 };
     dragEndP = { 0, 0 };
     prevP = { 0, 0 };
+    clickedP = { 0, 0 };
 }
 
 void MouseManager::Release()

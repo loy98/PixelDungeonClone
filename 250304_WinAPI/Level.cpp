@@ -99,13 +99,13 @@ void Level::Update()
 	camera->Update();
 
 	POINT ConvertedDragEndP = {
-		camera->ConvertToWorldX(MouseManager::GetInstance()->GetDragEndP().x),
-		camera->ConvertToWorldY(MouseManager::GetInstance()->GetDragEndP().y)
+		camera->ConvertToWorldX(MouseManager::GetInstance()->GetClickP().x),
+		camera->ConvertToWorldY(MouseManager::GetInstance()->GetClickP().y)
 	};
 
 	if (PtInRect(&mapRc, ConvertedDragEndP))
 	{
-		if (MouseManager::GetInstance()->GetValueUsed() == false) {
+		if (MouseManager::GetInstance()->GetClickValueUsed() == false) {
 
 			long posX = ConvertedDragEndP.x;
 			long posY = ConvertedDragEndP.y;
@@ -119,7 +119,7 @@ void Level::Update()
 			}																
 
 			MouseManager::GetInstance()->InitPoints();
-			MouseManager::GetInstance()->AlreadyUsed();
+			MouseManager::GetInstance()->AlreadyClickUsed();
 		}
 	} ///디버깅을 위해 마우스 왼쪽 버튼을 떼면 그 자리에 있는 타일이 빨간색으로 변하게 해놨습니다. 
 	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
