@@ -6,27 +6,29 @@
 #include "Monster.h"
 #include "Player.h"
 #include "TurnManager.h"
+#include "Camera.h"
 
 void Level::Init()
 {
 	turnManager = new TurnManager();
 
+	camera = new Camera();
+	camera->Init();
+
 	sampleTile = D2DImageManager::GetInstance()->AddImage(
 		"배틀시티_샘플타일", L"Image/mapTiles.bmp",
 		SAMPLE_TILE_X, SAMPLE_TILE_Y);
 
-	
-	// nowZoomScale = 0.0f;
 
-	tempTileSize = 30;
+	//tempTileSize = 30;
 
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
 			tempTile[TILE_X * i + j] = 
-			{	GRID_POS_OFFSET.x + j*tempTileSize, 
-				GRID_POS_OFFSET.y + i*tempTileSize,
-				GRID_POS_OFFSET.x + (j+1) * tempTileSize, 
-				GRID_POS_OFFSET.y + (i+1) * tempTileSize 
+			{	GRID_POS_OFFSET.x + j*TILE_SIZE, 
+				GRID_POS_OFFSET.y + i* TILE_SIZE,
+				GRID_POS_OFFSET.x + (j+1) * TILE_SIZE,
+				GRID_POS_OFFSET.y + (i+1) * TILE_SIZE
 			};
 		}
 	}
@@ -106,28 +108,8 @@ void Level::Update()
 
 		MouseManager::GetInstance()->AlreadyUsed();
 	}*/
-	if (PtInRect(&mapRc, MouseManager::GetInstance()->GetDragEndP())) 
-	{
-		if (MouseManager::GetInstance()->GetValueUsed() == false) {
-
-			long posX = MouseManager::GetInstance()->GetDragEndP().x;
-			long posY = MouseManager::GetInstance()->GetDragEndP().y;
-
-			long indX = (posX - mapRc.left) / tempTileSize;
-			long indY = (posY - mapRc.top) / tempTileSize;
-
-			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	///
-			{														/// 구현 하고 싶은 로직 넣는 부분
-				map[indY * TILE_X + indX].type = TT::COUNT;				///
-			}														///
-
-			MouseManager::GetInstance()->InitPoints();
-			MouseManager::GetInstance()->AlreadyUsed();
-		}
-	} ///디버깅을 위해 마우스 왼쪽 버튼을 떼면 그 자리에 있는 타일이 빨간색으로 변하게 해놨습니다. 
-	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
 	
-	if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
+	/*if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
 	{
 		long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
 		long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
@@ -146,6 +128,48 @@ void Level::Update()
 
 	}
 
+	if (MouseManager::GetInstance()->GetWheelDelta() != 0) {
+		short wd = MouseManager::GetInstance()->GetWheelDelta();
+
+		if (wd > 0) {
+			camera->ZoomIn();
+			MouseManager::GetInstance()->SetWheelDelta(0.0f);
+		}
+		else if (wd < 0) {
+			camera->ZoomOut();
+			MouseManager::GetInstance()->SetWheelDelta(0.0f);
+		}
+
+	}*/
+
+	camera->Update();
+
+	POINT ConvertedDragEndP = {
+		camera->ConvertToWorldX(MouseManager::GetInstance()->GetDragEndP().x),
+		camera->ConvertToWorldY(MouseManager::GetInstance()->GetDragEndP().y)
+	};
+
+	if (PtInRect(&mapRc, ConvertedDragEndP))
+	{
+		if (MouseManager::GetInstance()->GetValueUsed() == false) {
+
+			long posX = ConvertedDragEndP.x;
+			long posY = ConvertedDragEndP.y;
+
+			long indX = (posX - mapRc.left) / TILE_SIZE;
+			long indY = (posY - mapRc.top) / TILE_SIZE;
+
+			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	
+			{																/// 구현 하고 싶은 로직 넣는 부분
+				map[indY * TILE_X + indX].type = TT::COUNT;					///
+			}																
+
+			MouseManager::GetInstance()->InitPoints();
+			MouseManager::GetInstance()->AlreadyUsed();
+		}
+	} ///디버깅을 위해 마우스 왼쪽 버튼을 떼면 그 자리에 있는 타일이 빨간색으로 변하게 해놨습니다. 
+	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
+
 	turnManager->ProcessTurns(this);
 
 }
@@ -153,38 +177,46 @@ void Level::Update()
 void Level::Render(HDC hdc)
 {
 	// PatBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, WHITENESS);
-
+	
 	// RenderRect(hdc, mapRc);
-	sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
+	//sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
 	
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
 			
-			switch (map[20 * i + j].type) {
+			switch (map[TILE_X * i + j].type) {
 				case TT::WALL :
-					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
-						static_cast<int>(tempTile[20 * i + j].top), 1, 0);
+					sampleTile->RenderFrameScale(
+						(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+						(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+						camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
 					// hOldBrush = (HBRUSH)SelectObject(hdc, GreyBrush);
 					// RenderRect(hdc, tempTile[20 * i + j]);
 					// SelectObject(hdc, hOldBrush);
 					break;
 				case TT::FLOOR:
-					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
-						static_cast<int>(tempTile[20 * i + j].top), 3, 0);
+					sampleTile->RenderFrameScale(
+						(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+						(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+						camera->GetZoomScale(), camera->GetZoomScale(), 3, 0);
 					// hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
 					// RenderRect(hdc, tempTile[20 * i + j]);
 					// SelectObject(hdc, hOldBrush);
 					break;
 				case TT::NONE:
-					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
-						static_cast<int>(tempTile[20 * i + j].top), 0, 0);
+					sampleTile->RenderFrameScale(
+						(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+						(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+						camera->GetZoomScale(), camera->GetZoomScale(), 0, 0);
 					// hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
 					// RenderRect(hdc, tempTile[20 * i + j]);
 					// SelectObject(hdc, hOldBrush);
 					break;
 				default:
-					sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
-						static_cast<int>(tempTile[20 * i + j].top), 1, 0); 
+					sampleTile->RenderFrameScale(
+						(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+						(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+						camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
 					// hOldBrush = (HBRUSH)SelectObject(hdc, RedBrush);
 					// RenderRect(hdc, tempTile[20 * i + j]);
 					// SelectObject(hdc, hOldBrush);

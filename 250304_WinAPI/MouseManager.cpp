@@ -3,6 +3,11 @@
 // 전역 윈도우 핸들 필요 시 외부에서 정의
 extern HWND g_hWnd;
 
+template<typename T>
+T Clamp(T val, T minVal, T maxVal) {
+    return (val < minVal) ? minVal : ((val > maxVal) ? maxVal : val);
+}
+
 HRESULT MouseManager::Init()
 {
     wheelDelta = 0;
@@ -37,15 +42,16 @@ void MouseManager::Update()
     const int mouseVK[3] = { MOUSE_LEFT, MOUSE_RIGHT, MOUSE_MIDDLE };
 
     // 이전 상태 저장 & 현재 상태 갱신
-    for (int i = 0; i < 3; ++i)
-    {
-        prevMouseDown[i] = currMouseDown[i];
-        currMouseDown[i] = (GetAsyncKeyState(mouseVK[i]) & 0x8000) != 0;
-    }
+ 
 
     // 드래그 로직 처리
     for (int i = 0; i < 3; ++i)
     {
+
+        prevMouseDown[i] = currMouseDown[i];
+        currMouseDown[i] = (GetAsyncKeyState(mouseVK[i]) & 0x8000) != 0;
+
+
         if (IsOnceMouseDown(mouseVK[i])) {
             isDragging[i] = true;
             dragStartP = mousePos;
@@ -53,8 +59,17 @@ void MouseManager::Update()
         }
 
         if (isDragging[i] && IsStayMouseDown(mouseVK[i])) {
-            deltaX = mousePos.x - prevP.x;
-            deltaY = mousePos.y - prevP.y;
+            const int MAX_DELTA = 50; // 프레임당 이동 제한
+
+            int rawDeltaX = mousePos.x - prevP.x;
+            int rawDeltaY = mousePos.y - prevP.y;
+
+            deltaX = Clamp(rawDeltaX, -MAX_DELTA, MAX_DELTA);
+            deltaY = Clamp(rawDeltaY, -MAX_DELTA, MAX_DELTA);
+
+            std::string msg = "[Camera] deltaX: " + std::to_string(deltaX) + ", deltaY: " + std::to_string(deltaY) + "\n";
+            OutputDebugStringA(msg.c_str());
+
             prevP = mousePos;
         }
 
@@ -67,7 +82,7 @@ void MouseManager::Update()
         }
     }
 
-    wheelDelta = 0;
+    //wheelDelta = 0;
 }
 
 bool MouseManager::IsOnceMouseDown(int button)
