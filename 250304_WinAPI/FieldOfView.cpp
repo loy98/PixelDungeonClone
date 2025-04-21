@@ -56,7 +56,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			float centerSlope = (float)dx / (float)dy;
 			
 			if (centerSlope - startSlope > FLT_EPSILON ) {
-				if(centerSlope - endSlope < FLT_EPSILON){
+				if(centerSlope - endSlope <= FLT_EPSILON){
 					break;
 				}
 				else {
