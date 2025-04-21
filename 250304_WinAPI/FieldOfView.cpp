@@ -32,28 +32,21 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			int idX = tileIdX + (-dx * direction.horizonX) + (dy * direction.horizonY);
 			int idY = tileIdY + (-dx * direction.verticalX) + (dy * direction.verticalY);
 
-			if (idX < 0 || idX >= ASTAR_TILE_COUNT || idY < 0 || idY >= ASTAR_TILE_COUNT) {
-				
+			if (idX < 0 || idX >= ASTAR_TILE_COUNT || idY < 0 || idY >= ASTAR_TILE_COUNT)
 				break;
-			}
-			AstarTile* tile = &map[idY][idX];
-			//tile->SetColor(RGB(255, 255, 255));
-
+	
 			// 접점 기울기-dy에 -+0.5 left, right 바꾸면 다르게 나옴 
 			float leftSlope = ((float)dx +0.5f) / ((float)dy + 0.5f);
 			float rightSlope = ((float)dx - 0.5f) / ((float)dy - 0.5f);
 
-			if (rightSlope - startSlope > FLT_EPSILON) {
-
+			if (rightSlope - startSlope > FLT_EPSILON)
 				continue;
-			}
 
-			if (leftSlope - nextEndSlope < FLT_EPSILON){
-				tile = &map[idY][idX];
-				//tile->SetColor(RGB(0, 255, 255));
+			if (leftSlope - nextEndSlope < FLT_EPSILON)
 				break;
-			}
 			
+			AstarTile* tile = &map[idY][idX];
+
 			tile = &map[idY][idX];
 
 			if (!tile)
@@ -69,11 +62,9 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 				else {
 					continue;
 				}
-				//tile->SetColor(RGB(255, 255, 0));
 				
 			}
 	
-
 			tile->isVisible = true;
 
 			// 타일이 벽이라면
@@ -81,27 +72,28 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			{
 				if (tile->GetType() == AstarTileType::Wall)
 				{
-					nextStartSlope = rightSlope;
-					
 					continue;
 				}
 				else
 				{
+					nextStartSlope = rightSlope;
 					isBlock = false;
 				}
 			}
 			else
 			{
 				if (tile->GetType() == AstarTileType::Wall)
-				{
+				{	
+					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
+				
 					if (dx > 0) {
 						isBlock = true;
 					}
-					
-					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
-					
-					nextStartSlope = rightSlope;
-					nextEndSlope = leftSlope;	// 기울기 0에 벽 있을 때 뒤에 안나오긴 하는데 부자연스러움.
+
+					if (dx == 0)
+					{
+						return;
+					}
 					continue;
 				}
 			}
