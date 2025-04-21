@@ -41,13 +41,33 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			float leftSlope = ((float)dx + 0.5f) / ((float)dy + 0.5f);
 			float rightSlope = ((float)dx - 0.5f) / ((float)dy - 0.5f);
 
-			if ((centerSlope - startSlope > FLT_EPSILON) || (centerSlope - endSlope <= FLT_EPSILON)) {
-				if (rightSlope - startSlope > FLT_EPSILON)
+			// 시작기울기보다 크거나 같다면-startslope이 고정되어있음;;
+			if (rightSlope - startSlope > FLT_EPSILON)
+			{
+				// 센터가 시작기울기보다 크다면
+				if (centerSlope - startSlope > FLT_EPSILON)
+				{
+					continue;
+				}
+			}
+	
+			if (leftSlope - endSlope <= FLT_EPSILON)
+			{
+				if (centerSlope - endSlope < FLT_EPSILON)
+				{
+					break;
+				}
+			}
+				
+
+			// centerSlope이 시작기울기와 끝기울기에 겹쳤거나 벗어났다면
+			/*if ((centerSlope - startSlope >= FLT_EPSILON) || (centerSlope - endSlope <= FLT_EPSILON)) {
+				if (rightSlope - startSlope >= FLT_EPSILON)
 					continue;
 
 				if (leftSlope - endSlope <= FLT_EPSILON)
 					break;
-			}
+			*/
 
 			AstarTile* tile ;
 			tile = &map[idY][idX];
@@ -62,16 +82,27 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			{
 				if (tile->GetType() == AstarTileType::Wall)
 				{
+					nextStartSlope = rightSlope;
+
 					if (dx == 0)
 					{
 						return;
 					}
-					nextStartSlope = rightSlope;
 					continue;
 				}
 				else
 				{
-					nextStartSlope = rightSlope;
+					// dx == 0이면 rightSlope이 마이너스. start가 end보다 작기 때문에 종료된다.
+					if (dx == 0)
+					{
+						nextStartSlope = 0.0f;
+						startSlope = nextStartSlope;
+					}
+					else
+					{
+						nextStartSlope = rightSlope;
+						startSlope = nextStartSlope;
+					}
 					isBlock = false;
 				}
 			}
@@ -79,8 +110,10 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			{
 				if (tile->GetType() == AstarTileType::Wall)
 				{	
-					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);;
-
+					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
+					/*매 타일마다 초기화해야 다음 행에서 재귀탐색한 영역까지 재탐색하지 않음*/
+					nextStartSlope = rightSlope;
+					
 					if (dx > 0) {
 						isBlock = true;
 					}
@@ -89,14 +122,11 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 					{
 						return;
 					}
-					nextStartSlope = rightSlope;
-					/*매 타일마다 초기화해야 다음 행에서 재귀탐색한 영역까지 재탐색하지 않음*/
+					
 					continue;
 				}
 			}
-
 			tile->SetColor(RGB(0, 255, 0));
-			int a = 0;
 		}
 	}
 }
