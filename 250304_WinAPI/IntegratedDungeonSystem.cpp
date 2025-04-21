@@ -3,55 +3,58 @@
 #include "Level.h"
 #include <random>
 #include <ctime>
-
-IntegratedDungeonSystem::IntegratedDungeonSystem() {
-    // 랜덤 시드 초기화
-    std::srand(static_cast<unsigned int>(std::time(nullptr)));
-}
-
-IntegratedDungeonSystem::~IntegratedDungeonSystem() {
-}
-
-// 던전 생성 및 초기화
-void IntegratedDungeonSystem::GenerateDungeon(Level* level, int width, int height, int floorLevel) {
-    if (!level) return;
-    
-    // 1. 던전 맵 생성
-    currentMapData = dungeonGenerator.Generate(width, height);
-    
-    // 2. 타일 변형 결정
-    currentFrameMapData = tileVariationManager.ProcessTileMap(currentMapData);
-    
-    // 3. 레벨에 맵 데이터 설정
-    level->SetMapData(currentMapData);
-    level->SetFrameMapData(currentFrameMapData);
-    
-    // 4. 몬스터 생성
-    std::vector<Monster*> monsters = GenerateMonsters(level, floorLevel);
-    
-    // 5. 레벨에 몬스터 추가
+//
+// IntegratedDungeonSystem::IntegratedDungeonSystem() {
+//     // Initialize random seed
+//     std::srand(static_cast<unsigned int>(std::time(nullptr)));
+// }
+//
+// IntegratedDungeonSystem::~IntegratedDungeonSystem() {
+// }
+//
+// // Generate dungeon and initialize
+// void IntegratedDungeonSystem::GenerateDungeon(Level* level, int width, int height, int floorLevel) {
+//     if (!level) return;
+//     
+//     // 1. Generate dungeon map
+//     currentMapData = dungeonGenerator.Generate(width, height);
+//     
+//     // 2. Determine tile variations
+//     currentFrameMapData = tileVariationManager.ProcessTileMap(currentMapData);
+//     
+//     // 3. Set map data in level
+//     level->SetMapData(currentMapData);
+//     level->SetFrameMapData(currentFrameMapData);
+//     
+//     // 4. Generate monsters
+//     std::vector<Monster*> monsters = GenerateMonsters(level, floorLevel);
+//     
+//     // 5. Add monsters to level
+//     level->AddMonsters(monsters);
+//     
+//     // 6. Initialize environmental effects - REMOVED
+//     // environmentalEffectsManager.Initialize();
+// }
+//
+// // Generate monsters
+// std::vector<Monster*> IntegratedDungeonSystem::GenerateMonsters(Level* level, int floorLevel) {
+//     return monsterGenerator.GenerateMonsters(level, currentMapData, floorLevel);
+// }
+void IntegratedDungeonSystem::GenerateDungeon(Level* level, int width, int height, int roomCount, int minRoomSize,
+    int maxRoomSize)
+{
+    // Generate the dungeon layout
+    auto map = dungeonGenerator.Generate(width, height);
+        
+    // Get the generated map data
+    // std::vector<std::vector<int>> mapData = dungeonGenerator.GetMapData();
+    //
+    // Set the map data in the level
+    level->SetMapData(map);
+        
+    // Generate monsters based on the dungeon layout
+    std::vector<Monster*> monsters = monsterGenerator.GenerateMonsters(level, map, 2); // Generate 10 monsters
+        
+    // Add the monsters to the level
     level->AddMonsters(monsters);
-    
-    // 6. 환경 효과 초기화
-    environmentalEffectsManager.Initialize();
-}
-
-// 환경 효과 업데이트
-void IntegratedDungeonSystem::UpdateEnvironmentalEffects(Level* level, float deltaTime) {
-    environmentalEffectsManager.Update(level, deltaTime);
-}
-
-// 환경 효과 적용
-void IntegratedDungeonSystem::ApplyEnvironmentalEffect(Level* level, int x, int y, EnvironmentalEffectsManager::EffectType effectType, int duration) {
-    environmentalEffectsManager.ApplyEffect(level, x, y, effectType, duration);
-}
-
-// 타일 상태 확인
-EnvironmentalEffectsManager::TileState IntegratedDungeonSystem::GetTileState(int x, int y) const {
-    return environmentalEffectsManager.GetTileState(x, y);
-}
-
-// 몬스터 생성
-std::vector<Monster*> IntegratedDungeonSystem::GenerateMonsters(Level* level, int floorLevel) {
-    return monsterGenerator.GenerateMonsters(level, currentMapData, floorLevel);
 }

@@ -86,6 +86,7 @@ public:
 	int GetTileType(int x, int y) const;
 	bool IsSolid(int x, int y) const;
 	FPOINT GetRandomFloorTile() const;
+	FPOINT GetEntranceSpawnPosition() const;
 	
 	Level();
 	~Level();
@@ -104,11 +105,7 @@ public:
 		}
 		
 	}
-	void SetFrameMapData(const std::vector<std::vector<POINT>>& frameMapData)
-	{
-		frameMap = frameMapData;
-		frameTimer = 0.0f;
-	}
+
 	void AddMonsters(const std::vector<Monster*>& monsters)
 	{
 		for (Entity* monster : monsters) {
@@ -123,15 +120,6 @@ public:
 	{
 		map[y * TILE_X + x].type = tileType;
 	}
-
-	void UpdateFrameAnimation(float deltaTime)
-	{
-		frameTimer += deltaTime;
-		if (frameTimer >= FRAME_CHANGE_TIME)
-		{
-			frameTimer = 0.0f;
-			// Frame update logic will be handled in GetCurrentFrame
-		}
-	}
+	
 };
 

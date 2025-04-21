@@ -22,7 +22,7 @@ Player::~Player()
 void Player::Render(HDC hdc)
 {
     if (image)
-        image->RenderFrameScale(position.x, position.y, 2.f, 2.f, 1, 1);
+        image->Middle_RenderFrameScale(position.x, position.y, 2.f, 2.f, 1, 1);
 }
 
 void Player::Act(Level* level)

@@ -62,7 +62,7 @@ std::vector<std::vector<int>> DungeonGenerator::Generate(int width, int height) 
     CleanupWalls(map);
     
     // 10. 타일 변형 적용
-    ApplyTileVariations(map);
+    // ApplyTileVariations(map);
     
     return map;
 }

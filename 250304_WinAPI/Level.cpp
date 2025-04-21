@@ -10,6 +10,7 @@
 #include "IntegratedDungeonSystem.h"
 #include "Monster.h"
 #include "Player.h"
+#include "TileVariationManager.h"
 #include "TurnManager.h"
 
 void Level::Init()
@@ -52,29 +53,7 @@ void Level::Init()
     {
         i = true;
     }
-
-    // Initialize frame map data
-    std::vector<std::vector<POINT>> frameMapData;
-    frameMapData.resize(50);  // Reserve space for all tile types
-
-    // Water animation frames
-    frameMapData[36] = {
-        {10, 1}, {11, 1}, {12, 1}, {13, 1}  // Water animation sequence
-    };
-
-    // Torch animation frames
-    frameMapData[31] = {
-        {5, 1}, {5, 2}, {6, 2}, {5, 2}  // Torch animation sequence
-    };
-
-    // Door animation frames (for opening/closing)
-    frameMapData[2] = {
-        {8, 3}, {9, 3}, {10, 3}, {11, 3}  // Door animation sequence
-    };
-
-    // Set the frame map data
-    SetFrameMapData(frameMapData);
-
+    
     FileLoad();
 
     // Initialize turn manager
@@ -85,20 +64,20 @@ void Level::Init()
     mapHeight = TILE_Y;
 
     // Generate dungeon
-    dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 1);
+    dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
     
-    // Place player
-    FPOINT playerPos = GetRandomFloorTile();
+    // Place player near entrance
+    FPOINT playerPos = GetEntranceSpawnPosition();
     Player* player = new Player(playerPos, 50.0f);
     AddActor(player);
 
-    // Place monsters
-    for (int i = 0; i < 5; i++)
-    {
-        FPOINT monsterPos = GetRandomFloorTile();
-        Monster* monster = new Monster(monsterPos, 3.0f);
-        AddActor(monster);
-    }
+    // // Place monsters
+    // for (int i = 0; i < 5; i++)
+    // {
+    //     FPOINT monsterPos = GetRandomFloorTile();
+    //     Monster* monster = new Monster(monsterPos, 3.0f);
+    //     AddActor(monster);
+    // }
 
     // Add actors to turn manager
     for (auto actor : actors)
@@ -163,11 +142,7 @@ void Level::Update()
         mapRc.bottom += tempDeltaY;
     }
 
-    // Update frame animation
-    UpdateFrameAnimation(TimerManager::GetInstance()->GetDeltaTime());
-
     turnManager->ProcessTurns(this);
-    dungeonSystem.UpdateEnvironmentalEffects(this, TimerManager::GetInstance()->GetDeltaTime());
 }
 
 void Level::Render(HDC hdc)
@@ -385,4 +360,59 @@ POINT Level::GetCurrentFrame(int tileType) const
     default:
         return {0, 5}; // Default/unknown tile
     }
+}
+
+FPOINT Level::GetEntranceSpawnPosition() const {
+    // Find entrance position
+    std::pair<int, int> entrancePos = {-1, -1};
+    for (int y = 0; y < mapHeight; y++) {
+        for (int x = 0; x < mapWidth; x++) {
+            if (mapData[y][x] == 3) {
+                entrancePos = {x, y};
+                return GetPosByGridIndex(x, y);
+                break;
+            }
+        }
+        if (entrancePos.first != -1) break;
+    }
+
+    // If no entrance found, return a default position
+    if (entrancePos.first == -1) {
+        return GetRandomFloorTile();
+    }
+
+    // Look for a floor tile near the entrance
+    const int SAFE_RADIUS = 2; // Safe radius around entrance
+    std::vector<std::pair<int, int>> validPositions;
+    
+    for (int dy = -SAFE_RADIUS; dy <= SAFE_RADIUS; dy++) {
+        for (int dx = -SAFE_RADIUS; dx <= SAFE_RADIUS; dx++) {
+            int newX = entrancePos.first + dx;
+            int newY = entrancePos.second + dy;
+            
+            // Check bounds
+            if (newX < 0 || newX >= mapWidth || newY < 0 || newY >= mapHeight) {
+                continue;
+            }
+            
+            // Check if it's a floor tile
+            if (mapData[newY][newX] == TileVariationManager::TILE_FLOOR) {
+                validPositions.push_back({newX, newY});
+            }
+        }
+    }
+    
+    // If no valid positions found, return a random floor tile
+    if (validPositions.empty()) {
+        return GetRandomFloorTile();
+    }
+    
+    // Choose a random valid position
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, validPositions.size() - 1);
+    auto chosenPos = validPositions[dis(gen)];
+    
+    // Convert to world coordinates
+    return GetPosByGridIndex(chosenPos.first, chosenPos.second);
 }
