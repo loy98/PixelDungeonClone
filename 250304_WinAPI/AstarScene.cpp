@@ -142,7 +142,10 @@ void AstarScene::Update()
 		
 	}
 
-	SetVisibleTile();
+	if (KeyManager::GetInstance()->IsOnceKeyDown(VK_BACK))
+	{
+		SetVisibleTile();
+	}
 
 	astarGame->Update();
 
@@ -321,10 +324,16 @@ void AstarScene::ResetVisibleTile()
 		{
 			if (map[i][j].isVisible == true)
 			{
-				if (map[i][j].GetType() == AstarTileType::Wall)
+				//map[i][j].SetColor(RGB(100, 100, 100));
+				if (map[i][j].GetType() == AstarTileType::Wall ||
+					map[i][j].GetType() == AstarTileType::Start ||
+					map[i][j].GetType() == AstarTileType::End)
+				{
+					map[i][j].isVisible = false;
 					continue;
+				}
 				map[i][j].SetColor(RGB(100, 100, 100));
-				map[i][j].isVisible = false;
+				
 			}
 		}
 	}
@@ -343,7 +352,7 @@ void AstarScene::SetVisibleTile()
 	/*for(int i = 0; i< 8; i++)*/
 	{
 		fov->Calculate(reinterpret_cast<AstarTile(&)[20][20]>(map), 10, 10, 0, 
-			1.0f, 0.0f, scanDirections[7]);
+			1.0f, 0.0f, scanDirections[0]);
 		int a = 0;
 	}
 
