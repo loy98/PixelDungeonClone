@@ -15,6 +15,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 	y값 증가량에 대한 x값을 알아야 하기 때문에 역수로 계산한다.(x = 1/m * y)
 	*/
 	float nextStartSlope = startSlope;
+	float nextEndSlope = endSlope;
 
 	// 시작점
 	float oriCenterX = map[tileIdY][tileIdX].center.x;
@@ -38,7 +39,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			AstarTile* tile = &map[idY][idX];
 			//tile->SetColor(RGB(255, 255, 255));
 
-			// 접점 기울기
+			// 접점 기울기-dy에 -+0.5 left, right 바꾸면 다르게 나옴 
 			float leftSlope = ((float)dx +0.5f) / ((float)dy - 0.5f);
 			float rightSlope = ((float)dx - 0.5f) / ((float)dy + 0.5f);
 
@@ -47,7 +48,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 				continue;
 			}
 
-			if (leftSlope - endSlope <= FLT_EPSILON){
+			if (leftSlope - nextEndSlope < FLT_EPSILON){
 				tile = &map[idY][idX];
 				//tile->SetColor(RGB(0, 255, 255));
 				break;
@@ -100,6 +101,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
 					
 					nextStartSlope = rightSlope;
+					nextEndSlope = leftSlope;	// 기울기 0에 벽 있을 때 뒤에 안나오긴 하는데 부자연스러움.
 					continue;
 				}
 			}
