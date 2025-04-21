@@ -96,52 +96,6 @@ void Level::Release()
 
 void Level::Update()
 {
-	/*if (MouseManager::GetInstance()->GetValueUsed() == false) {
-		POINT p = MouseManager::GetInstance()->GetMousePos();
-
-		if (PtInRect(&mapRc, p)) {
-			long indX = (p.x - mapRc.left) / tempTileSize;
-			long indY = (p.y - mapRc.top) / tempTileSize;
-
-			map[indY * 20 + indX].type = TT::COUNT;
-		}
-
-		MouseManager::GetInstance()->AlreadyUsed();
-	}*/
-	
-	/*if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
-	{
-		long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
-		long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
-
-		for (auto& t : tempTile) {
-			t.left += tempDeltaX;
-			t.right += tempDeltaX;
-			t.top += tempDeltaY;
-			t.bottom += tempDeltaY;
-		}
-
-		mapRc.left += tempDeltaX;
-		mapRc.right += tempDeltaX;
-		mapRc.top += tempDeltaY;
-		mapRc.bottom += tempDeltaY;
-
-	}
-
-	if (MouseManager::GetInstance()->GetWheelDelta() != 0) {
-		short wd = MouseManager::GetInstance()->GetWheelDelta();
-
-		if (wd > 0) {
-			camera->ZoomIn();
-			MouseManager::GetInstance()->SetWheelDelta(0.0f);
-		}
-		else if (wd < 0) {
-			camera->ZoomOut();
-			MouseManager::GetInstance()->SetWheelDelta(0.0f);
-		}
-
-	}*/
-
 	camera->Update();
 
 	POINT ConvertedDragEndP = {

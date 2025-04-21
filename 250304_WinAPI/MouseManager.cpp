@@ -59,7 +59,7 @@ void MouseManager::Update()
         }
 
         if (isDragging[i] && IsStayMouseDown(mouseVK[i])) {
-            const int MAX_DELTA = 50; // 프레임당 이동 제한
+            const int MAX_DELTA = 30; // 프레임당 이동 제한
 
             int rawDeltaX = mousePos.x - prevP.x;
             int rawDeltaY = mousePos.y - prevP.y;

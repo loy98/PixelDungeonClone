@@ -5,8 +5,6 @@ void Camera::Init()
 	nowZoomScale = 0;
 	centerP = { 1620, 1080 };
 
-
-
 	screen = { centerP.x - screenW[nowZoomScale] / 2,
 			   centerP.y - screenH[nowZoomScale] / 2,
 			   centerP.x + screenW[nowZoomScale] / 2,
