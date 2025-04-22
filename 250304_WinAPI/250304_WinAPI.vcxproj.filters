@@ -4,6 +4,7 @@
     <ClCompile Include="Button.cpp">
       <Filter>2D Framework\UI\Button</Filter>
     </ClCompile>
+    <ClCompile Include="CombatSyetem.cpp" />
     <ClCompile Include="D2DImage.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -64,6 +65,17 @@
     <ClCompile Include="BattleScene.cpp">
       <Filter>MainGame\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="PathFinder.cpp" />
+    <ClCompile Include="Consumable.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="HealPotion.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Game.cpp">
       <Filter>MainGame\GamePlay</Filter>
     </ClCompile>
@@ -81,6 +93,7 @@
     <ClInclude Include="Button.h">
       <Filter>2D Framework\UI\Button</Filter>
     </ClInclude>
+    <ClInclude Include="CombatSyetem.h" />
     <ClInclude Include="CommonFunction.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -146,6 +159,17 @@
     <ClInclude Include="BattleScene.h">
       <Filter>MainGame\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="PathFinder.h" />
+    <ClInclude Include="Consumable.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="HealPotion.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.h" />
     <ClInclude Include="AstarScene.h">
       <Filter>MainGame\Scene</Filter>
     </ClInclude>
@@ -194,6 +218,12 @@
     <Filter Include="헤더 파일">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Item">
+      <UniqueIdentifier>{3f0c5ecf-fe6b-42cb-8c6e-cfd720b801c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inventory">
+      <UniqueIdentifier>{67a1e6c4-150e-49bf-b8f9-2400a5453b75}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
