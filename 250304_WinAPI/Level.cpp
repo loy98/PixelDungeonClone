@@ -622,7 +622,7 @@ void Level::SetVisibleTile()
 
     for (auto scanDirection : scanDirections)
     {
-        fov->Calculate(reinterpret_cast<Map(&)[TILE_Y][TILE_X]>(map), pTileXIndex, pTileYIndex, 0,
+        fov->Calculate(reinterpret_cast<Map(&)[TILE_Y][TILE_X]>(map), viewRange, pTileXIndex, pTileYIndex, 0,
                        1.0f, 0.0f, scanDirection);
         int a = 0;
     }

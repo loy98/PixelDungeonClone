@@ -2,14 +2,6 @@
 #include "config.h"
 #include "Entity.h"
 
-enum class MonsterState
-{
-    SLEEP,
-    MOVE,
-    ATTACK,
-    FOLLOW
-};
-
 //enum class EntityState
 //{
 //    IDLE,
@@ -18,6 +10,7 @@ enum class MonsterState
 //    DEAD
 //};
 
+class MonsterAI;
 class Level;
 class Monster : public Entity
 {
@@ -28,12 +21,16 @@ public:
     virtual void Act(Level* level) override;
     void Move(Level* level);
     virtual void Attack(Level* level) override;
-    void ActIdle(Level* level);
+    void ActIdle(Level* level);//AI
 
     bool NeedsInput() override { return false; }
     bool IsBusy() override { return curState != EntityState::IDLE; }
 
-    // 랜덤한 위치로 이동
+    // 랜덤한 위치로 이동-wandering-플레이어 있는지 계속 체크
     void SetRandomTargetPos();
+
+    // monsterAI
+    MonsterAI* monsterAi;
+    void SetEntityState(EntityState state) { this->curState = state; }
 };
 

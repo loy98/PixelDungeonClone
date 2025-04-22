@@ -74,6 +74,7 @@ private:
 
 	// FoV
 	FieldOfView* fov;
+	int viewRange = 5;
 	// config
 	ScanDirection scanDirections[8] =
 	{

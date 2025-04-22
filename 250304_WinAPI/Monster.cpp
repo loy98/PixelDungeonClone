@@ -5,6 +5,7 @@
 #include "TurnManager.h"
 #include "PathFinder.h"
 #include "CombatSyetem.h"
+#include "MonsterAI.h"
 
 Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -37,18 +38,21 @@ void Monster::Act(Level* level)
     switch (curState)
     {
     case EntityState::IDLE: // 뭐할까
-        ActIdle(level);
+        //ActIdle(level);//->AI부분. 
+        monsterAi->Act(level, this);
         return;
-    case EntityState::MOVE: // 움직이는중
+    case EntityState::MOVE: // 움직일겨(Hunting, Wanering)
         Move(level);
         return;
-    case EntityState::ATTACK:   // 공격중
+    case EntityState::ATTACK:   // 공격할겨
         Attack(level);
         return;
-    case EntityState::DEAD:     // 죽음
+    case EntityState::DEAD:     // 죽을겨
         // 애니메이션 끝나면 actor 목록에서 지워야함
         return;
     }
+
+     
 }
 
 void Monster::Attack(Level* level)
@@ -63,7 +67,7 @@ void Monster::Attack(Level* level)
 
 void Monster::ActIdle(Level* level)
 {
-
+    // Idle일 때는 타겟 잡아서 타겟이 있으면 어택모드, 없으면 무브모드 될테야~~
 
 
     target = level->GetActorAt(targetPos);

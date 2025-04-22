@@ -1,7 +1,8 @@
 ﻿#include "FieldOfView.h"
 #include <cmath>
+#include "CommonFunction.h"
 
-void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY, int checkRow, float startSlope, float endSlope, ScanDirection direction)
+void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int viewRange, int tileIdX, int tileIdY, int checkRow, float startSlope, float endSlope, ScanDirection direction)
 {
 	// 한 분면 검사
 	/*
@@ -10,11 +11,18 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY,
 	y값 증가량에 대한 x값을 알아야 하기 때문에 역수로 계산한다.(x = 1/m * y)
 	*/
 
+	if (viewRange <= 0)
+		return;
+
 	if (endSlope > startSlope)
 		return;
 	
 	float nextStartSlope = startSlope;
 	bool isBlock = false;
+
+	RECT viewRc;
+
+	viewRc = GetRectAtCenter(tileIdX, tileIdY, viewRange, viewRange);
 
 	// dy 맵 크기를 벗어나면 나올 수 없는 범위의 좌표가 나옴->왼쪽부터 차례대로...
 	for (int dy = checkRow; dy < TILE_Y; dy++) // 탐색 단위
@@ -28,6 +36,15 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY,
 			if (idX < 0 || idX >= TILE_X || idY < 0 || idY >= TILE_Y)
 				continue;
 	
+			Map* tile;
+			tile = &map[idY][idX];
+
+			if (!tile)
+				continue;
+
+			RECT tileRc;
+			tileRc = GetRectAtCenter(idX, idY, TILE_SIZE, TILE_SIZE);
+
 			// 타일이 시야 내에 있는지 확인
 			float centerSlope = (float)dx / (float)dy;
 			// 접점 기울기-dy에 -+0.5 left, right 바꾸면 다르게 나옴 
@@ -38,11 +55,11 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY,
 			{
 				continue;
 			}
-			
-			if (leftSlope < endSlope)
+			else if (leftSlope < endSlope)
 			{
 				break;
 			}
+			
 
 			if (centerSlope > startSlope)
 			{
@@ -61,14 +78,12 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY,
 				endSlope = centerSlope;
 				break;
 			}
-
-			Map* tile ;
-			tile = &map[idY][idX];
-
-			if (!tile)
-				continue;
 	
-			tile->visible = true;
+			if (RectInRect(viewRc, tileRc))
+			{
+				tile->visible = true;
+
+			}
 
 			// 타일이 벽이라면
 			if (isBlock)
@@ -102,7 +117,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY,
 			{
 				if (tile->type == 0)
 				{	
-					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
+					Calculate(map, viewRange, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
 
 					if (dx == 0)
 					{
