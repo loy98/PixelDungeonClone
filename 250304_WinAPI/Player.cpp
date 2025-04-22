@@ -8,6 +8,8 @@
 #include "TimerManager.h"
 #include "PathFinder.h"
 #include "CombatSyetem.h"
+#include "Item.h"
+#include "HealPotion.h"
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -20,6 +22,9 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     isMoving = false;
 
     isActive = true;
+    level = 1;
+    exp = 0;
+
 
     type = EntityType::PLAYER;
     curState = EntityState::IDLE;
@@ -34,6 +39,7 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 
     //image = D2DImageManager::GetInstance()->AddImage("player", L"Image/warrior.png", 21, 7); 
 
+    potion = new HealPotion();
 }
 
 Player::~Player()
@@ -77,9 +83,12 @@ void Player::Attack(Level* level)
 
 void Player::ActIdle(Level* level)
 {
+    if (KeyManager::GetInstance()->IsOnceKeyDown('P'))
+        potion->Use(this);
     if (finder->FindPath(position, destPos, level, OUT path))
         targetPos = path[1];
     if (position == destPos) return;
+
 
     //isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
 
@@ -92,6 +101,11 @@ void Player::ActIdle(Level* level)
     if (!level->GetMap(targetPos.x, targetPos.y)->CanGo()) return;
 
     curState = EntityState::MOVE;
+}
+
+void Player::Heal(int healAmount)
+{
+    hp += healAmount;
 }
 
 void Player::Move(Level* level)

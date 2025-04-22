@@ -39,6 +39,7 @@ protected:
     // 전투 속성
     int hp, maxHp;
     int attackDmg, defense;
+    int exp, level;
     Entity* target;
 
     //에너지 턴 test
@@ -62,14 +63,15 @@ public:
     void Update();
     virtual void Render(HDC hdc);
     virtual void Act(Level* level);
-    virtual void Attack(Level* level) {}
-    inline D2DImage* GetImage() {return this->image;};
+    virtual void Attack(Level* level) {};
 
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;
     bool IsAlive() { return curState != EntityState::DEAD; }
 
     void TakeDamage(int dmg);
+    void TakeExp(int exp);
+    void LevelUp();
 
     inline void SetPosition(const float x, const float y) { this->position.x = x; this->position.y = y; }
     inline void SetPosition(FPOINT postion) { this->position.x = postion.x; this->position.y = postion.y; }
@@ -79,11 +81,16 @@ public:
     inline EntityState GetState() const { return curState; }
     inline float GetSpeed() const { return speed; }
     inline EntityType GetType() const { return type; }
+    inline int GetExp() { return exp; }
+    inline D2DImage* GetImage() { return image; }
 
     //에너지 관련 함수
     inline bool CanAct() const { return energy >= actionCost; }
     void AddEnergy() { energy += energyPerTurn; }
     void UseEnergy() { energy -= actionCost; }
+
+    //아이템 관련 함수
+    virtual void Heal(int healAmount) {};
 
     void Stop() { destPos = position; }
 

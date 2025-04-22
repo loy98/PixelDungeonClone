@@ -56,3 +56,21 @@ void Entity::TakeDamage(int dmg)
 		curState = EntityState::DEAD;
 	}
 }
+
+void Entity::TakeExp(int exp)
+{
+	this->exp += exp;
+	if (this->exp / level == 20)
+	{
+		this->exp = this->exp % level;
+		LevelUp();
+	}
+}
+
+void Entity::LevelUp()
+{
+	level++;
+	attackDmg *= 1.5;
+	maxHp += 10;
+	hp += 10;
+}

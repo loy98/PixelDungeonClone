@@ -1,19 +1,29 @@
-#pragma once
+ï»¿#pragma once
 #include "config.h"
 
 class Item;
+class Entity;
+struct slot
+{
+	int count;
+	Item* item;
+};
+
 class Inventory
 {
 private:
-	// ½½·Ô 25°³¿¡ °¹¼ö ÁßÃ¸ -> ÀÌÁßº¤ÅÍ? or ¼ö·® µû·Î °ü¸®
-	vector<Item*> items{ 25, nullptr };
+	// ìŠ¬ë¡¯ 25ê°œì— ê°¯ìˆ˜ ì¤‘ì²© -> ì´ì¤‘ë²¡í„°? or ìˆ˜ëŸ‰ ë”°ë¡œ ê´€ë¦¬
+	vector<slot> items{ 25, {0, nullptr} };
+	unordered_map<string, int> indexMap;
+
+	Entity* owner;
 public:
 	Inventory();
 	~Inventory();
 
 	void AddItem(Item* item);
-	Item* GetItemAt(int index);
-	// ¿ÜºÎ¿¡¼­ remove ÇÏ°í ±× Ä£±¸¸¦ Ã³¸® ÈÄ delete?
-	Item* RemoveItemAt(int index);
+	Item* GetItem(string name);
+	// ì™¸ë¶€ì—ì„œ remove í•˜ê³  ê·¸ ì¹œêµ¬ë¥¼ ì²˜ë¦¬ í›„ delete?
+	void UseItem(string name);
 };
 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "config.h"
 
 class Entity;
@@ -13,6 +13,7 @@ enum class ItemType
 class Item
 {
 private:
+	string name;
 	FPOINT position;
 	ItemType type;
 	D2DImage* image;
@@ -21,5 +22,7 @@ public:
 	virtual ~Item();
 
 	virtual void Use(Entity* user);
+
+	inline string GetName() { return name; }
 };
 
