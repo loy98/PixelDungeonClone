@@ -18,10 +18,12 @@ void MonsterAI::Act(EntityState entityState, Level* level, Monster* monster, boo
     {
     case MonsterState::IDLE:
         // 시야 정보 업데이트
+        return;
         break;
-    case MonsterState::SLEEP:
-        // 턴 소모
-        break;
+    //case MonsterState::SLEEP:
+    //    // 턴 소모
+    //    monster->SetEntityState(EntityState::IDLE);
+    //    break;
     case MonsterState::HUNT:
         // 타겟위치로 도착지 설정
         Follow(level, monster);
@@ -86,8 +88,9 @@ void MonsterAI::Wandering(Level* level, Monster* monster)
     
     if ((map && !map->CanGo()) || actor)
     {
-        currMonsterState = MonsterState::SLEEP;
+        //currMonsterState = MonsterState::SLEEP;
     }
+    monster->SetEntityState(EntityState::MOVE);
 }
 
 // 임시

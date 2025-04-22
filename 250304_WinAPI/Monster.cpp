@@ -64,7 +64,7 @@ void Monster::Attack(Level* level)
     {
         CombatSyetem::GetInstance()->ProcessAttack(this, target);
        // SetRandomTargetPos();
-       // curState = EntityState::IDLE;
+       curState = EntityState::IDLE;
     }
 }
 
@@ -120,7 +120,7 @@ void Monster::Move(Level* level)
         //isMoving = false;
 
         //SetRandomTargetPos();
-        //curState = EntityState::IDLE;
+        curState = EntityState::IDLE;
     }
 }
 
