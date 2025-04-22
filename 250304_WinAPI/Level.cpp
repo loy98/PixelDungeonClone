@@ -21,16 +21,10 @@ void Level::Init()
 {
     turnManager = new TurnManager();
 
-   /* camera = new Camera();
-    camera->Init();*/
-
     sampleTile = D2DImageManager::GetInstance()->AddImage(
         "배틀시티_샘플타일", L"Image/tiles_sewers.png",
         16, 16);
-
-
-    tempTileSize = TILE_SIZE;
-
+    
     for (int i = 0; i < TILE_Y; ++i)
     {
         for (int j = 0; j < TILE_X; ++j)
@@ -46,13 +40,7 @@ void Level::Init()
     }
 
     mapRc = {tempTile[0].left, tempTile[0].top, tempTile[TILE_X * TILE_Y - 1].right, tempTile[TILE_X * TILE_Y - 1].bottom};
-
-    // BlackBrush = CreateSolidBrush(RGB(0, 0, 0));
-    // GreyBrush = CreateSolidBrush(RGB(100, 100, 100));
-    // WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-    // RedBrush = CreateSolidBrush(RGB(255, 0, 0));
-
-
+    
     for (auto& s : shouldBeRender)
     {
         s = true;
@@ -77,17 +65,9 @@ void Level::Init()
 
     // Place player near entrance
     FPOINT playerPos = GetEntranceSpawnPosition();
-    //TODO:MergeCheck
-    //   Player* player = new Player(playerPos, 50.0f);
-
-    // 시작 위치 테스트용 매직넘버
     player = new Player(playerPos, 300.f, 20, 5, 2);
-    // Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 300.f, 15, 4, 3);
-    // Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 300.f, 15, 4, 3);
 
     AddActor(player);
-    // AddActor(monster1);
-    // AddActor(monster2);
     
     camera = new Camera();
     camera->Init(player->GetPosition());
@@ -116,7 +96,6 @@ void Level::Release()
     }
     if (player)
     {
-        // delete player;
         player = nullptr;
     }
 
@@ -167,9 +146,8 @@ void Level::Update()
             if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y) ///
             {
                 /// 구현 하고 싶은 로직 넣는 부분
-                //map[indY * TILE_X + indX].type = TT::COUNT;
                 if (map[indY * TILE_X + indX].CanGo())
-                    dynamic_cast<Player*>(player)->SetNextPos(GetPosByGridIndex(indX, indY));
+                    player->SetNextPos(GetPosByGridIndex(indX, indY));
             } ///
 
             MouseManager::GetInstance()->InitPoints();
@@ -179,25 +157,7 @@ void Level::Update()
 	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
 
     SetVisibleTile();
-
-    /*if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT)) //카메라 도입 이후부턴 이거 넣으면 안됩니다!
-    {
-        long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
-        long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
-
-        for (auto& t : tempTile)
-        {
-            t.left += tempDeltaX;
-            t.right += tempDeltaX;
-            t.top += tempDeltaY;
-            t.bottom += tempDeltaY;
-        }
-
-        mapRc.left += tempDeltaX;
-        mapRc.right += tempDeltaX;
-        mapRc.top += tempDeltaY;
-        mapRc.bottom += tempDeltaY;
-    }*/
+    
 
     turnManager->ProcessTurns(this);
     for (auto actor : actors)
@@ -226,7 +186,7 @@ void Level::Render(HDC hdc)
             if (!shouldBeRender[TILE_X * i + j]) continue;
 
             bool isVisible = map[TILE_X * i + j].visible;
-            int tileType = map[TILE_X * i + j].type;
+            int tileType = rendermap[TILE_X * i + j];
             int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
             int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
 
@@ -370,7 +330,7 @@ void Level::AddActor(Entity* actor)
 void Level::GenerateMap(int width, int height)
 {
     // 맵 생성
-    mapData = dungeonGenerator.Generate(width, height);
+    // mapData = dungeonGenerator.Generate(width, height);
 
     // Map 객체 배열 초기화 (만약 사용한다면)
     for (int y = 0; y < height; y++)
@@ -391,10 +351,10 @@ void Level::GenerateMap(int width, int height)
             int index = y * width + x;
             // 맵 타일 위치 설정 (기존 코드 참고)
             tempTile[index] = {
-                GRID_POS_OFFSET.x + x * tempTileSize,
-                GRID_POS_OFFSET.y + y * tempTileSize,
-                GRID_POS_OFFSET.x + (x + 1) * tempTileSize,
-                GRID_POS_OFFSET.y + (y + 1) * tempTileSize
+                GRID_POS_OFFSET.x + x * TILE_SIZE,
+                GRID_POS_OFFSET.y + y * TILE_SIZE,
+                GRID_POS_OFFSET.x + (x + 1) * TILE_SIZE,
+                GRID_POS_OFFSET.y + (y + 1) * TILE_SIZE
             };
 
             // 타일 속성 초기화
@@ -438,8 +398,8 @@ FPOINT Level::GetRandomFloorTile() const
     {
         // Return a default position if map is not initialized
         return {
-            static_cast<float>(GRID_POS_OFFSET.x + tempTileSize),
-            static_cast<float>(GRID_POS_OFFSET.y + tempTileSize)
+            static_cast<float>(GRID_POS_OFFSET.x + TILE_SIZE),
+            static_cast<float>(GRID_POS_OFFSET.y + TILE_SIZE)
         };
     }
 
@@ -454,8 +414,8 @@ FPOINT Level::GetRandomFloorTile() const
                 (tileType >= 20 && tileType <= 23)) // TILE_FLOOR_NORMAL to TILE_FLOOR_MOSSY
             {
                 FPOINT pos;
-                pos.x = static_cast<float>(GRID_POS_OFFSET.x + x * tempTileSize + tempTileSize / 2);
-                pos.y = static_cast<float>(GRID_POS_OFFSET.y + y * tempTileSize + tempTileSize / 2);
+                pos.x = static_cast<float>(GRID_POS_OFFSET.x + x * TILE_SIZE + TILE_SIZE / 2);
+                pos.y = static_cast<float>(GRID_POS_OFFSET.y + y * TILE_SIZE + TILE_SIZE / 2);
                 floorTiles.push_back(pos);
             }
         }
@@ -465,8 +425,8 @@ FPOINT Level::GetRandomFloorTile() const
     if (floorTiles.empty())
     {
         return {
-            static_cast<float>(GRID_POS_OFFSET.x + tempTileSize),
-            static_cast<float>(GRID_POS_OFFSET.y + tempTileSize)
+            static_cast<float>(GRID_POS_OFFSET.x + TILE_SIZE),
+            static_cast<float>(GRID_POS_OFFSET.y + TILE_SIZE)
         };
     }
 
@@ -516,13 +476,21 @@ POINT Level::GetCurrentFrame(int tileType) const
     case 14: // Top-left corner
         return {9, 6};
     case 15: // Top-right corner
-        return {6, 3};
+        return {1, 13};
     case 16: // Bottom-left corner
         return {3, 13};
     case 17: // Bottom-right corner
         return {0, 13};
+    case 20: // Floor normal
+        return {0, 0};
+    case 21: // Floor mossy
+        return { 1, 0};
+    case 22: // Floor rough
+        return { 2, 0};
+    case 23: // Floor rough
+        return { 6, 0};
     default:
-        return {0, 5}; // Default/unknown tile
+        return {0, 4}; // Default/unknown tile
     }
 }
 
@@ -636,15 +604,12 @@ void Level::ResetVisibleTile()
         {
             if (map[i * TILE_X + j].visible == true)
             {
-                //map[i][j].SetColor(RGB(100, 100, 100));
                 if (map[i * TILE_X + j].type == 0/* ||
                     map[i][j].GetType() == AstarTileType::Start ||
                     map[i][j].GetType() == AstarTileType::End*/)
                 {
-                    map[i * TILE_X + j].visible = false;
-                    continue;
+                    // map[i * TILE_X + j].visible = false;
                 }
-                // map[i][j].SetColor(RGB(100, 100, 100));
             }
         }
     }
@@ -655,11 +620,7 @@ void Level::SetVisibleTile()
     //// 시야 설정-시야에 드는 타일은 색을 다르게 함.
     //// 시야 리셋
     ResetVisibleTile();
-
-    // 임시 좌표-플레이어 좌표
-    //map[10][10].SetColor(RGB(200, 200, 0));
-    // map[10][10].isVisible = true;
-
+    
     int index = GetMapIndex(player->GetPosition().x, player->GetPosition().y);
     int pTileXIndex = index % TILE_Y;
     int pTileYIndex = index / TILE_Y;
@@ -669,7 +630,5 @@ void Level::SetVisibleTile()
     {
         fov->Calculate(reinterpret_cast<Map(&)[TILE_Y][TILE_X]>(map), pTileXIndex, pTileYIndex, 0,
                        1.0f, 0.0f, scanDirection);
-        int a = 0;
     }
-    // map[10][10].SetColor(RGB(200, 200, 0));
 }
