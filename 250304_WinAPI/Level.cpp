@@ -123,6 +123,10 @@ void Level::Release()
     if (uiTestView)
         uiTestView->Release();
 
+    if (camera) {
+        camera = nullptr;
+    }
+
 }
 
 void Level::Update()

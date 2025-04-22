@@ -69,8 +69,10 @@ public:
         return isDragging[idx];
     }
 
+    inline POINT GetDragStartP() { return dragStartP; }
     inline POINT GetDragEndP() { return dragEndP; }
     inline POINT GetClickP() { return clickedP; }
+    inline POINT GetPrevP() { return prevP; }
 
     inline bool GetDragValueUsed() { return dragEndPUsed; }
     inline void AlreadyDragUsed() { dragEndPUsed = true; }

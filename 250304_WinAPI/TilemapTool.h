@@ -1,33 +1,48 @@
 ﻿#pragma once
 #include "GameObject.h"
-#include "config.h"
 
-class D2DImage;
-// class Image;
+
+class Image;
 class Button;
 class TilemapTool : public GameObject
 {
 private:
 	D2DImage* sampleTile;
-	RECT rcSampleTile;
+	const float zoomScales[5] = { 1.0f, 1.5f, 2.0f, 2.5f, 3.0f };
+	int nowZoomScale;
 
 	Map tileInfo[TILE_X * TILE_Y];
-	RECT rcMain;
 
+	const int gridSize{ 16 };
+	HPEN hPen_forGrid;
+	HPEN hPen_forSample;
 	
-	RECT tempTile[20 * 20]; //타일 이미지 넣기 전 임시 이미지 그리기용 배열
-	int tempTileSize; // 20*20 규격의 맵에 알맞은 임시 타일 사이즈
-
-	// HBRUSH tBlackBrush;
-	// HBRUSH tGreyBrush;
-	// HBRUSH tWhiteBrush;
-	// HBRUSH tRedBrush;
-	//
-	// HBRUSH hOldBrush;
-
-	POINT selectedTile;
+	//POINT selectedTile;
 
 	Button* saveButton;
+
+	int selectedTileType;
+	const POINT sampleOffset = { 760, 40 };
+	RECT sampleRc;
+
+	RECT sample_none;
+	RECT sample_wall;
+	RECT sample_floor;
+	RECT sample_door;
+	RECT sample_entrance;
+	RECT sample_destination;
+
+	RECT dragRc;
+	vector<POINT> specialTiles;
+	//POINT dragStartP;
+	//POINT dragNowP;
+
+	//bool isDragging;
+	const POINT mainOffset = { 10, 40 };
+	RECT rcMain;
+	RECT mainGrid[TILE_X * TILE_Y];
+
+	bool gridLineOn{ false };
 
 public:
 	virtual HRESULT Init() override;
@@ -35,8 +50,21 @@ public:
 	virtual void Update() override;
 	virtual void Render(HDC hdc) override;
 
+	void AutoSave();
 	void Save();
+	void SaveAs();
 	void Load();
+	void LoadAs();
+
+	void Erase();
+	void Paint();
+
+	void MakeARoom();
+
+	inline void SetGridLine() { gridLineOn = !gridLineOn; }
+	void Test();
+
+	POINT GetCurrentFrame(int tileType);
 
 	TilemapTool() {};
 	virtual ~TilemapTool() {};
