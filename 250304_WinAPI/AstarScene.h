@@ -73,18 +73,6 @@ class AstarScene : public GameObject
 
 	// FoV
 	FieldOfView* fov;
-	//ScanDirection scanDirections[8] =
-	//{
-	//	{1, 0, 0, 1},
-	//	{-1, 0, 0, 1},
-	//	{0, 1, 1, 0},
-	//	{0, 1, -1, 0},
-	//	{-1, 0, 0, -1},
-	//	{1, 0, 0, -1},
-	//	{0, -1, 1, 0},
-	//	{0, -1, -1, 0}
-	//};
-
 	// config
 	ScanDirection scanDirections[8] =
 	{
@@ -96,18 +84,6 @@ class AstarScene : public GameObject
 		{1, 0, 0, 1},
 		{0, -1, -1, 0},
 		{0, 1, -1, 0}
-	};
-
-	DirectionSlope directionSlope[8] =
-	{
-		{-1.0f, 0.0f},
-		{1.0f, 0.0f},
-		{-1.0f,0.0f },
-		{1.0f, 0.0f},
-		{-1.0f, 0.0f},
-		{1.0f, 0.0f},
-		{-1.0f, 0.0f},
-		{1.0f, 0.0f}
 	};
 
 public:

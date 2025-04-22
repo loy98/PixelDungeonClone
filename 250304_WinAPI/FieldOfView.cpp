@@ -58,8 +58,8 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			// 타일의 leftSlope은 dy+1 타일의 rightSlope과 같다.-시야처리하면 안됨 몰겟다
 			if (endSlope == rightSlope)
 			{
-				endSlope = leftSlope;
-				//endSlope = centerSlope;
+				//endSlope = leftSlope;
+				endSlope = centerSlope;
 				break;
 			}
 
