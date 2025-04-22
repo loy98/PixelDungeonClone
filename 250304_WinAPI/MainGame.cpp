@@ -67,6 +67,67 @@ LRESULT MainGame::MainProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lPara
 {
 	switch (iMessage)
 	{
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+			// 타일맵툴 메뉴
+		case ID_FILE_NEW:
+			//
+			break;
+		case ID_FILE_OPEN:
+			if (dynamic_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene()))
+			{
+				static_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene())->LoadAs();
+			}
+			break;
+		case ID_FILE_SAVE:
+			if (dynamic_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene()))
+			{
+				static_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene())->Save();
+			}
+			break;
+		case ID_FILE_SAVEAS:
+			if (dynamic_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene()))
+			{
+				static_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene())->SaveAs();
+			}
+			break;
+		case ID_TILE_TEST:
+			if (dynamic_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene()))
+			{
+				static_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene())->Test();
+			}
+			break;
+		case ID_TILE_SHOWGRID:
+			if (dynamic_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene()))
+			{
+				static_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene())->SetGridLine();
+			}
+			break;
+		case ID_TILE_ERASE:
+			if (dynamic_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene()))
+			{
+				static_cast<TilemapTool*>(SceneManager::GetInstance()->GetCurrentScene())->Erase();
+			}
+			break;
+			// 배틀씬 메뉴
+		//case ID_BATTLE_RESTART:
+		//	if (dynamic_cast<BattleScene*>(SceneManager::GetInstance()->GetCurrentScene()))
+		//	{
+		//		static_cast<BattleScene*>(SceneManager::GetInstance()->GetCurrentScene())->Init();
+		//	}
+		//	break;
+		//case ID_BATTLE_EXIT:
+		//	if (dynamic_cast<BattleScene*>(SceneManager::GetInstance()->GetCurrentScene()))
+		//	{
+		//		static_cast<BattleScene*>(SceneManager::GetInstance()->GetCurrentScene())->Exit();
+		//	}
+		//	break;
+		//case ID_BATTLE_SOUND:
+		//	//
+		//	break;
+		//}
+		//break;
 	case WM_MOUSEWHEEL:
 	{
 		short wheelDelta = GET_WHEEL_DELTA_WPARAM(wParam); // 120 단위로 올라감/내려감

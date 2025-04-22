@@ -8,6 +8,8 @@ class TilemapTool : public GameObject
 {
 private:
 	D2DImage* sampleTile;
+	D2DImage* selectedTile;
+	D2DImage* grid;
 	const float zoomScales[5] = { 1.0f, 1.5f, 2.0f, 2.5f, 3.0f };
 	int nowZoomScale;
 

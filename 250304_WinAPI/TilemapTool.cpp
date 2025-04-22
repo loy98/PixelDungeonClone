@@ -269,7 +269,10 @@ void TilemapTool::Render(HDC hdc)
 	HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hNullBrush);
 	switch (selectedTileType) {
 	case 6:
-		RenderRect(hdc, sample_none);
+		selectedTile->DrawRect(
+			{ static_cast<float>(sample_none.left), static_cast<float>(sample_none.top) }, 
+			{ static_cast<float>(sample_none.right), static_cast<float>(sample_none.bottom) },
+			RGB(255, 0, 0), 1.0f);
 		break;
 	case 0:
 		RenderRect(hdc, sample_wall);
