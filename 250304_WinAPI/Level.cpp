@@ -26,7 +26,7 @@ void Level::Init()
         16, 16);
 
 
-	//tempTileSize = 30;
+	tempTileSize = 30;
 
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
@@ -122,7 +122,7 @@ void Level::Update()
 
 			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	
 			{																/// 구현 하고 싶은 로직 넣는 부분
-				map[indY * TILE_X + indX].type = TT::COUNT;					///
+				map[indY * TILE_X + indX].type = static_cast<int>(TT::COUNT);					///
 			}																
 
 			MouseManager::GetInstance()->InitPoints();
@@ -144,65 +144,74 @@ void Level::Render(HDC hdc)
 	
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
-			
-			switch (map[TILE_X * i + j].type) {
-				case TT::WALL :
-					sampleTile->RenderFrameScale(
-						(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-						(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-						camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
-					// hOldBrush = (HBRUSH)SelectObject(hdc, GreyBrush);
-					// RenderRect(hdc, tempTile[20 * i + j]);
-					// SelectObject(hdc, hOldBrush);
-					break;
-				case TT::FLOOR:
-					sampleTile->RenderFrameScale(
-						(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-						(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-						camera->GetZoomScale(), camera->GetZoomScale(), 3, 0);
-					// hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
-					// RenderRect(hdc, tempTile[20 * i + j]);
-					// SelectObject(hdc, hOldBrush);
-					break;
-				case TT::NONE:
-					sampleTile->RenderFrameScale(
-						(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-						(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-						camera->GetZoomScale(), camera->GetZoomScale(), 0, 0);
-					// hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
-					// RenderRect(hdc, tempTile[20 * i + j]);
-					// SelectObject(hdc, hOldBrush);
-					break;
-				default:
-					sampleTile->RenderFrameScale(
-						(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-						(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-						camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
-					// hOldBrush = (HBRUSH)SelectObject(hdc, RedBrush);
-					// RenderRect(hdc, tempTile[20 * i + j]);
-					// SelectObject(hdc, hOldBrush);
-					break;
-			}
+		    int tileType = map[TILE_X * i + j].type;
+		    int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
+		    int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
+            
+		    // Get the current frame coordinates for this tile type
+		    POINT frame = GetCurrentFrame(tileType);
+            
+		    // Render the tile using the frame coordinates
+		    sampleTile->Middle_RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, frame.x, frame.y);
+		    
+			// switch (map[TILE_X * i + j].type) {
+			// 	case TT::WALL :
+			// 		sampleTile->RenderFrameScale(
+			// 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+			// 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+			// 			camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
+			// 		// hOldBrush = (HBRUSH)SelectObject(hdc, GreyBrush);
+			// 		// RenderRect(hdc, tempTile[20 * i + j]);
+			// 		// SelectObject(hdc, hOldBrush);
+			// 		break;
+			// 	case TT::FLOOR:
+			// 		sampleTile->RenderFrameScale(
+			// 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+			// 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+			// 			camera->GetZoomScale(), camera->GetZoomScale(), 3, 0);
+			// 		// hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
+			// 		// RenderRect(hdc, tempTile[20 * i + j]);
+			// 		// SelectObject(hdc, hOldBrush);
+			// 		break;
+			// 	case TT::NONE:
+			// 		sampleTile->RenderFrameScale(
+			// 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+			// 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+			// 			camera->GetZoomScale(), camera->GetZoomScale(), 0, 0);
+			// 		// hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
+			// 		// RenderRect(hdc, tempTile[20 * i + j]);
+			// 		// SelectObject(hdc, hOldBrush);
+			// 		break;
+			// 	default:
+			// 		sampleTile->RenderFrameScale(
+			// 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+			// 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+			// 			camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
+			// 		// hOldBrush = (HBRUSH)SelectObject(hdc, RedBrush);
+			// 		// RenderRect(hdc, tempTile[20 * i + j]);
+			// 		// SelectObject(hdc, hOldBrush);
+			// 		break;
+			// }
 		}
 	}
 	
-    sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
+    // sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
 
-    for (int i = 0; i < TILE_Y; ++i)
-    {
-        for (int j = 0; j < TILE_X; ++j)
-        {
-            int tileType = map[TILE_X * i + j].type;
-            int tileX = static_cast<int>(tempTile[TILE_X * i + j].left);
-            int tileY = static_cast<int>(tempTile[TILE_X * i + j].top);
-			//TODO:MERGECHECK
-            // Get the current frame coordinates for this tile type
-            POINT frame = GetCurrentFrame(tileType);
-            
-            // Render the tile using the frame coordinates
-            sampleTile->Middle_RenderFrameScale(tileX, tileY, 2.f, 2.f, frame.x, frame.y);
-        }
-    }
+    // for (int i = 0; i < TILE_Y; ++i)
+    // {
+    //     for (int j = 0; j < TILE_X; ++j)
+    //     {
+    //         int tileType = map[TILE_X * i + j].type;
+    //         int tileX = static_cast<int>(tempTile[TILE_X * i + j].left);
+    //         int tileY = static_cast<int>(tempTile[TILE_X * i + j].top);
+    //         
+    //         // Get the current frame coordinates for this tile type
+    //         POINT frame = GetCurrentFrame(tileType);
+    //         
+    //         // Render the tile using the frame coordinates
+    //         sampleTile->Middle_RenderFrameScale(tileX, tileY, 2.f, 2.f, frame.x, frame.y);
+    //     }
+    // }
 
     // Render actors
     for (auto actor : actors)
