@@ -36,16 +36,16 @@ void Monster::Act(Level* level)
 {
     switch (curState)
     {
-    case EntityState::IDLE:
+    case EntityState::IDLE: // 뭐할까
         ActIdle(level);
         return;
-    case EntityState::MOVE:
+    case EntityState::MOVE: // 움직이는중
         Move(level);
         return;
-    case EntityState::ATTACK:
+    case EntityState::ATTACK:   // 공격중
         Attack(level);
         return;
-    case EntityState::DEAD:
+    case EntityState::DEAD:     // 죽음
         // 애니메이션 끝나면 actor 목록에서 지워야함
         return;
     }
@@ -63,6 +63,9 @@ void Monster::Attack(Level* level)
 
 void Monster::ActIdle(Level* level)
 {
+
+
+
     target = level->GetActorAt(targetPos);
     if (target)
     {

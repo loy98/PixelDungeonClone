@@ -2,6 +2,22 @@
 #include "config.h"
 #include "Entity.h"
 
+enum class MonsterState
+{
+    SLEEP,
+    MOVE,
+    ATTACK,
+    FOLLOW
+};
+
+//enum class EntityState
+//{
+//    IDLE,
+//    MOVE,
+//    ATTACK,
+//    DEAD
+//};
+
 class Level;
 class Monster : public Entity
 {
@@ -17,7 +33,7 @@ public:
     bool NeedsInput() override { return false; }
     bool IsBusy() override { return curState != EntityState::IDLE; }
 
-    // Å×½ºÆ®¿ë ´ÙÀ½ À§Ä¡ ¼³Á¤
+    // ëœë¤í•œ ìœ„ì¹˜ë¡œ ì´ë™
     void SetRandomTargetPos();
 };
 
