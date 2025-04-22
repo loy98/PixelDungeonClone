@@ -115,6 +115,14 @@ inline float GetDistance(FPOINT p1, FPOINT p2)
 	 return sqrtf(x * x + y * y);
 }
 
+inline float GetDistance(POINT p1, POINT p2)
+{
+	float x = p1.x - p2.x;
+	float y = p1.y - p2.y;
+
+	return sqrtf(x * x + y * y);
+}
+
 inline FPOINT RotatePoint(const FPOINT& p, double angleRad) {
 	FPOINT rotated;
 	rotated.x = p.x * std::cos(angleRad) - p.y * std::sin(angleRad);

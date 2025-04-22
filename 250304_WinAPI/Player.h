@@ -9,6 +9,7 @@ public:
     Player(FPOINT pos, float speed, int hp, int attDmg, int defense);
     virtual ~Player();
 
+    void Render(HDC hdc) override;
     virtual void Act(Level* level) override;
     void Move(Level* level);
     virtual void Attack(Level* level) override;

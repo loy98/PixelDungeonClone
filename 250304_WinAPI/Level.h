@@ -1,12 +1,17 @@
 ﻿#pragma once
 #include "config.h"
+#include "DungeonGenerator.h"
+#include "IntegratedDungeonSystem.h"
+#include "Monster.h"
 
+class Monster;
 class D2DImage;
 class TurnManager;
 class Entity;
 class Item;
 class Biome;
 class Image;
+class Camera;
 class Level
 {
 private:
@@ -17,21 +22,35 @@ private:
 	RECT tempTile[TILE_Y * TILE_X]; //타일 이미지 넣기 전 임시 이미지 그리기용 배열
 	int tempTileSize; // 20*20 규격의 맵에 알맞은 임시 타일 사이즈
 
-	// Image* zoomedSampleTile[5];
-	// const float zoomScales[5] = { 1.0f, 1.5f, 2.0f, 2.5f, 3.0f };
+	Camera* camera;
+
+	// Frame map data for tile animations/variants
+	std::vector<std::vector<POINT>> frameMap;  // Stores frame coordinates for each tile type
+	float frameTimer;                          // Timer for frame animation
+	const float FRAME_CHANGE_TIME = 0.2f;      // Time between frame changes
+
 	float nowZoomScale;
 
 	bool shouldBeRender[TILE_Y * TILE_X]; //인덱스별 렌더해야하는지 여부 저장하는 배열
 	bool hasExplored[TILE_Y * TILE_X]; //인덱스별 해금되었는지 여부 저장하는 배열
 	bool isSeen[TILE_Y * TILE_X]; //인덱스별 시야 안에 들어왔는지 여부 저장하는 배열
 
-	const POINT GRID_POS_OFFSET = {240, 60};
+	const POINT GRID_POS_OFFSET = {(3240 - TILE_SIZE*TILE_X)/2, (2160 - TILE_SIZE * TILE_Y) / 2 };
 
 	vector<Biome*> bioms;
 	vector<Item*> items;
 	vector<Entity*> monsters;
 
 	D2DImage* sampleTile;
+
+	std::vector<std::vector<int>> mapData;
+    
+	// 던전 생성기
+	DungeonGenerator dungeonGenerator;
+    
+	// 맵 크기
+	int mapWidth;
+	int mapHeight;
 	
 	// HBRUSH BlackBrush;
 	// HBRUSH GreyBrush;
@@ -45,6 +64,10 @@ private:
 	
 	vector<Entity*> actors;
 	// int startInd;
+	IntegratedDungeonSystem dungeonSystem;
+
+	// Helper method to get current frame for a tile type
+	POINT GetCurrentFrame(int tileType) const;
 
 public:
 	void Init();
@@ -61,7 +84,46 @@ public:
 	
 	void FileLoad();
 
+	void GenerateMap(int width, int height);
+    
+	// 맵 정보 조회 메서드
+	int GetTileType(int x, int y) const;
+	bool IsSolid(int x, int y) const;
+	FPOINT GetRandomFloorTile() const;
+	FPOINT GetEntranceSpawnPosition() const;
+	
 	Level();
 	~Level();
+
+	void SetMapData(const std::vector<std::vector<int>>& mapData)
+	{
+		this->mapData = mapData;
+		int i = 0;
+		for (const auto& vec : mapData)
+		{
+			for (auto m : vec)
+			{
+				this->map[i] = Map(m);
+				i++;
+			}
+		}
+		
+	}
+
+	void AddMonsters(const std::vector<Monster*>& monsters)
+	{
+		for (Entity* monster : monsters) {
+			actors.push_back(static_cast<Entity*>(monster));
+		}
+	}
+	std::vector<std::vector<int>> GetMapData() const
+	{
+		return mapData;
+	}
+	void SetTile(int x, int y, int tileType)
+	{
+		map[y * TILE_X + x].type = tileType;
+	}
+	
 };
 

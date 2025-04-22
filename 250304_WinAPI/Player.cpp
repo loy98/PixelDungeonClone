@@ -1,5 +1,7 @@
 ﻿#include "Player.h"
 // #include "Game.h"
+#include "D2DImage.h"
+#include "D2DImageManager.h"
 #include "TurnManager.h"
 #include "KeyManager.h"
 #include "Level.h"
@@ -16,6 +18,7 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     this->attackDmg = attDmg;
     this->defense = defense;
     isMoving = false;
+
     isActive = true;
 
     type = EntityType::PLAYER;
@@ -28,10 +31,19 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     //길찾기
     finder = new PathFinder();
     destPos = position;
+
+    //image = D2DImageManager::GetInstance()->AddImage("player", L"Image/warrior.png", 21, 7); 
+
 }
 
 Player::~Player()
 {
+}
+
+void Player::Render(HDC hdc)
+{
+    if (image)
+        image->Middle_RenderFrameScale(position.x, position.y, 2.f, 2.f, 1, 1);
 }
 
 void Player::Act(Level* level)

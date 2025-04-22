@@ -98,7 +98,7 @@ void TilemapTool::Update()
 			int posY = g_ptMouse.y;
 			int tileX = posX / tempTileSize;
 			int tileY = posY / tempTileSize;
-			tileInfo[tileY * TILE_X + tileX].type = TT::FLOOR;
+			tileInfo[tileY * TILE_X + tileX].type = static_cast<int>(TT::FLOOR);
 		}
 
 		if (KeyManager::GetInstance()->IsStayKeyDown(VK_RBUTTON))
@@ -107,17 +107,17 @@ void TilemapTool::Update()
 			int posY = g_ptMouse.y;
 			int tileX = posX / tempTileSize;
 			int tileY = posY / tempTileSize;
-			tileInfo[tileY * TILE_X + tileX].type = TT::WALL;
+			tileInfo[tileY * TILE_X + tileX].type = static_cast<int>(TT::WALL);
 		}
 
-		if (KeyManager::GetInstance()->IsStayKeyDown(VK_MBUTTON))
-		{
-			int posX = g_ptMouse.x;
-			int posY = g_ptMouse.y;
-			int tileX = posX / tempTileSize;
-			int tileY = posY / tempTileSize;
-			tileInfo[tileY * TILE_X + tileX].type = TT::NONE;
-		}
+		// if (KeyManager::GetInstance()->IsStayKeyDown(VK_MBUTTON))
+		// {
+		// 	int posX = g_ptMouse.x;
+		// 	int posY = g_ptMouse.y;
+		// 	int tileX = posX / tempTileSize;
+		// 	int tileY = posY / tempTileSize;
+		// 	tileInfo[tileY * TILE_X + tileX].type = static_cast<int>(TT::NONE);
+		// }
 	}
 
 	if (saveButton)	saveButton->Update();
@@ -132,27 +132,27 @@ void TilemapTool::Render(HDC hdc)
 		for (int j = 0; j < 20; ++j) {
 
 			switch (tileInfo[20 * i + j].type) {
-			case TT::WALL:
+			case static_cast<int>(TT::WALL):
 				sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
 				static_cast<int>(tempTile[20 * i + j].top), 1, 0);
 				// hOldBrush = (HBRUSH)SelectObject(hdc, tGreyBrush);
 				// RenderRect(hdc, tempTile[20 * i + j]);
 				// SelectObject(hdc, hOldBrush);
 				break;
-			case TT::FLOOR:
+			case static_cast<int>(TT::FLOOR):
 				// hOldBrush = (HBRUSH)SelectObject(hdc, tWhiteBrush);
 				// RenderRect(hdc, tempTile[20 * i + j]);
 				// SelectObject(hdc, hOldBrush);
 				sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
 					static_cast<int>(tempTile[20 * i + j].top), 3, 0);
 				break;
-			case TT::NONE:
-				// hOldBrush = (HBRUSH)SelectObject(hdc, tBlackBrush);
-				// RenderRect(hdc, tempTile[20 * i + j]);
-				// SelectObject(hdc, hOldBrush);
-				sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
-					static_cast<int>(tempTile[20 * i + j].top), 0, 0);
-				break;
+			// case static_cast<int>(TT::NONE):
+			// 	// hOldBrush = (HBRUSH)SelectObject(hdc, tBlackBrush);
+			// 	// RenderRect(hdc, tempTile[20 * i + j]);
+			// 	// SelectObject(hdc, hOldBrush);
+			// 	sampleTile->RenderFrame(static_cast<int>(tempTile[20 * i + j].left),
+			// 		static_cast<int>(tempTile[20 * i + j].top), 0, 0);
+			// 	break;
 			default:
 				// hOldBrush = (HBRUSH)SelectObject(hdc, tRedBrush);
 				// RenderRect(hdc, tempTile[20 * i + j]);

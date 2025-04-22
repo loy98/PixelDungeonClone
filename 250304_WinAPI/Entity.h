@@ -60,7 +60,7 @@ public:
     virtual ~Entity();
 
     void Update();
-    void Render(HDC hdc);
+    virtual void Render(HDC hdc);
     virtual void Act(Level* level);
     virtual void Attack(Level* level) {};
 

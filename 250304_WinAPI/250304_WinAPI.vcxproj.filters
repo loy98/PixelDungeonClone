@@ -38,6 +38,10 @@
   <ItemGroup>
     <ClInclude Include="Button.h" />
     <ClInclude Include="CombatSyetem.h" />
+    <ClCompile Include="Camera.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Button.h" />
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="D2DImage.h" />
@@ -78,5 +82,6 @@
     <Filter Include="Inventory">
       <UniqueIdentifier>{67a1e6c4-150e-49bf-b8f9-2400a5453b75}</UniqueIdentifier>
     </Filter>
+    <ClInclude Include="Camera.h" />
   </ItemGroup>
 </Project>
