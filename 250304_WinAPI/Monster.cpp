@@ -102,7 +102,7 @@ void Monster::Move(Level* level)
     delta = targetPos - position;
 
     // 매직넘버로,,, -> 변수로 dir 저장해두고 쓰면 Dot Product
-    if (delta.Length() <= 1.f)
+    if (delta.Length() <= 10.f)
     {
         position = targetPos;
         // 테스트용이라 도착지 정하는건 수정해야함
