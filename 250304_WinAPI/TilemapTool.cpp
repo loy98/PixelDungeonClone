@@ -61,7 +61,7 @@ HRESULT TilemapTool::Init()
 	
 	// UI - 버튼
 	saveButton = new Button();
-	saveButton->Init(1000,500);
+	saveButton->Init(800,500);
 	//saveButton->SetFunction(&TilemapTool::Save, this);
 	//saveButton->SetFunction(std::bind(&TilemapTool::Save, this));
 	saveButton->SetFunction([this]() {
@@ -220,7 +220,7 @@ void TilemapTool::Update()
 
 void TilemapTool::Render(HDC hdc)
 {
-	PatBlt(hdc, 0, 0, TILEMAPTOOL_X, TILEMAPTOOL_Y, WHITENESS);
+	//PatBlt(hdc, 0, 0, TILEMAPTOOL_X, TILEMAPTOOL_Y, WHITENESS);
 
 	// 메인 타일 영역
 	for (int i = 0; i < TILE_X * TILE_Y; ++i)

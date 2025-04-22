@@ -10,6 +10,8 @@
 #include "MouseManager.h"
 // #include "BJS_TestScene.h"
 #include "GameScene.h"
+#include "resource4.h"
+
 
 HRESULT MainGame::Init()
 {
@@ -25,7 +27,7 @@ HRESULT MainGame::Init()
 	SceneManager::GetInstance()->AddScene("타일맵툴", new TilemapTool());
 	SceneManager::GetInstance()->AddScene("게임씬", new GameScene());
 	SceneManager::GetInstance()->AddLoadingScene("로딩_1", new LoadingScene());
-	SceneManager::GetInstance()->ChangeScene("게임씬");
+	SceneManager::GetInstance()->ChangeScene("타일맵툴");
 
 	hdc = GetDC(g_hWnd);
 #pragma endregion

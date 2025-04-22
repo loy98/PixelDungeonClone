@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 
-class Image;
+class D2DImage;
 class Button;
 class TilemapTool : public GameObject
 {
@@ -42,7 +42,7 @@ private:
 	RECT rcMain;
 	RECT mainGrid[TILE_X * TILE_Y];
 
-	bool gridLineOn{ false };
+	bool gridLineOn{ true };
 
 public:
 	virtual HRESULT Init() override;
