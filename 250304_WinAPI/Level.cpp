@@ -193,9 +193,10 @@ void Level::Render(HDC hdc)
             POINT frame = GetCurrentFrame(tileType);
 
             // Render the tile using the frame coordinates
-            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * (isVisible ? 2.f : 1.f),
-                                                camera->GetZoomScale() * (isVisible ? 2.f : 1.f), frame.x, frame.y);
-
+            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f,
+                                                camera->GetZoomScale() * 2.f, frame.x, frame.y);
+            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f,
+                                    camera->GetZoomScale() * 2.f, 0, 9, 0, false, false, isVisible ? 0.f : 0.5f);
             // switch (map[TILE_X * i + j].type) {
             // 	case TT::WALL :
             // 		sampleTile->RenderFrameScale(
@@ -258,12 +259,15 @@ void Level::Render(HDC hdc)
     // Render actors
     for (auto actor : actors)
     {
-        if (actor->GetImage()) {
-            actor->GetImage()->
-                Middle_RenderFrameScale(
-                    camera->ConvertToRendererX(actor->GetPosition().x), 
-                    camera->ConvertToRendererY(actor->GetPosition().y),
-                    camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, 0, 0);
+        if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
+        {
+            if (actor->GetImage()) {
+                actor->GetImage()->
+                    Middle_RenderFrameScale(
+                        camera->ConvertToRendererX(actor->GetPosition().x), 
+                        camera->ConvertToRendererY(actor->GetPosition().y),
+                        camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, 0, 0);
+            }
         }
     }
 }
