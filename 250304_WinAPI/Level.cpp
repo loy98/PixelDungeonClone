@@ -147,7 +147,7 @@ void Level::Update()
 
     SetVisibleTile();
 
-    if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
+    /*if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
     {
         long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
         long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
@@ -164,7 +164,7 @@ void Level::Update()
         mapRc.right += tempDeltaX;
         mapRc.top += tempDeltaY;
         mapRc.bottom += tempDeltaY;
-    }
+    }*/
 
     turnManager->ProcessTurns(this);
     for (auto actor : actors)
