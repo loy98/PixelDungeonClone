@@ -128,6 +128,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="D2DImageManager.cpp" />
     <ClCompile Include="Dungeon.cpp">
@@ -157,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="D2DImage.h" />

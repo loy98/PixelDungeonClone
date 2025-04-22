@@ -28,13 +28,17 @@ private:
     POINT dragStartP;
     POINT dragEndP;
     POINT prevP;
+    POINT clickedP;
+
+    float dragElapsedTime;
 
     long deltaX;
     long deltaY;
 
     bool isDragging[3]{ false, false, false };
 
-    bool valueUsed;
+    bool dragEndPUsed;
+    bool clickedPUsed;
 
     short wheelDelta;
 
@@ -66,9 +70,13 @@ public:
     }
 
     inline POINT GetDragEndP() { return dragEndP; }
+    inline POINT GetClickP() { return clickedP; }
 
-    inline bool GetValueUsed() { return valueUsed; }
-    inline void AlreadyUsed() { valueUsed = true; }
+    inline bool GetDragValueUsed() { return dragEndPUsed; }
+    inline void AlreadyDragUsed() { dragEndPUsed = true; }
+
+    inline bool GetClickValueUsed() { return clickedPUsed; }
+    inline void AlreadyClickUsed() { clickedPUsed = true; }
 
     inline long GetDeltaX() { return deltaX; }
     inline long GetDeltaY() { return deltaY; }
