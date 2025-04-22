@@ -21,7 +21,7 @@ public:
     Entity();
     virtual ~Entity();
 
-    void Render(HDC hdc);
+    virtual void Render(HDC hdc);
     virtual void Act(Level* level);
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;

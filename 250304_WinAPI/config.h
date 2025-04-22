@@ -99,8 +99,8 @@ extern POINT g_ptMouse;
 #define TILE_SIZE	90
 
 // 메인 그리기 공간 정보
-#define TILE_X	20
-#define TILE_Y	20
+#define TILE_X	32
+#define TILE_Y	32
 
 typedef struct tagTile
 {
@@ -111,7 +111,7 @@ typedef struct tagTile
 
 #pragma once
 typedef enum class TileType {
-	NONE,
+	// NONE,
 	WALL,
 	FLOOR,
 	COUNT
@@ -119,12 +119,16 @@ typedef enum class TileType {
 
 
 struct Map {
-	int frameX;
-	int frameY;
-	TT type;
-
-	bool CanGo() const
-	{
-		return type == TT::FLOOR || type == TT::NONE;
+	int type;    // 타일 종류 (0: 벽, 1: 바닥, 2: 문, 3: 입구, 4: 출구)
+	bool explored;   // 탐험 여부
+	bool visible;    // 현재 시야 내 여부
+    
+	// 이동 가능 여부 확인
+	bool CanGo() const {
+		return type != 0; // 벽이 아니면 통과 가능
 	}
+    
+	// 초기화
+	Map() : type(0), explored(false), visible(false) {}
+	Map(int type) : type(type), explored(false), visible(false) {}
 };

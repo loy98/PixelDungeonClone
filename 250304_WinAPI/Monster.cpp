@@ -46,14 +46,7 @@ void Monster::Move(Level* level)
 {
     // 이동 순서 체크용
     // Sleep(100);
-    auto index = level->GetMapIndex(targetPos.x, targetPos.y);
-    int a = 0;
-    auto map = level->GetMap(targetPos.x, targetPos.y);
-    
-    if (map)
-    {
-        if (!map->CanGo()) return;
-    }
+
     // if (!level->GetMap(targetPos.x, targetPos.x)->CanGo()) return;
 
     FPOINT delta = position - position;
