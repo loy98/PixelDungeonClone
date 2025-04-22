@@ -63,36 +63,6 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 				break;
 			}
 
-			//// 시작기울기보다 크거나 같다면
-			//if (rightSlope  >= startSlope)
-			//{
-			//	// 센터가 시작기울기보다 크거나 같다면
-			//	if (centerSlope - startSlope >= FLT_EPSILON)
-			//	{
-			//		continue;
-			//	}
-			//}
-			////rightSlope >= leftSlope이면 포함시킨다?
-
-	
-			//if (leftSlope - endSlope <= FLT_EPSILON)
-			//{
-			//	if (centerSlope - endSlope < FLT_EPSILON)
-			//	{
-			//		break;
-			//	}
-
-			//}
-
-			// centerSlope이 시작기울기와 끝기울기에 겹쳤거나 벗어났다면
-			//if ((centerSlope - startSlope >= FLT_EPSILON) || (centerSlope - endSlope <= FLT_EPSILON)) {
-			//	if (rightSlope - startSlope >= FLT_EPSILON)
-			//		continue;
-
-			//	if (leftSlope - endSlope <= FLT_EPSILON)
-			//		break;
-			//}
-
 			AstarTile* tile ;
 			tile = &map[idY][idX];
 
