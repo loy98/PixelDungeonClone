@@ -70,7 +70,7 @@ void Monster::ActIdle(Level* level)
     // Idle일 때는 타겟 잡아서 타겟이 있으면 어택모드, 없으면 무브모드 될테야~~
 
 
-    target = level->GetActorAt(targetPos);
+    target = level->GetActorAt(targetPos);  // target pos에 타겟이 있다면(actor가 있다면)-actor pos 얻어옴
     if (target)
     {
         if (target->GetType() == EntityType::PLAYER)
