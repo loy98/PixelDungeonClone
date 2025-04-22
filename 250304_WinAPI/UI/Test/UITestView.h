@@ -9,7 +9,7 @@
 
 class UITestView 
 {
-private:
+public:
 	UIStatusToolbar statusToolBar;
 	UIQuickSlotToolbar quickSlotToolBar;
 	UITopRightUI topRightToolBar;
@@ -49,6 +49,7 @@ public:
 		topRightToolBar.Init();
 		uiTester.InitUI();  // logPanel, floatingText 등 포함
 		uiInventoryView.Init();
+		uiInventoryView.inventoryPanel->SetActive(false);
 		uiAutoTestMenu.Init({100,400,200,0});
 		uiStatPanel.Init();
 
@@ -95,7 +96,7 @@ public:
 		quickSlotToolBar.Update(dt);
 		topRightToolBar.Update(dt);
 		uiInventoryView.Update(dt);
-		uiAutoTestMenu.Update(dt);
+		//uiAutoTestMenu.Update(dt);
 		uiTester.UpdateUI(dt);  // 로그/이펙트
 
 
@@ -133,9 +134,9 @@ public:
 		quickSlotToolBar.Render(rt);
 		topRightToolBar.Render(rt);
 		uiInventoryView.Render(rt);
-		uiStatPanel.Render(rt);
+		//uiStatPanel.Render(rt);
 
-		uiAutoTestMenu.Render(rt);
+		//uiAutoTestMenu.Render(rt);
 		uiTester.RenderUI(rt);  // 로그/이펙트
 
 		uiContainer.Render(rt);

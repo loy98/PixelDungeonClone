@@ -89,8 +89,8 @@ public:
     }
 
     void RenderUI(ID2D1HwndRenderTarget* rt) {
-        if (logPanel) logPanel->Render(rt);
-        effectManager->Render(rt);
+        //if (logPanel) logPanel->Render(rt);
+        //effectManager->Render(rt);
     }
 };
 

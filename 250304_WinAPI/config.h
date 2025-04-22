@@ -3,6 +3,13 @@
 #pragma once
 #pragma comment(lib, "Winmm.lib")
 
+
+#include <dwrite.h>
+#include <d2d1.h>
+
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
+
 #include <Windows.h>
 #include <string>
 #include <iostream>
@@ -52,6 +59,7 @@ typedef struct tagFPOINT
 		x = other.x;
 		y = other.y;
 	}	
+	}
 	void operator+=(const tagFPOINT& other) {
 		x += other.x;
 		y += other.y;
@@ -108,6 +116,23 @@ typedef struct tagFPOINT
 
 } FPOINT;
 
+typedef struct tagFRECT
+{
+	float left;
+	float top;
+	float right;
+	float bottom;
+
+    // + 연산자 오버로딩 (FRECT끼리의 합)
+    tagFRECT operator+(const tagFRECT& other) const {
+        return {
+            left + other.left,
+            top + other.top,
+            right + other.right,
+            bottom + other.bottom
+        };
+        return { left, top, right, bottom };
+    }
 /*
 	extern 키워드 : 변수나 함수가 다른 파일에 정의되어 있다 라는
 	사실을 알리는 키워드.
@@ -125,6 +150,14 @@ extern POINT g_ptMouse;
 // 메인 그리기 공간 정보
 #define TILE_X	32
 #define TILE_Y	32
+
+#define SAFE_DELETE(ptr) \
+	if (ptr)			 \
+	{					 \
+		ptr->Release();	 \
+		delete ptr;		 \
+		ptr = nullptr;	 \
+	}					 \
 
 typedef struct tagTile
 {
@@ -145,6 +178,7 @@ struct ScanDirection
 		: horizonX(hX), verticalX(vX), horizonY(hY), verticalY(vY) {
 	}
 };
+
 #pragma once
 typedef enum class TileType {
 	// NONE,
@@ -167,4 +201,12 @@ struct Map {
 	// 초기화
 	Map() : type(0), explored(false), visible(false) {}
 	Map(int type) : type(type), explored(false), visible(false) {}
+};
+
+// 0.0f ~ 1.0f
+struct RGBA {
+    float r;
+    float g;
+    float b;
+    float a;
 };

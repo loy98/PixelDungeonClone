@@ -14,6 +14,8 @@
 #include "TurnManager.h"
 #include "Camera.h"
 #include "FieldOfView.h"
+#include "UI/Test/UITestView.h"
+
 
 void Level::Init()
 {
@@ -93,6 +95,10 @@ void Level::Init()
             turnManager->AddActor(actor);
     }
     turnManager->Init();
+
+    // UI
+    uiTestView = new UITestView();
+    uiTestView->Init();
 }
 
 void Level::Release()
@@ -110,6 +116,10 @@ void Level::Release()
         // delete player;
         player = nullptr;
     }
+
+    if (uiTestView)
+        uiTestView->Release();
+
 }
 
 void Level::Update()
@@ -170,7 +180,13 @@ void Level::Update()
     for (auto actor : actors)
     {
         if (actor) actor->Update();
+        //UIManager가 여기서 HP 연동
+
     }
+
+    // UI
+    uiTestView->Update(TimerManager::GetInstance()->GetDeltaTime());
+    uiTestView->statusToolBar.SetHP(player->GetHP(), player->GetMaxHP());
 }
 
 void Level::Render(HDC hdc)
@@ -266,6 +282,10 @@ void Level::Render(HDC hdc)
                     camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, 0, 0);
         }
     }
+
+    // UI
+    // UIManager Zoom 전달 하는게 있어야 함
+    uiTestView->Render(D2DImage::GetRenderTarget());
 }
 
 void Level::FileLoad()
