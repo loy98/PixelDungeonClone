@@ -21,16 +21,20 @@ public:
     virtual void Act(Level* level) override;
     void Move(Level* level);
     virtual void Attack(Level* level) override;
-    void ActIdle(Level* level);//AI
+   // void ActIdle(Level* level);
 
     bool NeedsInput() override { return false; }
     bool IsBusy() override { return curState != EntityState::IDLE; }
 
     // 랜덤한 위치로 이동-wandering-플레이어 있는지 계속 체크
-    void SetRandomTargetPos();
+   // void SetRandomTargetPos();
 
     // monsterAI
     MonsterAI* monsterAi;
     void SetEntityState(EntityState state) { this->curState = state; }
+    void SetTarget(Entity* actor) { this->target = actor; }
+    void SetTargetPos(FPOINT destPos) { targetPos = destPos; }
+    FPOINT GetTargetPos() { return targetPos; }
+    Entity* GetTarget() { return target; }
 };
 
