@@ -9,6 +9,9 @@
 #include <bitset>
 #include <map>
 #include <vector>
+#include <random>
+#include <queue>
+#include <functional>
 #include <algorithm>
 
 using namespace std;
@@ -35,6 +38,9 @@ typedef struct tagFPOINT
 	float x;
 	float y;
 
+	tagFPOINT operator+(const tagFPOINT& other) {
+		return { x + other.x , y + other.y };
+	}
 	tagFPOINT operator-(const tagFPOINT& other) {
 		return { x - other.x , y - other.y };
 	}
@@ -55,6 +61,20 @@ typedef struct tagFPOINT
 	}
 	bool operator!=(const tagFPOINT& other) {
 		return x != other.x || y != other.y;
+	}
+	bool operator<(const tagFPOINT& other) const
+	{
+		if (x != other.x)
+			return x < other.x;
+
+		return y < other.y;
+	}
+	bool operator>(const tagFPOINT& other) const
+	{ 
+		if (x != other.x)
+			return x > other.x;
+
+		return y > other.y;
 	}
 
 	float LengthSquared()

@@ -39,54 +39,59 @@ void Level::Init()
 		}
 	}
 
-    for (auto& s : shouldBeRender)
-    {
-        s = true;
-    }
+	mapRc = { tempTile[0].left, tempTile[0].top, tempTile[399].right, tempTile[399].bottom };
 
-    for (auto& h : hasExplored)
-    {
-        h = true;
-    }
+	// BlackBrush = CreateSolidBrush(RGB(0, 0, 0));
+	// GreyBrush = CreateSolidBrush(RGB(100, 100, 100));
+	// WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+	// RedBrush = CreateSolidBrush(RGB(255, 0, 0));
 
-    for (auto& i : isSeen)
-    {
-        i = true;
-    }
-    
-    FileLoad();
 
-    // Initialize turn manager
-    turnManager = new TurnManager();
 
-    // Set map dimensions
-    mapWidth = TILE_X;
-    mapHeight = TILE_Y;
+	for (auto& s : shouldBeRender) 
+	{
+		s = true;
+	}
 
-    // Generate dungeon
-    dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
-    
-    // Place player near entrance
-    FPOINT playerPos = GetEntranceSpawnPosition();
-    Player* player = new Player(playerPos, 50.0f);
-    AddActor(player);
+	for (auto& h : hasExplored) 
+	{
+		h = true;
+	}
 
-    // // Place monsters
-    // for (int i = 0; i < 5; i++)
-    // {
-    //     FPOINT monsterPos = GetRandomFloorTile();
-    //     Monster* monster = new Monster(monsterPos, 3.0f);
-    //     AddActor(monster);
-    // }
+	for (auto& i : isSeen) 
+	{
+		i = true;
+	}
 
-    // Add actors to turn manager
-    for (auto actor : actors)
-    {
-        if (actor)
-            turnManager->AddActor(actor);
-    }
+	FileLoad();
 
-    frameTimer = 0.0f;  // Initialize frame timer
+  // Set map dimensions
+  mapWidth = TILE_X;
+  mapHeight = TILE_Y;
+
+  // Generate dungeon
+  dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
+
+  // Place player near entrance
+  FPOINT playerPos = GetEntranceSpawnPosition();
+  //TODO:MergeCheck
+  //   Player* player = new Player(playerPos, 50.0f);
+  
+	// 시작 위치 테스트용 매직넘버
+	Entity* player = new Player(GetPosByGridIndex(3, 3), 300.f, 20, 5, 2);
+	Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 300.f, 15, 4, 3);
+	Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 300.f, 15, 4, 3);
+
+	AddActor(player);
+	AddActor(monster1);
+	AddActor(monster2);
+
+	for (auto actor : actors)
+	{
+		if (actor)
+			turnManager->AddActor(actor);
+	}
+	turnManager->Init();
 }
 
 void Level::Release()
@@ -120,18 +125,43 @@ void Level::Update()
 			long indX = (posX - mapRc.left) / TILE_SIZE;
 			long indY = (posY - mapRc.top) / TILE_SIZE;
 
-			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	
-			{																/// 구현 하고 싶은 로직 넣는 부분
-				map[indY * TILE_X + indX].type = static_cast<int>(TT::COUNT);					///
-			}																
+			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	///
+			{														/// 구현 하고 싶은 로직 넣는 부분
+				//map[indY * TILE_X + indX].type = TT::COUNT;
+				if (map[indY * TILE_X + indX].CanGo())
+					dynamic_cast<Player*>(actors[0])->SetNextPos(GetPosByGridIndex(indX, indY));	
+			}														///
 
 			MouseManager::GetInstance()->InitPoints();
 			MouseManager::GetInstance()->AlreadyClickUsed();
 		}
 	} ///디버깅을 위해 마우스 왼쪽 버튼을 떼면 그 자리에 있는 타일이 빨간색으로 변하게 해놨습니다. 
 	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
-	  
-    turnManager->ProcessTurns(this);
+
+	if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
+	{
+		long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
+		long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
+
+		for (auto& t : tempTile) {
+			t.left += tempDeltaX;
+			t.right += tempDeltaX;
+			t.top += tempDeltaY;
+			t.bottom += tempDeltaY;
+		}
+
+		mapRc.left += tempDeltaX;
+		mapRc.right += tempDeltaX;
+		mapRc.top += tempDeltaY;
+		mapRc.bottom += tempDeltaY;
+
+	}
+
+	turnManager->ProcessTurns(this);
+	for (auto actor : actors)
+	{
+		if (actor) actor->Update();
+	}
 }
 
 void Level::Render(HDC hdc)
@@ -245,6 +275,19 @@ Level::Level()
 
 Level::~Level()
 {
+}
+
+
+Entity* Level::GetActorAt(FPOINT pos)
+{
+	if (actors.empty()) return nullptr;
+
+	for (auto actor : actors)
+	{
+		if (actor && actor->GetPosition() == pos)
+			return actor;
+	}
+	return nullptr;
 }
 
 void Level::AddActor(Entity* actor)

@@ -2,6 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="CombatSyetem.cpp" />
     <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="D2DImageManager.cpp" />
     <ClCompile Include="Dungeon.cpp" />
@@ -22,6 +23,21 @@
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerManager.cpp" />
     <ClCompile Include="TurnManager.cpp" />
+    <ClCompile Include="PathFinder.cpp" />
+    <ClCompile Include="Consumable.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="HealPotion.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Item.cpp">
+      <Filter>Item</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Button.h" />
+    <ClInclude Include="CombatSyetem.h" />
     <ClCompile Include="Camera.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -47,6 +63,25 @@
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerManager.h" />
     <ClInclude Include="TurnManager.h" />
+    <ClInclude Include="PathFinder.h" />
+    <ClInclude Include="Consumable.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="HealPotion.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Item.h">
+      <Filter>Item</Filter>
+    </ClInclude>
+    <ClInclude Include="Inventory.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Item">
+      <UniqueIdentifier>{3f0c5ecf-fe6b-42cb-8c6e-cfd720b801c0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Inventory">
+      <UniqueIdentifier>{67a1e6c4-150e-49bf-b8f9-2400a5453b75}</UniqueIdentifier>
+    </Filter>
     <ClInclude Include="Camera.h" />
   </ItemGroup>
 </Project>
