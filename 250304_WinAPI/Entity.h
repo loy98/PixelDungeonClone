@@ -1,14 +1,19 @@
 ﻿#pragma once
 #include "config.h"
 
+class Level;
+class D2DImage;
 class Game;
 class Entity
 {
 protected:
-    FPOINT position;
+    //test
+    D2DImage* image;
+	FPOINT position;
     FPOINT targetPos;
     float speed;
     bool isMoving;
+
 public:
     int graphicID;
     bool isActive;
@@ -16,8 +21,8 @@ public:
     Entity();
     virtual ~Entity();
 
-    void Render(HDC hdc);
-    virtual void Act(Game* game);
+    virtual void Render(HDC hdc);
+    virtual void Act(Level* level);
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;
 

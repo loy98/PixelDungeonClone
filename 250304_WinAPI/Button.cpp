@@ -1,11 +1,14 @@
 #include "Button.h"
-#include "Image.h"
+
+#include "D2DImage.h"
+#include "D2DImageManager.h"
+// #include "Image.h"
 
 HRESULT Button::Init(int posX, int posY)
 {
 	state = ButtonState::None;
-	image = ImageManager::GetInstance()->
-		AddImage("버튼", L"Image/button.bmp", 122, 62, 1, 2);
+	image = D2DImageManager::GetInstance()->
+		AddImage("버튼", L"Image/button.bmp", 1, 2);
 	if (image == nullptr)
 	{
 		return E_FAIL;
@@ -14,10 +17,10 @@ HRESULT Button::Init(int posX, int posY)
 	pos.x = posX;
 	pos.y = posY;
 
-	rc.left = pos.x - image->GetFrameWidth() / 2;
-	rc.top = pos.y - image->GetFrameHeight() / 2;
-	rc.right = rc.left + image->GetFrameWidth();
-	rc.bottom = rc.top + image->GetFrameHeight();
+	rc.left = pos.x - image->GetWidth() / 2;
+	rc.top = pos.y - image->GetHeight() / 2;
+	rc.right = rc.left + image->GetWidth();
+	rc.bottom = rc.top + image->GetHeight();
 
 	buttonFunc = nullptr;
 
@@ -59,10 +62,10 @@ void Button::Render(HDC hdc)
 	{
 	case ButtonState::None:
 	case ButtonState::Up:
-		image->FrameRender(hdc, pos.x, pos.y, 0, 0);
+		image->RenderFrame( pos.x, pos.y, 0, 0);
 		break;
 	case ButtonState::Down:
-		image->FrameRender(hdc, pos.x, pos.y, 0, 1);
+		image->RenderFrame(pos.x, pos.y, 0, 1);
 		break;
 	}
 }

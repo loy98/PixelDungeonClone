@@ -1,25 +1,13 @@
 #pragma once
 #include "GameObject.h"
 
-class Timer;
-class Image;
-class EnemyManager;
-class TilemapTool;
-class D2DImage;
+
+
 class MainGame : public GameObject
 {
 private:
 	HDC hdc;
-	PAINTSTRUCT ps;
-	wchar_t szText[128];
 
-	Image* backBuffer;
-
-	TilemapTool* tilemapTool;
-
-	Timer* timer;
-	D2DImage* test;
-	
 public:
 	virtual HRESULT Init() override;
 	virtual void Release() override;

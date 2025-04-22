@@ -127,55 +127,74 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AstarScene.cpp" />
-    <ClCompile Include="BattleScene.cpp" />
     <ClCompile Include="Button.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="D2DImageManager.cpp" />
+    <ClCompile Include="Dungeon.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="DungeonGenerator.cpp" />
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FieldOfView.cpp" />
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="EnvironmentalEffectsManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="Image.cpp" />
-    <ClCompile Include="ImageManager.cpp" />
+    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="IntegratedDungeonSystem.cpp" />
     <ClCompile Include="KeyManager.cpp" />
+    <ClCompile Include="Level.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
-    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="MonsterGenerator.cpp" />
+    <ClCompile Include="MouseManager.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TilemapTool.cpp" />
+    <ClCompile Include="Tiles.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="TileVariationManager.cpp" />
     <ClCompile Include="Timer.cpp" />
     <ClCompile Include="TimerManager.cpp" />
     <ClCompile Include="TurnManager.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AstarScene.h" />
-    <ClInclude Include="BattleScene.h" />
     <ClInclude Include="Button.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="D2DImage.h" />
     <ClInclude Include="D2DImageManager.h" />
+    <ClInclude Include="DungeonGenerator.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FieldOfView.h" />
     <ClInclude Include="Game.h" />
+    <ClInclude Include="EnvironmentalEffectsManager.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="Image.h" />
-    <ClInclude Include="ImageManager.h" />
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="IntegratedDungeonSystem.h" />
     <ClInclude Include="KeyManager.h" />
+    <ClInclude Include="Level.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="MainGame.h" />
-    <ClInclude Include="Map.h" />
+    <ClInclude Include="MonsterGenerator.h" />
+    <ClInclude Include="MouseManager.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Renderer.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="TilemapTool.h" />
+    <ClInclude Include="Tiles.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
+    <ClInclude Include="TileVariationManager.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="TimerManager.h" />
     <ClInclude Include="TurnManager.h" />

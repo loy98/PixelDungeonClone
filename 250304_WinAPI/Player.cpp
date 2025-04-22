@@ -1,8 +1,10 @@
 ﻿#include "Player.h"
-#include "Map.h"
-#include "Game.h"
+// #include "Game.h"
+#include "D2DImage.h"
+#include "D2DImageManager.h"
 #include "TurnManager.h"
 #include "KeyManager.h"
+#include "Level.h"
 #include "TimerManager.h"
 
 Player::Player(FPOINT pos, float speed)
@@ -10,19 +12,26 @@ Player::Player(FPOINT pos, float speed)
     position = pos;
     this->speed = speed;
     isMoving = false;
+    image = D2DImageManager::GetInstance()->AddImage("player", L"Image/warrior.png", 21, 7); 
 }
 
 Player::~Player()
 {
 }
 
-void Player::Act(Game* game)
+void Player::Render(HDC hdc)
+{
+    if (image)
+        image->Middle_RenderFrameScale(position.x, position.y, 2.f, 2.f, 1, 1);
+}
+
+void Player::Act(Level* level)
 {
     KeyManager* km = KeyManager::GetInstance();
 
     if (isMoving)
     {
-        Move(game);
+        Move(level);
         return;
     }
 
@@ -59,8 +68,7 @@ void Player::Act(Game* game)
         targetPos = { position.x + TILE_SIZE, position.y };
     else return;
 
-    isMoving = true;
-
+    isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
 }
 
 bool Player::NeedsInput()
@@ -73,9 +81,9 @@ bool Player::IsBusy()
     return isMoving;
 }
 
-void Player::Move(Game* game)
+void Player::Move(Level* level)
 {
-    if (!game->GetMap()->CanGo(targetPos)) return;
+    if (!level->GetMap(targetPos.x, targetPos.y)->CanGo()) return;
 
     FPOINT delta = targetPos - position;
 

@@ -1,8 +1,8 @@
 #pragma once
 #include "config.h"
 
+class Level;
 class Entity;
-class Game;
 class TurnManager
 {
 private:
@@ -13,7 +13,7 @@ public:
 	virtual ~TurnManager();
 
 	void AddActor(Entity* actor);
-	void ProcessTurns(Game* game);
+	void ProcessTurns(Level* level);
 	void EndTurn();
 	Entity* GetCurrentActor();
 };
