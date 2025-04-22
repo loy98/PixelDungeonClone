@@ -3,10 +3,13 @@
 #include "Game.h"
 #include "TurnManager.h"
 #include "KeyManager.h"
+#include "TimerManager.h"
 
-Player::Player(FPOINT pos)
+Player::Player(FPOINT pos, float speed)
 {
     position = pos;
+    this->speed = speed;
+    isMoving = false;
 }
 
 Player::~Player()
@@ -15,9 +18,13 @@ Player::~Player()
 
 void Player::Act(Game* game)
 {
-    TurnManager* tm = game->GetTurnManager();
     KeyManager* km = KeyManager::GetInstance();
-    Map* map = game->GetMap();
+
+    if (isMoving)
+    {
+        Move(game);
+        return;
+    }
 
     //if (km->IsOnceKeyDown(VK_UP))
     //    Move({ 0, -TILE_SIZE }, map, game);
@@ -33,6 +40,7 @@ void Player::Act(Game* game)
 
     // 에이스타용
     if (km->IsOnceKeyDown(VK_UP))
+    //---
         Move({ 0, -30 }, map, game);
     else if (km->IsOnceKeyDown(VK_DOWN))
         Move({ 0, 30 }, map, game);
@@ -40,23 +48,49 @@ void Player::Act(Game* game)
         Move({ -30, 0 }, map, game);
     else if (km->IsOnceKeyDown(VK_RIGHT))
         Move({ 30, 0 }, map, game);
+  
+    //TODO:MergeCheck
+        targetPos = { position.x, position.y - TILE_SIZE };
+    else if (km->IsOnceKeyDown(VK_DOWN))
+        targetPos = { position.x, position.y + TILE_SIZE };
+    else if (km->IsOnceKeyDown(VK_LEFT))
+        targetPos = { position.x - TILE_SIZE, position.y };
+    else if (km->IsOnceKeyDown(VK_RIGHT))
+        targetPos = { position.x + TILE_SIZE, position.y };
+    else return;
+
+    isMoving = true;
+
 }
 
 bool Player::NeedsInput()
 {
-    return true;
+    return !isMoving;
 }
 
-void Player::Move(FPOINT delta, Map* map, Game* game)
+bool Player::IsBusy()
 {
-    // 다음 좌표
-    float nextX = position.x + delta.x;
-    float nextY = position.y + delta.y;
+    return isMoving;
+}
 
-    if (!map->CanGo({ nextX, nextY })) return;
+void Player::Move(Game* game)
+{
+    if (!game->GetMap()->CanGo(targetPos)) return;
 
-    position.x = nextX;
-    position.y = nextY;
+    FPOINT delta = targetPos - position;
 
-    game->GetTurnManager()->EndTurn();
+    float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
+    delta.Normalize();
+
+    position.x += speed * deltaTime * delta.x;
+    position.y += speed * deltaTime * delta.y;
+
+    delta = targetPos - position;
+
+    // 매직넘버로,,, -> 변수로 dir 저장해두고 쓰면 Dot Product
+    if (delta.Length() <= 0.5f)
+    {
+        position = targetPos;
+        isMoving = false;
+    }
 }

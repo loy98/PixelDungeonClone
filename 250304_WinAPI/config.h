@@ -36,6 +36,54 @@ typedef struct tagFPOINT
 {
 	float x;
 	float y;
+
+	tagFPOINT operator-(const tagFPOINT& other) {
+		return { x - other.x , y - other.y };
+	}
+	void operator=(const tagFPOINT& other) {
+		x = other.x;
+		y = other.y;
+	}	
+	void operator+=(const tagFPOINT& other) {
+		x += other.x;
+		y += other.y;
+	}
+	void operator-=(const tagFPOINT& other) {
+		x -= other.x;
+		y -= other.y;
+	}
+	bool operator==(const tagFPOINT& other) {
+		return x == other.x && y == other.y;
+	}
+	bool operator!=(const tagFPOINT& other) {
+		return x != other.x || y != other.y;
+	}
+
+	float LengthSquared()
+	{
+		return x * x + y * y;
+	}
+
+	float Length()
+	{
+		return ::sqrt(LengthSquared());
+	}
+
+	void Normalize()
+	{
+		float length = Length();
+		if (length < 0.00000000001f)
+			return;
+
+		x /= length;
+		y /= length;
+	}
+
+	float Dot(tagFPOINT other)
+	{
+		return x * other.x + y * other.y;
+	}
+
 } FPOINT;
 
 /*

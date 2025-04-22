@@ -37,13 +37,18 @@ void Game::Init()
 	//}
 
 	// 시작 위치 테스트용 매직넘버
+
 	//Entity* player = new Player({ TILE_SIZE / 2, TILE_SIZE  / 2});
 	//Entity* monster1 = new Monster({TILE_SIZE /2 * 5, TILE_SIZE / 2 * 5 });
 	//Entity* monster2 = new Monster({TILE_SIZE /2 * 9, TILE_SIZE / 2 });
 
 	//AddActor(player);
 	//AddActor(monster);
-	
+
+	Entity* player = new Player({ TILE_SIZE / 2, TILE_SIZE  / 2}, 100.f);
+	Entity* monster1 = new Monster({TILE_SIZE /2 * 5, TILE_SIZE / 2 * 5 }, 100.f);
+	Entity* monster2 = new Monster({TILE_SIZE /2 * 9, TILE_SIZE / 2 }, 100.f);
+
 
 	// 게임이 맵을 가지고 있으면 바로 위치 설정 가능
 	AddActor(new Player
