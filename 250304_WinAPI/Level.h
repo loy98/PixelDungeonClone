@@ -37,8 +37,8 @@ private:
 	bool hasExplored[TILE_Y * TILE_X]; //인덱스별 해금되었는지 여부 저장하는 배열
 	bool isSeen[TILE_Y * TILE_X]; //인덱스별 시야 안에 들어왔는지 여부 저장하는 배열
 
-	const POINT GRID_POS_OFFSET = {(3240 - TILE_SIZE*TILE_X)/2, (2160 - TILE_SIZE * TILE_Y) / 2 };
-
+	// const POINT GRID_POS_OFFSET = {(3240 - TILE_SIZE*TILE_X)/2, (2160 - TILE_SIZE * TILE_Y) / 2 };
+	const POINT GRID_POS_OFFSET = {0,0};
 	vector<Biome*> bioms;
 	vector<Item*> items;
 	vector<Entity*> monsters;
@@ -94,8 +94,8 @@ public:
 	void Render(HDC hdc);
 
 	void AddActor(Entity* actor);
-	int GetMapIndex(int x, int y) {return (y - GRID_POS_OFFSET.y - TILE_SIZE / 2) / 30 * TILE_X + (x - GRID_POS_OFFSET.x - TILE_SIZE / 2) / 30;}
-	Map* GetMap(int x, int y) { return &map[(y - GRID_POS_OFFSET.y - TILE_SIZE / 2) / 30 * TILE_X + (x - GRID_POS_OFFSET.x - TILE_SIZE / 2) / 30]; }
+	int GetMapIndex(int x, int y) {return (y - GRID_POS_OFFSET.y - TILE_SIZE / 2) / TILE_SIZE * TILE_X + (x - GRID_POS_OFFSET.x - TILE_SIZE / 2) / TILE_SIZE;}
+	Map* GetMap(int x, int y) { return &map[(y - GRID_POS_OFFSET.y - TILE_SIZE / 2) / TILE_SIZE * TILE_X + (x - GRID_POS_OFFSET.x - TILE_SIZE / 2) / TILE_SIZE]; }
 	Entity* GetActorAt(FPOINT pos);
 
 	FPOINT GetPosByGridIndex(int idx, int idy) const { return {GRID_POS_OFFSET.x + (idx * 2 + 1) / 2.f * tempTileSize, GRID_POS_OFFSET.y + (idy * 2 + 1) / 2.f * tempTileSize}; }

@@ -62,7 +62,8 @@ public:
     void Update();
     virtual void Render(HDC hdc);
     virtual void Act(Level* level);
-    virtual void Attack(Level* level) {};
+    virtual void Attack(Level* level) {}
+    inline D2DImage* GetImage() {return this->image;};
 
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;

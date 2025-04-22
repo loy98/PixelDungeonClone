@@ -4,6 +4,7 @@
     <file url="file://$PROJECT_DIR$/250304_WinAPI/BattleScene.cpp" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/Button.h" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/MainGame.cpp" charset="EUC-KR" />
+    <file url="file://$PROJECT_DIR$/250304_WinAPI/PathFinder.cpp" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/SceneManager.cpp" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/Singleton.h" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/TilemapTool.cpp" charset="EUC-KR" />

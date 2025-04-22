@@ -19,78 +19,80 @@ void Level::Init()
 {
     turnManager = new TurnManager();
 
-	camera = new Camera();
-	camera->Init();
+    camera = new Camera();
+    camera->Init();
 
     sampleTile = D2DImageManager::GetInstance()->AddImage(
         "배틀시티_샘플타일", L"Image/tiles_sewers.png",
         16, 16);
 
 
-	tempTileSize = 30;
+    tempTileSize = TILE_SIZE;
 
-	for (int i = 0; i < TILE_Y; ++i) {
-		for (int j = 0; j < TILE_X; ++j) {
-			tempTile[TILE_X * i + j] = 
-			{	GRID_POS_OFFSET.x + j*TILE_SIZE, 
-				GRID_POS_OFFSET.y + i* TILE_SIZE,
-				GRID_POS_OFFSET.x + (j+1) * TILE_SIZE,
-				GRID_POS_OFFSET.y + (i+1) * TILE_SIZE
-			};
-		}
-	}
+    for (int i = 0; i < TILE_Y; ++i)
+    {
+        for (int j = 0; j < TILE_X; ++j)
+        {
+            tempTile[TILE_X * i + j] =
+            {
+                GRID_POS_OFFSET.x + j * TILE_SIZE,
+                GRID_POS_OFFSET.y + i * TILE_SIZE,
+                GRID_POS_OFFSET.x + (j + 1) * TILE_SIZE,
+                GRID_POS_OFFSET.y + (i + 1) * TILE_SIZE
+            };
+        }
+    }
 
-	mapRc = { tempTile[0].left, tempTile[0].top, tempTile[399].right, tempTile[399].bottom };
+    mapRc = {tempTile[0].left, tempTile[0].top, tempTile[TILE_X * TILE_Y - 1].right, tempTile[TILE_X * TILE_Y - 1].bottom};
 
-	// BlackBrush = CreateSolidBrush(RGB(0, 0, 0));
-	// GreyBrush = CreateSolidBrush(RGB(100, 100, 100));
-	// WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
-	// RedBrush = CreateSolidBrush(RGB(255, 0, 0));
+    // BlackBrush = CreateSolidBrush(RGB(0, 0, 0));
+    // GreyBrush = CreateSolidBrush(RGB(100, 100, 100));
+    // WhiteBrush = CreateSolidBrush(RGB(255, 255, 255));
+    // RedBrush = CreateSolidBrush(RGB(255, 0, 0));
 
 
+    for (auto& s : shouldBeRender)
+    {
+        s = true;
+    }
+    for (auto& h : hasExplored)
+    {
+        h = true;
+    }
+    for (auto& i : isSeen)
+    {
+        i = true;
+    }
 
-	for (auto& s : shouldBeRender) 
-	{
-		s = true;
-	}
-	for (auto& h : hasExplored) 
-	{
-		h = true;
-	}
-	for (auto& i : isSeen) 
-	{
-		i = true;
-	}
+    FileLoad();
 
-	FileLoad();
+    // Set map dimensions
+    mapWidth = TILE_X;
+    mapHeight = TILE_Y;
 
-  // Set map dimensions
-  mapWidth = TILE_X;
-  mapHeight = TILE_Y;
+    // Generate dungeon
+    dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
 
-  // Generate dungeon
-  dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
+    // Place player near entrance
+    FPOINT playerPos = GetEntranceSpawnPosition();
+    //TODO:MergeCheck
+    //   Player* player = new Player(playerPos, 50.0f);
 
-  // Place player near entrance
-  FPOINT playerPos = GetEntranceSpawnPosition();
-  //TODO:MergeCheck
-  //   Player* player = new Player(playerPos, 50.0f);
-  
-	// 시작 위치 테스트용 매직넘버
-	Entity* player = new Player(GetPosByGridIndex(3, 3), 300.f, 20, 5, 2);
-	// Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 300.f, 15, 4, 3);
-	// Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 300.f, 15, 4, 3);
+    // 시작 위치 테스트용 매직넘버
+    player = new Player(playerPos, 300.f, 20, 5, 2);
+    // Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 300.f, 15, 4, 3);
+    // Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 300.f, 15, 4, 3);
 
-	AddActor(player);
-	// AddActor(monster1);
-	// AddActor(monster2);
+    AddActor(player);
+    // AddActor(monster1);
+    // AddActor(monster2);
 
-	for (auto actor : actors)
-	{
-		if (actor)
-			turnManager->AddActor(actor);
-	}
-	turnManager->Init();
+    for (auto actor : actors)
+    {
+        if (actor)
+            turnManager->AddActor(actor);
+    }
+    turnManager->Init();
 }
 
 void Level::Release()
@@ -112,126 +114,129 @@ void Level::Release()
 
 void Level::Update()
 {
-	camera->Update();
+    camera->Update();
 
-	POINT ConvertedDragEndP = {
-		camera->ConvertToWorldX(MouseManager::GetInstance()->GetClickP().x),
-		camera->ConvertToWorldY(MouseManager::GetInstance()->GetClickP().y)
-	};
+    POINT ConvertedDragEndP = {
+        camera->ConvertToWorldX(MouseManager::GetInstance()->GetClickP().x),
+        camera->ConvertToWorldY(MouseManager::GetInstance()->GetClickP().y)
+    };
 
-	if (PtInRect(&mapRc, ConvertedDragEndP))
-	{
-		if (MouseManager::GetInstance()->GetClickValueUsed() == false) {
+    if (PtInRect(&mapRc, ConvertedDragEndP))
+    {
+        if (MouseManager::GetInstance()->GetClickValueUsed() == false)
+        {
+            long posX = ConvertedDragEndP.x;
+            long posY = ConvertedDragEndP.y;
 
-			long posX = ConvertedDragEndP.x;
-			long posY = ConvertedDragEndP.y;
+            long indX = (posX - mapRc.left) / TILE_SIZE;
+            long indY = (posY - mapRc.top) / TILE_SIZE;
 
-			long indX = (posX - mapRc.left) / TILE_SIZE;
-			long indY = (posY - mapRc.top) / TILE_SIZE;
+            if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y) ///
+            {
+                /// 구현 하고 싶은 로직 넣는 부분
+                //map[indY * TILE_X + indX].type = TT::COUNT;
+                if (map[indY * TILE_X + indX].CanGo())
+                    dynamic_cast<Player*>(player)->SetNextPos(GetPosByGridIndex(indX, indY));
+            } ///
 
-			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	///
-			{														/// 구현 하고 싶은 로직 넣는 부분
-				//map[indY * TILE_X + indX].type = TT::COUNT;
-				if (map[indY * TILE_X + indX].CanGo())
-					dynamic_cast<Player*>(actors[0])->SetNextPos(GetPosByGridIndex(indX, indY));	
-			}														///
-
-			MouseManager::GetInstance()->InitPoints();
-			MouseManager::GetInstance()->AlreadyClickUsed();
-		}
-	} ///디버깅을 위해 마우스 왼쪽 버튼을 떼면 그 자리에 있는 타일이 빨간색으로 변하게 해놨습니다. 
+            MouseManager::GetInstance()->InitPoints();
+            MouseManager::GetInstance()->AlreadyClickUsed();
+        }
+    } ///디버깅을 위해 마우스 왼쪽 버튼을 떼면 그 자리에 있는 타일이 빨간색으로 변하게 해놨습니다. 
 	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
 
     SetVisibleTile();
 
-	if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
-	{
-		long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
-		long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
+    if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
+    {
+        long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
+        long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
 
-		for (auto& t : tempTile) {
-			t.left += tempDeltaX;
-			t.right += tempDeltaX;
-			t.top += tempDeltaY;
-			t.bottom += tempDeltaY;
-		}
+        for (auto& t : tempTile)
+        {
+            t.left += tempDeltaX;
+            t.right += tempDeltaX;
+            t.top += tempDeltaY;
+            t.bottom += tempDeltaY;
+        }
 
-		mapRc.left += tempDeltaX;
-		mapRc.right += tempDeltaX;
-		mapRc.top += tempDeltaY;
-		mapRc.bottom += tempDeltaY;
+        mapRc.left += tempDeltaX;
+        mapRc.right += tempDeltaX;
+        mapRc.top += tempDeltaY;
+        mapRc.bottom += tempDeltaY;
+    }
 
-	}
-
-	turnManager->ProcessTurns(this);
-	for (auto actor : actors)
-	{
-		if (actor) actor->Update();
-	}
+    turnManager->ProcessTurns(this);
+    for (auto actor : actors)
+    {
+        if (actor) actor->Update();
+    }
 }
 
 void Level::Render(HDC hdc)
 {
+    // PatBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, WHITENESS);
 
-	// PatBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, WHITENESS);
-	
-	// RenderRect(hdc, mapRc);
-	//sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
-	
-	for (int i = 0; i < TILE_Y; ++i) {
-		for (int j = 0; j < TILE_X; ++j) {
-		    bool isVisible = map[TILE_X * i + j].visible;
-		    int tileType = map[TILE_X * i + j].type;
-		    int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
-		    int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
-            
-		    // Get the current frame coordinates for this tile type
-		    POINT frame = GetCurrentFrame(tileType);
-            
-		    // Render the tile using the frame coordinates
-		    sampleTile->Middle_RenderFrameScale(tileX, tileY, camera->GetZoomScale() * (isVisible ? 2.f : 1.f), camera->GetZoomScale() * (isVisible ? 2.f : 1.f), frame.x, frame.y);
-		    
-			// switch (map[TILE_X * i + j].type) {
-			// 	case TT::WALL :
-			// 		sampleTile->RenderFrameScale(
-			// 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-			// 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-			// 			camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
-			// 		// hOldBrush = (HBRUSH)SelectObject(hdc, GreyBrush);
-			// 		// RenderRect(hdc, tempTile[20 * i + j]);
-			// 		// SelectObject(hdc, hOldBrush);
-			// 		break;
-			// 	case TT::FLOOR:
-			// 		sampleTile->RenderFrameScale(
-			// 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-			// 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-			// 			camera->GetZoomScale(), camera->GetZoomScale(), 3, 0);
-			// 		// hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
-			// 		// RenderRect(hdc, tempTile[20 * i + j]);
-			// 		// SelectObject(hdc, hOldBrush);
-			// 		break;
-			// 	case TT::NONE:
-			// 		sampleTile->RenderFrameScale(
-			// 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-			// 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-			// 			camera->GetZoomScale(), camera->GetZoomScale(), 0, 0);
-			// 		// hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
-			// 		// RenderRect(hdc, tempTile[20 * i + j]);
-			// 		// SelectObject(hdc, hOldBrush);
-			// 		break;
-			// 	default:
-			// 		sampleTile->RenderFrameScale(
-			// 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-			// 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-			// 			camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
-			// 		// hOldBrush = (HBRUSH)SelectObject(hdc, RedBrush);
-			// 		// RenderRect(hdc, tempTile[20 * i + j]);
-			// 		// SelectObject(hdc, hOldBrush);
-			// 		break;
-			// }
-		}
-	}
-	
+    // RenderRect(hdc, mapRc);
+    //sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
+
+    for (int i = 0; i < TILE_Y; ++i)
+    {
+        for (int j = 0; j < TILE_X; ++j)
+        {
+            bool isVisible = map[TILE_X * i + j].visible;
+            int tileType = map[TILE_X * i + j].type;
+            int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
+            int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
+
+            // Get the current frame coordinates for this tile type
+            POINT frame = GetCurrentFrame(tileType);
+
+            // Render the tile using the frame coordinates
+            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * (isVisible ? 2.f : 1.f),
+                                                camera->GetZoomScale() * (isVisible ? 2.f : 1.f), frame.x, frame.y);
+
+            // switch (map[TILE_X * i + j].type) {
+            // 	case TT::WALL :
+            // 		sampleTile->RenderFrameScale(
+            // 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+            // 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+            // 			camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
+            // 		// hOldBrush = (HBRUSH)SelectObject(hdc, GreyBrush);
+            // 		// RenderRect(hdc, tempTile[20 * i + j]);
+            // 		// SelectObject(hdc, hOldBrush);
+            // 		break;
+            // 	case TT::FLOOR:
+            // 		sampleTile->RenderFrameScale(
+            // 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+            // 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+            // 			camera->GetZoomScale(), camera->GetZoomScale(), 3, 0);
+            // 		// hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
+            // 		// RenderRect(hdc, tempTile[20 * i + j]);
+            // 		// SelectObject(hdc, hOldBrush);
+            // 		break;
+            // 	case TT::NONE:
+            // 		sampleTile->RenderFrameScale(
+            // 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+            // 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+            // 			camera->GetZoomScale(), camera->GetZoomScale(), 0, 0);
+            // 		// hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
+            // 		// RenderRect(hdc, tempTile[20 * i + j]);
+            // 		// SelectObject(hdc, hOldBrush);
+            // 		break;
+            // 	default:
+            // 		sampleTile->RenderFrameScale(
+            // 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
+            // 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
+            // 			camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
+            // 		// hOldBrush = (HBRUSH)SelectObject(hdc, RedBrush);
+            // 		// RenderRect(hdc, tempTile[20 * i + j]);
+            // 		// SelectObject(hdc, hOldBrush);
+            // 		break;
+            // }
+        }
+    }
+
     // sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
 
     // for (int i = 0; i < TILE_Y; ++i)
@@ -253,7 +258,13 @@ void Level::Render(HDC hdc)
     // Render actors
     for (auto actor : actors)
     {
-        actor->Render(hdc);
+        if (actor->GetImage()) {
+            actor->GetImage()->
+                Middle_RenderFrameScale(
+                    camera->ConvertToRendererX(actor->GetPosition().x), 
+                    camera->ConvertToRendererY(actor->GetPosition().y),
+                    camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, 0, 0);
+        }
     }
 }
 
@@ -287,14 +298,14 @@ Level::~Level()
 
 Entity* Level::GetActorAt(FPOINT pos)
 {
-	if (actors.empty()) return nullptr;
+    if (actors.empty()) return nullptr;
 
-	for (auto actor : actors)
-	{
-		if (actor && actor->GetPosition() == pos)
-			return actor;
-	}
-	return nullptr;
+    for (auto actor : actors)
+    {
+        if (actor && actor->GetPosition() == pos)
+            return actor;
+    }
+    return nullptr;
 }
 
 void Level::AddActor(Entity* actor)
@@ -374,10 +385,13 @@ FPOINT Level::GetRandomFloorTile() const
     std::vector<FPOINT> floorTiles;
 
     // Check if map is initialized
-    if (mapData.empty() || mapHeight <= 0 || mapWidth <= 0) {
+    if (mapData.empty() || mapHeight <= 0 || mapWidth <= 0)
+    {
         // Return a default position if map is not initialized
-        return {static_cast<float>(GRID_POS_OFFSET.x + tempTileSize), 
-                static_cast<float>(GRID_POS_OFFSET.y + tempTileSize)};
+        return {
+            static_cast<float>(GRID_POS_OFFSET.x + tempTileSize),
+            static_cast<float>(GRID_POS_OFFSET.y + tempTileSize)
+        };
     }
 
     // 모든 바닥 타일 위치 수집
@@ -399,9 +413,12 @@ FPOINT Level::GetRandomFloorTile() const
     }
 
     // If no floor tiles found, return a default position
-    if (floorTiles.empty()) {
-        return {static_cast<float>(GRID_POS_OFFSET.x + tempTileSize), 
-                static_cast<float>(GRID_POS_OFFSET.y + tempTileSize)};
+    if (floorTiles.empty())
+    {
+        return {
+            static_cast<float>(GRID_POS_OFFSET.x + tempTileSize),
+            static_cast<float>(GRID_POS_OFFSET.y + tempTileSize)
+        };
     }
 
     // 랜덤하게 하나 선택
@@ -425,19 +442,19 @@ POINT Level::GetCurrentFrame(int tileType) const
     // Default frames for basic tiles if no frame data exists
     switch (tileType)
     {
-    case 0:  // Wall
+    case 0: // Wall
         return {0, 3};
-    case 1:  // Floor
+    case 1: // Floor
         return {0, 0};
-    case 2:  // Door
+    case 2: // Door
         return {8, 3};
-    case 3:  // Entrance
+    case 3: // Entrance
         return {0, 1};
-    case 4:  // Exit
+    case 4: // Exit
         return {1, 1};
-    case 5:  // Hidden door
+    case 5: // Hidden door
         return {13, 3};
-    case 6:  // Empty space
+    case 6: // Empty space
         return {0, 9};
     case 10: // Top wall
         return {0, 6};
@@ -460,12 +477,16 @@ POINT Level::GetCurrentFrame(int tileType) const
     }
 }
 
-FPOINT Level::GetEntranceSpawnPosition() const {
+FPOINT Level::GetEntranceSpawnPosition() const
+{
     // Find entrance position
     std::pair<int, int> entrancePos = {-1, -1};
-    for (int y = 0; y < mapHeight; y++) {
-        for (int x = 0; x < mapWidth; x++) {
-            if (mapData[y][x] == 3) {
+    for (int y = 0; y < mapHeight; y++)
+    {
+        for (int x = 0; x < mapWidth; x++)
+        {
+            if (mapData[y][x] == 3)
+            {
                 entrancePos = {x, y};
                 return GetPosByGridIndex(x, y);
                 break;
@@ -475,42 +496,48 @@ FPOINT Level::GetEntranceSpawnPosition() const {
     }
 
     // If no entrance found, return a default position
-    if (entrancePos.first == -1) {
+    if (entrancePos.first == -1)
+    {
         return GetRandomFloorTile();
     }
 
     // Look for a floor tile near the entrance
     const int SAFE_RADIUS = 2; // Safe radius around entrance
     std::vector<std::pair<int, int>> validPositions;
-    
-    for (int dy = -SAFE_RADIUS; dy <= SAFE_RADIUS; dy++) {
-        for (int dx = -SAFE_RADIUS; dx <= SAFE_RADIUS; dx++) {
+
+    for (int dy = -SAFE_RADIUS; dy <= SAFE_RADIUS; dy++)
+    {
+        for (int dx = -SAFE_RADIUS; dx <= SAFE_RADIUS; dx++)
+        {
             int newX = entrancePos.first + dx;
             int newY = entrancePos.second + dy;
-            
+
             // Check bounds
-            if (newX < 0 || newX >= mapWidth || newY < 0 || newY >= mapHeight) {
+            if (newX < 0 || newX >= mapWidth || newY < 0 || newY >= mapHeight)
+            {
                 continue;
             }
-            
+
             // Check if it's a floor tile
-            if (mapData[newY][newX] == TileVariationManager::TILE_FLOOR) {
+            if (mapData[newY][newX] == TileVariationManager::TILE_FLOOR)
+            {
                 validPositions.push_back({newX, newY});
             }
         }
     }
-    
+
     // If no valid positions found, return a random floor tile
-    if (validPositions.empty()) {
+    if (validPositions.empty())
+    {
         return GetRandomFloorTile();
     }
-    
+
     // Choose a random valid position
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_int_distribution<> dis(0, validPositions.size() - 1);
     auto chosenPos = validPositions[dis(gen)];
-    
+
     // Convert to world coordinates
     return GetPosByGridIndex(chosenPos.first, chosenPos.second);
 }
@@ -569,7 +596,6 @@ void Level::ResetVisibleTile()
                     continue;
                 }
                 // map[i][j].SetColor(RGB(100, 100, 100));
-				
             }
         }
     }
@@ -588,12 +614,12 @@ void Level::SetVisibleTile()
     int index = GetMapIndex(player->GetPosition().x, player->GetPosition().y);
     int pTileXIndex = index % TILE_Y;
     int pTileYIndex = index / TILE_Y;
-    map[index].visible = true; 
-    
-    for(int i = 0; i< 8; i++)
+    map[index].visible = true;
+
+    for (auto scanDirection : scanDirections)
     {
-        fov->Calculate(reinterpret_cast<Map(&)[TILE_Y][TILE_X]>(map), pTileXIndex, pTileYIndex, 0, 
-            1.0f, 0.0f, scanDirections[i]);
+        fov->Calculate(reinterpret_cast<Map(&)[TILE_Y][TILE_X]>(map), pTileXIndex, pTileYIndex, 0,
+                       1.0f, 0.0f, scanDirection);
         int a = 0;
     }
     // map[10][10].SetColor(RGB(200, 200, 0));
