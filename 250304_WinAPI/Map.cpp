@@ -2,6 +2,7 @@
 
 Map::Map(int width, int height)
 {
+
 }
 
 bool Map::Load(wchar_t* filePath)
@@ -12,6 +13,12 @@ bool Map::Load(wchar_t* filePath)
 bool Map::CanGo(FPOINT nextPos)
 {
 	return true;
+}
+
+POINT Map::GetRandomFloorTile()
+{
+
+	return POINT();
 }
 
 int Map::GetTileType(int x, int y)

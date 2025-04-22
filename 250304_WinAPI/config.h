@@ -17,6 +17,10 @@ using namespace std;
 #include "TimerManager.h"
 #include "SceneManager.h"
 
+// 랜덤
+#include <cstdlib>
+#include <ctime>
+
 /*
 	컴파일러에서 해당 코드를 뒤에 정의된 코드로 변경한다. 
 */
@@ -106,3 +110,16 @@ typedef struct tagTile
 	int frameX;
 	int frameY;
 } TILE_INFO;
+
+// FoV Direction
+struct ScanDirection
+{
+	int horizonX;
+	int verticalX;
+	int horizonY;
+	int verticalY;
+
+	ScanDirection(int hX, int vX, int hY, int vY)
+		: horizonX(hX), verticalX(vX), horizonY(hY), verticalY(vY) {
+	}
+};

@@ -108,6 +108,9 @@
     <ClCompile Include="main.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="FieldOfView.cpp">
+      <Filter>2D Framework</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="config.h">
@@ -184,6 +187,9 @@
     </ClInclude>
     <ClInclude Include="Monster.h">
       <Filter>MainGame\GamePlay\Entity</Filter>
+    </ClInclude>
+    <ClInclude Include="FieldOfView.h">
+      <Filter>2D Framework</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

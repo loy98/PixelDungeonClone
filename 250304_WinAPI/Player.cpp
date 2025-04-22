@@ -26,7 +26,30 @@ void Player::Act(Game* game)
         return;
     }
 
+    //if (km->IsOnceKeyDown(VK_UP))
+    //    Move({ 0, -TILE_SIZE }, map, game);
+    //else if (km->IsOnceKeyDown(VK_DOWN))
+    //    Move({ 0, TILE_SIZE }, map, game);
+    //else if (km->IsOnceKeyDown(VK_LEFT))
+    //    Move({ -TILE_SIZE, 0 }, map, game);
+    //else if (km->IsOnceKeyDown(VK_RIGHT))
+    //    Move({ TILE_SIZE, 0 }, map, game);
+
+    // endturn을 move 안에서..? -> 인자에 turnManager 받아야함
+    // 이동이 수행 됐을 때만 endturn
+
+    // 에이스타용
     if (km->IsOnceKeyDown(VK_UP))
+    //---
+        Move({ 0, -30 }, map, game);
+    else if (km->IsOnceKeyDown(VK_DOWN))
+        Move({ 0, 30 }, map, game);
+    else if (km->IsOnceKeyDown(VK_LEFT))
+        Move({ -30, 0 }, map, game);
+    else if (km->IsOnceKeyDown(VK_RIGHT))
+        Move({ 30, 0 }, map, game);
+  
+    //TODO:MergeCheck
         targetPos = { position.x, position.y - TILE_SIZE };
     else if (km->IsOnceKeyDown(VK_DOWN))
         targetPos = { position.x, position.y + TILE_SIZE };
@@ -37,6 +60,7 @@ void Player::Act(Game* game)
     else return;
 
     isMoving = true;
+
 }
 
 bool Player::NeedsInput()

@@ -5,7 +5,8 @@
 #define ASTAR_TILE_SIZE		30
 #define ASTAR_TILE_COUNT	20
 
-enum class AstarTileType { Start, End, Wall, None };
+//enum class AstarTileType { Start, End, Wall, None};
+enum class AstarTileType { Start, End, Wall, None };	// fov test용
 
 class AstarTile : public GameObject
 {
@@ -27,6 +28,8 @@ public:
 	HBRUSH hBrush;
 	HBRUSH hOldBrush;
 
+	// fov test
+	bool isVisible = false;
 
 	virtual HRESULT Init();
 	HRESULT Init(int idX, int idY);
@@ -49,6 +52,10 @@ public:
 
 };
 
+// Fov -> 추후 레벨로 이동
+class FieldOfView;
+// test
+class Game;
 class AstarScene : public GameObject
 {
 	AstarTile map[ASTAR_TILE_COUNT][ASTAR_TILE_COUNT];
@@ -60,6 +67,24 @@ class AstarScene : public GameObject
 
 	vector<AstarTile*> openList;
 	vector<AstarTile*> closeList;
+
+	// test
+	Game* astarGame;
+
+	// FoV
+	FieldOfView* fov;
+	// config
+	ScanDirection scanDirections[8] =
+	{
+		{1, 0, 0, -1},
+		{-1, 0, 0, -1},
+		{0, 1, 1, 0},
+		{0, -1, 1, 0},
+		{-1, 0, 0, 1},
+		{1, 0, 0, 1},
+		{0, -1, -1, 0},
+		{0, 1, -1, 0}
+	};
 
 public:
 	virtual HRESULT Init();
@@ -77,5 +102,13 @@ public:
 	bool isValidNeighbor(AstarTile* neighbor);
 
 	virtual ~AstarScene() {};
+
+	//
+	FPOINT GetRandomFloorTile();
+	void SetEntityPos();
+
+	// Fov용
+	void ResetVisibleTile();
+	void SetVisibleTile();
 };
 

@@ -18,14 +18,20 @@ void Monster::Act(Game* game)
 {
 
     // 턴 이동 테스트용
-    if (isMoving)
-    {
-        Move(game);
-    }
-    else
-    {
-        isMoving = true;
-    }
+
+    //Move({ TILE_SIZE, TILE_SIZE }, map);
+
+    // 에이스타용
+    Move({ 30, 30 }, map);
+
+//     if (isMoving)
+//     {
+//         Move(game);
+//     }
+//     else
+//     {
+//         isMoving = true;
+//     }
 
     // tm->EndTurn();
 }
@@ -44,17 +50,17 @@ void Monster::Move(Game* game)
 {
     // 이동 순서 체크용
     // Sleep(100);
-    if (!game->GetMap()->CanGo(targetPos)) return;
+//     if (!game->GetMap()->CanGo(targetPos)) return;
 
-    FPOINT delta = targetPos - position;
+//     FPOINT delta = targetPos - position;
 
-    float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
-    delta.Normalize();
+//     float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
+//     delta.Normalize();
 
-    position.x += speed * deltaTime * delta.x;
-    position.y += speed * deltaTime * delta.y;
+//     position.x += speed * deltaTime * delta.x;
+//     position.y += speed * deltaTime * delta.y;
 
-    delta = targetPos - position;
+//     delta = targetPos - position;
 
     // 매직넘버로,,, -> 변수로 dir 저장해두고 쓰면 Dot Product
     if (delta.Length() <= 0.5f)

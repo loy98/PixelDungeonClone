@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "config.h"
 #include "Entity.h"
 
@@ -6,7 +6,9 @@ class Map;
 class Monster : public Entity
 {
 public:
+    Monster() {};
     Monster(FPOINT pos, float speed);
+
     virtual ~Monster();
 
     virtual void Act(Game* game) override;

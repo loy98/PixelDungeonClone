@@ -101,6 +101,9 @@ LRESULT MainGame::MainProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lPara
 		case 'd': case 'D':
 			SceneManager::GetInstance()->ChangeScene("타일맵툴");
 			break;
+		case 'w': case 'W':
+			SceneManager::GetInstance()->ChangeScene("A*알고리즘");
+			break;
 		}
 		break;
 	case WM_LBUTTONDOWN:

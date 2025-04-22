@@ -5,6 +5,7 @@ class Map;
 class Player : public Entity
 {
 public:
+    Player() {};
     Player(FPOINT pos, float speed);
     virtual ~Player();
 

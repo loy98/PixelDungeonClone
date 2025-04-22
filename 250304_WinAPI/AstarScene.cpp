@@ -1,6 +1,11 @@
-#include "AstarScene.h"
+﻿#include "AstarScene.h"
 #include "CommonFunction.h"
 #include "algorithm"
+// test
+#include "Game.h"
+
+// Fov
+#include "FieldOfView.h"
 
 HRESULT AstarTile::Init()
 {
@@ -96,6 +101,13 @@ HRESULT AstarScene::Init()
 	destTile->SetColor(RGB(0, 0, 255));
 	destTile->SetType(AstarTileType::End);
 
+	// test
+	astarGame = new Game;
+	astarGame->Init();
+
+	// fov test
+	fov = new FieldOfView;
+
 	return S_OK;
 }
 
@@ -105,9 +117,14 @@ void AstarScene::Release()
 
 void AstarScene::Update()
 {
+	if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE))
+	{
+		SetEntityPos();
+	}
+
 	if (KeyManager::GetInstance()->IsStayKeyDown(VK_RBUTTON))
 	{
-		// g_ptMouse�� �ε����� ���
+		// g_ptMouse로 인덱스를 계산
 		int x, y;
 		x = g_ptMouse.x / ASTAR_TILE_SIZE;
 		y = g_ptMouse.y / ASTAR_TILE_SIZE;
@@ -122,14 +139,23 @@ void AstarScene::Update()
 				map[y][x].SetType(AstarTileType::Wall);
 			}
 		}
+		
 	}
 
+	if (KeyManager::GetInstance()->IsOnceKeyDown(VK_BACK))
+	{
+		SetVisibleTile();
+	}
+
+	astarGame->Update();
+
+	
 
 	// TODO 
-	if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE))
-	{
-		FindPath();
-	}
+	//if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE))
+	//{
+	//	FindPath();
+	//}
 }
 
 void AstarScene::Render(HDC hdc)
@@ -141,6 +167,8 @@ void AstarScene::Render(HDC hdc)
 			map[i][j].Render(hdc);
 		}
 	}
+
+	astarGame->Render(hdc);
 }
 
 void AstarScene::FindPath()
@@ -164,7 +192,7 @@ void AstarScene::FindPath()
 
 		if (KeyManager::GetInstance()->IsOnceKeyDown(VK_RETURN))
 		{
-			SceneManager::GetInstance()->ChangeScene("������_1", "�ε�_1");
+			SceneManager::GetInstance()->ChangeScene("전투씬_1", "로딩_1");
 		}
 	}
 }
@@ -188,13 +216,13 @@ void AstarScene::AddOpenList(AstarTile* currTile)
 
 		if (!isValidNeighbor(neighbor)) continue;
 
-		// �밢�� �̵� �� ���� �� �˻�
+		// 대각선 이동 시 인접 벽 검사
 		if (abs(dx[i]) + abs(dy[i]) == 2) {
 			bool wallX = map[currTile->idY][nx].GetType() == AstarTileType::Wall;
 			bool wallY = map[ny][currTile->idX].GetType() == AstarTileType::Wall;
 			if (wallX || wallY) continue;
 		}
-		// �̵� ��� Ȯ�� �� ���� ���� Ȯ��
+		// 이동 비용 확인 및 갱신 여부 확인
 		UpdateNeighborCosts(neighbor, currTile, moveCost);
 	}
 
@@ -250,4 +278,82 @@ bool AstarScene::isValidNeighbor(AstarTile* neighbor)
 {
 	bool isNotClose = find(closeList.begin(), closeList.end(), neighbor) == closeList.end();
 	return neighbor->GetType() != AstarTileType::Wall && isNotClose;
+}
+
+// 맵 함수-이 주소로 세팅. 레벨이 구현되면 레벨에서 이 작업하면 될 것같음.
+FPOINT AstarScene::GetRandomFloorTile()
+{
+	// 랜덤한 타일의 center 좌표를 반환
+	// 벽이면 반환하면 안됨
+	// 플레이어 주변도 X
+
+	RECT rc;
+	rc.left = 0;
+	rc.right = ASTAR_TILE_SIZE * 2;
+	rc.top = 0;
+	rc.bottom = ASTAR_TILE_SIZE * 2;
+
+
+	int x = (rand() % ASTAR_TILE_COUNT);
+	int y = (rand() % ASTAR_TILE_COUNT);
+
+	while ((map[(int)y][(int)x].GetType() == AstarTileType::Wall) ||RectInRect(rc, map[(int)y][(int)x].rc))
+	{
+		x = (rand() % ASTAR_TILE_COUNT);
+		y = (rand() % ASTAR_TILE_COUNT);
+	}
+			
+	FPOINT pos = { map[y][x].center.x, map[y][x].center.y };
+
+	return pos;
+}
+
+void AstarScene::SetEntityPos()
+{
+	// entity 배치
+	FPOINT pos = GetRandomFloorTile();
+	astarGame->SetEntityOnMap(pos);
+}
+
+void AstarScene::ResetVisibleTile()
+{
+	// 시야 리셋-모든 타일 검사. 맵이 커지면 비효율적일수도 있을 것 같음.
+	for (int i = 0; i < ASTAR_TILE_COUNT; i++)
+	{
+		for (int j = 0; j < ASTAR_TILE_COUNT; j++)
+		{
+			if (map[i][j].isVisible == true)
+			{
+				//map[i][j].SetColor(RGB(100, 100, 100));
+				if (map[i][j].GetType() == AstarTileType::Wall/* ||
+					map[i][j].GetType() == AstarTileType::Start ||
+					map[i][j].GetType() == AstarTileType::End*/)
+				{
+					map[i][j].isVisible = false;
+					continue;
+				}
+				map[i][j].SetColor(RGB(100, 100, 100));
+				
+			}
+		}
+	}
+}
+
+void AstarScene::SetVisibleTile()
+{
+	//// 시야 설정-시야에 드는 타일은 색을 다르게 함.
+	//// 시야 리셋
+	ResetVisibleTile();
+
+	// 임시 좌표-플레이어 좌표
+	//map[10][10].SetColor(RGB(200, 200, 0));
+	map[10][10].isVisible = true;
+
+	for(int i = 0; i< 8; i++)
+	{
+		fov->Calculate(reinterpret_cast<AstarTile(&)[20][20]>(map), 10, 10, 0, 
+			1.0f, 0.0f, scanDirections[i]);
+		int a = 0;
+	}
+	map[10][10].SetColor(RGB(200, 200, 0));
 }
