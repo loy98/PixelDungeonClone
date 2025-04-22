@@ -17,14 +17,18 @@ void Inventory::AddItem(Item* item)
     // 해당 인덱스 count 증가
 	auto it = indexMap.find(key);
 
+    // 장비... 같은 이름이면 indexMap 사용 불가,,, 같은 장비 못먹는다?
     if (it != indexMap.end() && indexMap[key] != -1)
     {
-        items[it->second].count++;
+        if (item->GetType() == ItemType::CONSUMABLE)
+        {
+            items[it->second].count++;
+        }
         return;
     }
 
     // 없으면 빈 슬롯 찾아 할당
-    for (int i = 0; i < (int)items.size(); ++i) 
+    for (int i = 3; i < (int)items.size(); ++i) 
     {
         if (items[i].count == 0) 
         {

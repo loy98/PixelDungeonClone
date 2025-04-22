@@ -31,5 +31,6 @@ public:
 	FPOINT GetPosition() { return position; }
 	int GetImgIdX() { return imageIdX; }
 	int GetImgIdY() { return imageIdY; }
+	ItemType GetType() { return type; }
 };
 
