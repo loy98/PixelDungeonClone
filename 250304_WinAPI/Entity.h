@@ -83,6 +83,7 @@ public:
     inline EntityType GetType() const { return type; }
     inline int GetExp() { return exp; }
     inline D2DImage* GetImage() { return image; }
+    inline int GetCurAnimIdx() { return curAnimFrame; }
 
     //에너지 관련 함수
     inline bool CanAct() const { return energy >= actionCost; }
@@ -90,7 +91,7 @@ public:
     void UseEnergy() { energy -= actionCost; }
 
     //아이템 관련 함수
-    virtual void Heal(int healAmount) {};
+    virtual void Heal(int healAmount) {};   // HealthPotion
 
     void Stop() { destPos = position; }
 

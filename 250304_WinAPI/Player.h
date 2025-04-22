@@ -4,6 +4,7 @@
 class Level;
 class PathFinder;
 class Item;
+class Inventory;
 class Player : public Entity
 {
 public:
@@ -22,6 +23,7 @@ public:
     bool IsBusy() override { return curState != EntityState::IDLE; }
 
     void SetNextPos(FPOINT pos) { destPos = pos; }
+    void GetItem(Item* item);
 private:
-    Item* potion;
+    Inventory* inven;
 };

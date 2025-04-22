@@ -9,7 +9,7 @@
 #include "PathFinder.h"
 #include "CombatSyetem.h"
 #include "Item.h"
-#include "HealPotion.h"
+#include "Inventory.h"
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -39,7 +39,7 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 
     //image = D2DImageManager::GetInstance()->AddImage("player", L"Image/warrior.png", 21, 7); 
 
-    potion = new HealPotion();
+    inven = new Inventory(this);
 }
 
 Player::~Player()
@@ -83,14 +83,18 @@ void Player::Attack(Level* level)
 
 void Player::ActIdle(Level* level)
 {
+    // 테스트용
     if (KeyManager::GetInstance()->IsOnceKeyDown('P'))
-        potion->Use(this);
+    {
+        if (inven)
+        {
+            inven->UseItem("체력포션");
+        }
+    }
+
     if (finder->FindPath(position, destPos, level, OUT path))
         targetPos = path[1];
     if (position == destPos) return;
-
-
-    //isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
 
     target = level->GetActorAt(targetPos);
     if (target)
@@ -103,9 +107,18 @@ void Player::ActIdle(Level* level)
     curState = EntityState::MOVE;
 }
 
+void Player::GetItem(Item* item)
+{
+    if (inven)
+    {
+        inven->AddItem(item);
+    }
+}
+
 void Player::Heal(int healAmount)
 {
     hp += healAmount;
+    if (hp >= maxHp) hp = maxHp;
 }
 
 void Player::Move(Level* level)

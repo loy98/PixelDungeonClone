@@ -1,7 +1,7 @@
 ﻿#include "Inventory.h"
 #include "Item.h"
 
-Inventory::Inventory()
+Inventory::Inventory(Entity* owner) : owner(owner)
 {
 }
 
@@ -17,7 +17,7 @@ void Inventory::AddItem(Item* item)
     // 해당 인덱스 count 증가
 	auto it = indexMap.find(key);
 
-    if (it != indexMap.end()) 
+    if (it != indexMap.end() && indexMap[key] != -1)
     {
         items[it->second].count++;
         return;
@@ -55,6 +55,17 @@ void Inventory::UseItem(string name)
     Item* item = items[index].item;
     item->Use(owner);
     items[index].count--;
+     
+    if (items[index].count <= 0)
+    {
+        // 인벤토리에서 제거
+        items[index].count = 0;
+        delete items[index].item;
+        items[index].item = nullptr;
+
+        // 인덱스 정보 -1로 초기화
+        indexMap[name] = -1;
+    }
 
 	return;
 }

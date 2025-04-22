@@ -15,6 +15,8 @@
 #include "Camera.h"
 #include "FieldOfView.h"
 #include "UI/Test/UITestView.h"
+#include "Item.h"
+#include "HealPotion.h"
 
 
 void Level::Init()
@@ -102,6 +104,12 @@ void Level::Init()
     // UI
     uiTestView = new UITestView();
     uiTestView->Init();
+
+    // Item
+    Item* potion1 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , TILE_SIZE });
+    Item* potion2 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , 0 });
+    AddItem(potion1);
+    AddItem(potion2);
 }
 
 void Level::Release()
@@ -123,6 +131,15 @@ void Level::Release()
     if (uiTestView)
         uiTestView->Release();
 
+    // Items
+    for (auto item : items)
+    {
+        if (item)
+        {
+            delete item;
+            item = nullptr;
+        }
+    }
 }
 
 void Level::Update()
@@ -168,9 +185,21 @@ void Level::Update()
             {
                 /// 구현 하고 싶은 로직 넣는 부분
                 //map[indY * TILE_X + indX].type = TT::COUNT;
+                
+                // 현재 플레이어 위치 재클릭 했을 때, 아이템 줍기
+                if (GetPosByGridIndex(indX, indY) == player->GetPosition())
+                {
+                    Item* item = GetItemAt(GetPosByGridIndex(indX, indY));
+                    if (item)
+                    {
+                        player->GetItem(item);
+                        MoveItemToInven(item);
+                    }
+                }
+                // 플레이어 도착지 설정
                 if (map[indY * TILE_X + indX].CanGo())
                     dynamic_cast<Player*>(player)->SetNextPos(GetPosByGridIndex(indX, indY));
-            } ///
+            }
 
             MouseManager::GetInstance()->InitPoints();
             MouseManager::GetInstance()->AlreadyClickUsed();
@@ -296,6 +325,23 @@ void Level::Render(HDC hdc)
     //         sampleTile->Middle_RenderFrameScale(tileX, tileY, 2.f, 2.f, frame.x, frame.y);
     //     }
     // }
+    
+    //Render Items
+    for (auto item : items)
+    {
+        if (map[GetMapIndex(item->GetPosition().x, item->GetPosition().y)].visible)
+        {
+            D2DImage* image = item->GetImage();
+            if (image) {
+                image->
+                    Middle_RenderFrameScale(
+                        camera->ConvertToRendererX(item->GetPosition().x),
+                        camera->ConvertToRendererY(item->GetPosition().y),
+                        camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f,
+                        item->GetImgIdX(), item->GetImgIdY());
+            }
+        }
+    }
 
     // Render actors
     for (auto actor : actors)
@@ -307,7 +353,7 @@ void Level::Render(HDC hdc)
                     Middle_RenderFrameScale(
                         camera->ConvertToRendererX(actor->GetPosition().x), 
                         camera->ConvertToRendererY(actor->GetPosition().y),
-                        camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, 0, 0);
+                        camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, actor->GetCurAnimIdx(), 0);
             }
         }
     }
@@ -357,6 +403,25 @@ Entity* Level::GetActorAt(FPOINT pos)
     return nullptr;
 }
 
+Item* Level::GetItemAt(FPOINT pos)
+{
+    if (items.empty()) return nullptr;
+
+    for (auto item : items)
+    {
+        if (item && item->GetPosition() == pos)
+            return item;
+    }
+    return nullptr;
+}
+
+void Level::MoveItemToInven(Item* item)
+{
+    auto it = find(items.begin(), items.end(), item);
+    if (it != items.end())
+        items.erase(it);
+}
+
 void Level::AddActor(Entity* actor)
 {
     // 추가하려는 Entity가 이미 container에 있다면 return
@@ -365,6 +430,15 @@ void Level::AddActor(Entity* actor)
         return;
 
     actors.push_back(actor);
+}
+
+void Level::AddItem(Item* item)
+{
+    auto it = find(items.begin(), items.end(), item);
+    if (it != items.end())
+        return;
+
+    items.push_back(item);
 }
 
 void Level::GenerateMap(int width, int height)
