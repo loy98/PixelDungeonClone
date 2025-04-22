@@ -124,7 +124,7 @@ struct ScanDirection
 	ScanDirection(int hX, int vX, int hY, int vY)
 		: horizonX(hX), verticalX(vX), horizonY(hY), verticalY(vY) {
 	}
-
+};
 #pragma once
 typedef enum class TileType {
 	// NONE,
@@ -138,12 +138,12 @@ struct Map {
 	int type;    // 타일 종류 (0: 벽, 1: 바닥, 2: 문, 3: 입구, 4: 출구)
 	bool explored;   // 탐험 여부
 	bool visible;    // 현재 시야 내 여부
-    
+
 	// 이동 가능 여부 확인
 	bool CanGo() const {
 		return type != 0; // 벽이 아니면 통과 가능
 	}
-    
+
 	// 초기화
 	Map() : type(0), explored(false), visible(false) {}
 	Map(int type) : type(type), explored(false), visible(false) {}

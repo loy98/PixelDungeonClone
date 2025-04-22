@@ -1,8 +1,7 @@
 ﻿#include "FieldOfView.h"
-#include "AstarScene.h"
 #include <cmath>
 
-void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, int checkRow, float startSlope, float endSlope, ScanDirection direction)
+void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY, int checkRow, float startSlope, float endSlope, ScanDirection direction)
 {
 	// 한 분면 검사
 	/*
@@ -18,7 +17,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 	bool isBlock = false;
 
 	// dy 맵 크기를 벗어나면 나올 수 없는 범위의 좌표가 나옴->왼쪽부터 차례대로...
-	for (int dy = checkRow; dy < ASTAR_TILE_COUNT; dy++) // 탐색 단위
+	for (int dy = checkRow; dy < TILE_Y; dy++) // 탐색 단위
 	{
 		for (int dx = ceil((float)dy * nextStartSlope); dx >= 0; dx--) // 시작 기울기->끝기울기까지
 		{
@@ -26,7 +25,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			int idX = tileIdX + (-dx * direction.horizonX) + (dy * direction.horizonY);
 			int idY = tileIdY + (-dx * direction.verticalX) + (dy * direction.verticalY);
 
-			if (idX < 0 || idX >= ASTAR_TILE_COUNT || idY < 0 || idY >= ASTAR_TILE_COUNT)
+			if (idX < 0 || idX >= TILE_X || idY < 0 || idY >= TILE_Y)
 				continue;
 	
 			// 타일이 시야 내에 있는지 확인
@@ -63,18 +62,19 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 				break;
 			}
 
-			AstarTile* tile ;
+			Map* tile ;
 			tile = &map[idY][idX];
 
 			if (!tile)
 				continue;
 	
-			tile->isVisible = true;
+			tile->visible = true;
 
 			// 타일이 벽이라면
 			if (isBlock)
 			{
-				if (tile->GetType() == AstarTileType::Wall)
+				//TODO: convert raw value to enum
+				if (tile->type == 0)
 				{
 					if (dx == 0)
 					{
@@ -100,7 +100,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 			}
 			else
 			{
-				if (tile->GetType() == AstarTileType::Wall)
+				if (tile->type == 0)
 				{	
 					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
 
@@ -112,7 +112,7 @@ void FieldOfView::Calculate(AstarTile(&map)[20][20], int tileIdX, int tileIdY, i
 					continue;
 				}
 			}
-			tile->SetColor(RGB(0, 255, 0));
+			// tile->SetColor(RGB(0, 255, 0));
 		}
 	}
 }

@@ -13,6 +13,7 @@
 #include "TileVariationManager.h"
 #include "TurnManager.h"
 #include "Camera.h"
+#include "FieldOfView.h"
 
 void Level::Init()
 {
@@ -65,10 +66,13 @@ void Level::Init()
 
     // Generate dungeon
     dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
-    
+
+    // fov test
+    fov = new FieldOfView;
+
     // Place player near entrance
     FPOINT playerPos = GetEntranceSpawnPosition();
-    Player* player = new Player(playerPos, 50.0f);
+    player = new Player(playerPos, 50.0f);
     AddActor(player);
 
     // // Place monsters
@@ -99,6 +103,11 @@ void Level::Release()
             actor = nullptr;
         }
     }
+    if (player)
+    {
+        // delete player;
+        player = nullptr;
+    }
 }
 
 void Level::Update()
@@ -122,7 +131,7 @@ void Level::Update()
 
 			if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y)	
 			{																/// 구현 하고 싶은 로직 넣는 부분
-				map[indY * TILE_X + indX].type = static_cast<int>(TT::COUNT);					///
+				map[indY * TILE_X + indX] = 99;//Map(TileT);					///
 			}																
 
 			MouseManager::GetInstance()->InitPoints();
@@ -132,6 +141,7 @@ void Level::Update()
 	  ///맵으로 사용하실 땐 타일 선택 로직(이동 및 공격)을 써주세요!
 	  
     turnManager->ProcessTurns(this);
+    SetVisibleTile();
 }
 
 void Level::Render(HDC hdc)
@@ -144,6 +154,7 @@ void Level::Render(HDC hdc)
 	
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
+		    bool isVisible = map[TILE_X * i + j].visible;
 		    int tileType = map[TILE_X * i + j].type;
 		    int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
 		    int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
@@ -152,7 +163,7 @@ void Level::Render(HDC hdc)
 		    POINT frame = GetCurrentFrame(tileType);
             
 		    // Render the tile using the frame coordinates
-		    sampleTile->Middle_RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, frame.x, frame.y);
+		    sampleTile->Middle_RenderFrameScale(tileX, tileY, camera->GetZoomScale() * (isVisible ? 2.f : 1.f), camera->GetZoomScale() * (isVisible ? 2.f : 1.f), frame.x, frame.y);
 		    
 			// switch (map[TILE_X * i + j].type) {
 			// 	case TT::WALL :
@@ -463,4 +474,88 @@ FPOINT Level::GetEntranceSpawnPosition() const {
     
     // Convert to world coordinates
     return GetPosByGridIndex(chosenPos.first, chosenPos.second);
+}
+
+// // 맵 함수-이 주소로 세팅. 레벨이 구현되면 레벨에서 이 작업하면 될 것같음.
+// FPOINT Level::GetRandomFloorTile()
+// {
+//     // 랜덤한 타일의 center 좌표를 반환
+//     // 벽이면 반환하면 안됨
+//     // 플레이어 주변도 X
+//
+//     RECT rc;
+//     rc.left = 0;
+//     rc.right = TILE_X * 2;
+//     rc.top = 0;
+//     rc.bottom = TILE_Y * 2;
+//
+//
+//     int x = (rand() % TILE_SIZE);
+//     int y = (rand() % TILE_SIZE);
+//
+//     //TODO: Check visible with function
+//     while ((map[y * TILE_X + x].type == 0) || RectInRect(rc, map[(int)y][(int)x].rc))
+//     {
+//         x = (rand() % TILE_SIZE);
+//         y = (rand() % TILE_SIZE);
+//     }
+// 			
+//     FPOINT pos = { map[y][x].center.x, map[y][x].center.y };
+//
+//     return pos;
+// }
+//
+// void Level::SetEntityPos()
+// {
+//     // entity 배치
+//     FPOINT pos = GetRandomFloorTile();
+//     astarGame->SetEntityOnMap(pos);
+// }
+
+void Level::ResetVisibleTile()
+{
+    // 시야 리셋-모든 타일 검사. 맵이 커지면 비효율적일수도 있을 것 같음.
+    for (int i = 0; i < TILE_Y; i++)
+    {
+        for (int j = 0; j < TILE_X; j++)
+        {
+            if (map[i * TILE_X + j].visible == true)
+            {
+                //map[i][j].SetColor(RGB(100, 100, 100));
+                if (map[i * TILE_X + j].type == 0/* ||
+                    map[i][j].GetType() == AstarTileType::Start ||
+                    map[i][j].GetType() == AstarTileType::End*/)
+                {
+                    map[i * TILE_X + j].visible = false;
+                    continue;
+                }
+                // map[i][j].SetColor(RGB(100, 100, 100));
+				
+            }
+        }
+    }
+}
+
+void Level::SetVisibleTile()
+{
+    //// 시야 설정-시야에 드는 타일은 색을 다르게 함.
+    //// 시야 리셋
+    ResetVisibleTile();
+
+    // 임시 좌표-플레이어 좌표
+    //map[10][10].SetColor(RGB(200, 200, 0));
+    // map[10][10].isVisible = true;
+
+    int index = GetMapIndex(player->GetPosition().x, player->GetPosition().y);
+    int pTileXIndex = index % TILE_Y;
+    int pTileYIndex = index / TILE_Y;
+    map[index].visible = true; 
+    
+    for(int i = 0; i< 8; i++)
+    {
+        fov->Calculate(reinterpret_cast<Map(&)[TILE_Y][TILE_X]>(map), pTileXIndex, pTileYIndex, 0, 
+            1.0f, 0.0f, scanDirections[i]);
+        int a = 0;
+    }
+    // map[10][10].SetColor(RGB(200, 200, 0));
 }

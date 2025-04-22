@@ -49,16 +49,16 @@ void Player::Act(Level* level)
 
     // 에이스타용
     if (km->IsOnceKeyDown(VK_UP))
-    //---
-        Move({ 0, -30 }, map, game);
-    else if (km->IsOnceKeyDown(VK_DOWN))
-        Move({ 0, 30 }, map, game);
-    else if (km->IsOnceKeyDown(VK_LEFT))
-        Move({ -30, 0 }, map, game);
-    else if (km->IsOnceKeyDown(VK_RIGHT))
-        Move({ 30, 0 }, map, game);
-  
-    //TODO:MergeCheck
+    // //---
+    //     Move({ 0, -30 }, map, game);
+    // else if (km->IsOnceKeyDown(VK_DOWN))
+    //     Move({ 0, 30 }, map, game);
+    // else if (km->IsOnceKeyDown(VK_LEFT))
+    //     Move({ -30, 0 }, map, game);
+    // else if (km->IsOnceKeyDown(VK_RIGHT))
+    //     Move({ 30, 0 }, map, game);
+    //
+    // //TODO:MergeCheck
         targetPos = { position.x, position.y - TILE_SIZE };
     else if (km->IsOnceKeyDown(VK_DOWN))
         targetPos = { position.x, position.y + TILE_SIZE };

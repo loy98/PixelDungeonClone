@@ -19,16 +19,17 @@ Monster::~Monster()
 void Monster::Act(Level* level)
 {
 
-	Move({ 30, 30 }, map);
-    //if (isMoving)
-    //{
-        //Move(level);
-        // 에이스타용
-	//}
-    //else
-    //{
-        //isMoving = true;
-    //}
+    // 에이스타용
+    // Move({ 30, 30 }, map);
+    if (isMoving)
+    {
+        Move(level);
+
+	}
+    else
+    {
+        isMoving = true;
+    }
     // tm->EndTurn();
 }
 

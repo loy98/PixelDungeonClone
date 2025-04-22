@@ -4,6 +4,8 @@
 #include "IntegratedDungeonSystem.h"
 #include "Monster.h"
 
+class Player;
+class FieldOfView;
 class Monster;
 class D2DImage;
 class TurnManager;
@@ -25,7 +27,7 @@ private:
 	Camera* camera;
 
 	// Frame map data for tile animations/variants
-	std::vector<std::vector<POINT>> frameMap;  // Stores frame coordinates for each tile type
+	// std::vector<std::vector<POINT>> frameMap;  // Stores frame coordinates for each tile type
 	float frameTimer;                          // Timer for frame animation
 	const float FRAME_CHANGE_TIME = 0.2f;      // Time between frame changes
 
@@ -61,7 +63,8 @@ private:
 
 	// Entity* player;
 	TurnManager* turnManager;
-	
+
+	Player* player;
 	vector<Entity*> actors;
 	// int startInd;
 	IntegratedDungeonSystem dungeonSystem;
@@ -69,6 +72,21 @@ private:
 	// Helper method to get current frame for a tile type
 	POINT GetCurrentFrame(int tileType) const;
 
+	// FoV
+	FieldOfView* fov;
+	// config
+	ScanDirection scanDirections[8] =
+	{
+		{1, 0, 0, -1},
+		{-1, 0, 0, -1},
+		{0, 1, 1, 0},
+		{0, -1, 1, 0},
+		{-1, 0, 0, 1},
+		{1, 0, 0, 1},
+		{0, -1, -1, 0},
+		{0, 1, -1, 0}
+	};
+	
 public:
 	void Init();
 	void Release();
@@ -90,7 +108,9 @@ public:
 	bool IsSolid(int x, int y) const;
 	FPOINT GetRandomFloorTile() const;
 	FPOINT GetEntranceSpawnPosition() const;
-	
+	void ResetVisibleTile();
+	void SetVisibleTile();
+
 	Level();
 	~Level();
 

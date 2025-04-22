@@ -6,7 +6,7 @@ class Player : public Entity
 {
 public:
     Player() {};
-    Player(FPOINT pos, float speed);
+    Player(FPOINT pos, float speed = 0.f);
     virtual ~Player();
 
     void Render(HDC hdc) override;
