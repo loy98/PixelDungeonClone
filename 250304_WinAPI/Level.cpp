@@ -79,12 +79,12 @@ void Level::Init()
   
 	// 시작 위치 테스트용 매직넘버
 	Entity* player = new Player(GetPosByGridIndex(3, 3), 300.f, 20, 5, 2);
-	Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 300.f, 15, 4, 3);
-	Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 300.f, 15, 4, 3);
+	// Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 300.f, 15, 4, 3);
+	// Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 300.f, 15, 4, 3);
 
 	AddActor(player);
-	AddActor(monster1);
-	AddActor(monster2);
+	// AddActor(monster1);
+	// AddActor(monster2);
 
 	for (auto actor : actors)
 	{
