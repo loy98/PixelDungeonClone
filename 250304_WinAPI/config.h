@@ -1,6 +1,15 @@
 ﻿// config.h
 
 #pragma once
+// 메모리 할당 시 파일, 라인 정보 확인 가능
+//#define _CRTDBG_MAP_ALLOC
+//#include <cstdlib>
+//#include <crtdbg.h>
+//
+//#ifdef _DEBUG
+//#define new new(_NORMAL_BLOCK, __FILE__, __LINE__)
+//#endif
+
 #pragma comment(lib, "Winmm.lib")
 
 
@@ -25,21 +34,19 @@ using namespace std;
 
 #include "KeyManager.h"
 #include "MouseManager.h"
-// #include "ImageManager.h"
 #include "TimerManager.h"
 #include "SceneManager.h"
 
 // 랜덤
 #include <cstdlib>
 #include <ctime>
-
 /*
 	컴파일러에서 해당 코드를 뒤에 정의된 코드로 변경한다. 
 */
 #define WINSIZE_X	1080
 #define WINSIZE_Y	720
 #define TILEMAPTOOL_X	1420
-#define TILEMAPTOOL_Y	700
+#define TILEMAPTOOL_Y	720
 
 #define DEG_TO_RAD(degree) ((3.14 / 180.0) * degree)
 #define RAD_TO_DEG(radian) ((180.0 / 3.14) * radian)
@@ -58,7 +65,6 @@ typedef struct tagFPOINT
 	void operator=(const tagFPOINT& other) {
 		x = other.x;
 		y = other.y;
-	}	
 	}
 	void operator+=(const tagFPOINT& other) {
 		x += other.x;
@@ -113,7 +119,6 @@ typedef struct tagFPOINT
 	{
 		return x * other.x + y * other.y;
 	}
-
 } FPOINT;
 
 typedef struct tagFRECT
@@ -131,8 +136,21 @@ typedef struct tagFRECT
             right + other.right,
             bottom + other.bottom
         };
+    }
+
+    tagFRECT AplyScale(const FPOINT& scale) {
+        float cx = (left + right) / 2.0f;
+        float cy = (top + bottom) / 2.0f;
+
+        left = cx + (left - cx) * scale.x;
+        right = cx + (right - cx) * scale.x;
+        top = cy + (top - cy) * scale.y;
+        bottom = cy + (bottom - cy) * scale.y;
         return { left, top, right, bottom };
     }
+
+} FRECT;
+
 /*
 	extern 키워드 : 변수나 함수가 다른 파일에 정의되어 있다 라는
 	사실을 알리는 키워드.
