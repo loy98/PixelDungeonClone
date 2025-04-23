@@ -310,6 +310,11 @@ Level::~Level()
 {
 }
 
+FPOINT Level::GetPlayerTargetPos()
+{
+    return player->GetTargetPos();
+}
+
 
 Entity* Level::GetActorAt(FPOINT pos)
 {

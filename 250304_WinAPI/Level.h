@@ -150,5 +150,8 @@ public:
 		map[y * TILE_X + x].type = tileType;
 	}
 	
+
+	// AI
+	FPOINT GetPlayerTargetPos();
 };
 

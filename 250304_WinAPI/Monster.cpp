@@ -25,7 +25,7 @@ Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
     // targetPos = pos
 
     // 에너지 test
-    actionCost = 6.f;
+    actionCost = 10.f;
     energyPerTurn = 10.0f;
 
     //길찾기-갈 곳을 받아온다?-HUNTING에서 FOLLOW에서 사용
@@ -81,7 +81,7 @@ void Monster::Attack(Level* level)
     if (target)
     {
         CombatSyetem::GetInstance()->ProcessAttack(this, target);
-       // SetRandomTargetPos();
+       SetRandomTargetPos();
        curState = EntityState::IDLE;
     }
 }
@@ -113,9 +113,6 @@ void Monster::Move(Level* level)// 한 턴 이동
         targetPos = path[1];
     }
 
-    //auto index = level->GetMapIndex(targetPos.x, targetPos.y);
-    //int a = 0;
-
     auto map = level->GetMap(targetPos.x, targetPos.y);
     
     if ((map && !map->CanGo()) || level->GetActorAt(targetPos))
@@ -124,7 +121,6 @@ void Monster::Move(Level* level)// 한 턴 이동
         curState = EntityState::IDLE;
         return;
     }
-     // if (!level->GetMap(targetPos.x, targetPos.x)->CanGo()) return;
 
     if (map->visible)
     {
