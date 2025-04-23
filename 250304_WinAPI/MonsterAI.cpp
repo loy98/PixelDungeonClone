@@ -17,7 +17,12 @@ void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
 
     // 몬스터 destPos(hunting시) 바꿔줌
     // 타겟위치로 도착지 설정(findpath destPos 설정)
-    if (isAlert)
+   
+    if (target)
+    {
+        Hunting(level, monster);
+    }
+    else if (isAlert)
     {
         // 타겟 위치 전달 필요
         Hunting(level, monster);
@@ -134,7 +139,7 @@ void MonsterAI::Wandering(Level* level, Monster* monster)
     currMonsterState = MonsterState::WANDER;
 }
 
-// 임시
+// 임시-
 void MonsterAI::SetFov(Level* level, Monster* monster)
 {
     // 적의 시야를 가져오는 함수
@@ -175,7 +180,7 @@ bool MonsterAI::UpdateFovInfo(Level* level, Monster* monster)
             if (actor->GetType() == EntityType::PLAYER)
             {
                 target = actor;
-                //monster->SetTarget(target);
+                monster->SetTarget(target);
                 //monster->SetTargetPos(fovList[i]);
                 return true;
             }

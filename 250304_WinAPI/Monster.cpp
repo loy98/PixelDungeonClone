@@ -45,7 +45,7 @@ void Monster::Act(Level* level)
     switch (curState)
     {
     case EntityState::IDLE: // 뭐할까
-        // 가만히
+        monsterAi->Act(level, this);
         break;
     case EntityState::WAIT:
         curState = EntityState::IDLE;
@@ -64,8 +64,11 @@ void Monster::Act(Level* level)
         break;
     }
 
-    // AI는 curState 상태와 도착지를 정한다
-    monsterAi->Act(level, this);     
+    //if(curState == EntityState::IDLE)
+    //{
+    //    // AI는 curState 상태와 도착지를 정한다
+    //    
+    //}
 
     // 새로운 destPos로 길찾기-move State에서는 targetPos가 여기서 결정됨.
     finder->FindPath(position, destPos, level, OUT path);
@@ -117,11 +120,11 @@ void Monster::Move(Level* level)// 한 턴 이동
     
     if ((map && !map->CanGo()) || level->GetActorAt(targetPos))
     {
-        //SetRandomTargetPos();
+        SetRandomTargetPos();
         curState = EntityState::IDLE;
         return;
     }
-     if (!level->GetMap(targetPos.x, targetPos.x)->CanGo()) return;
+     // if (!level->GetMap(targetPos.x, targetPos.x)->CanGo()) return;
 
     if (map->visible)
     {
@@ -148,23 +151,23 @@ void Monster::Move(Level* level)// 한 턴 이동
     else
     {
         position = targetPos;
-        //SetRandomTargetPos();
+        SetRandomTargetPos();
         curState = EntityState::IDLE;
     }
 
 }
 
-//void Monster::SetRandomTargetPos()
-//{
-//    // 랜덤으로 시드 생성
-//    random_device rd;
-//
-//    // 고성능 엔진을 시드(rd())로 초기화
-//    mt19937_64 eng(rd());
-//
-//    // 범위 설정
-//    uniform_int_distribution<int> dist(0, 3);
-//    FPOINT dir[] = { {-TILE_SIZE, 0}, {TILE_SIZE, 0}, {0, TILE_SIZE}, {0, -TILE_SIZE} };
-//
-//    targetPos = position + dir[dist(eng)];
-//}
+void Monster::SetRandomTargetPos()
+{
+    // 랜덤으로 시드 생성
+    random_device rd;
+
+    // 고성능 엔진을 시드(rd())로 초기화
+    mt19937_64 eng(rd());
+
+    // 범위 설정
+    uniform_int_distribution<int> dist(0, 3);
+    FPOINT dir[] = { {-TILE_SIZE, 0}, {TILE_SIZE, 0}, {0, TILE_SIZE}, {0, -TILE_SIZE} };
+
+    targetPos = position + dir[dist(eng)];
+}

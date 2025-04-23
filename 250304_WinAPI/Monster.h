@@ -27,7 +27,7 @@ public:
     bool IsBusy() override { return curState != EntityState::IDLE; }
 
     // 랜덤한 위치로 이동-wandering-플레이어 있는지 계속 체크
-   // void SetRandomTargetPos();
+   void SetRandomTargetPos();
 
     // monsterAI
     MonsterAI* monsterAi;
