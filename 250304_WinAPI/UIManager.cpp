@@ -9,6 +9,7 @@
 #include "UI/Panel/UIStatusTollbar.h"
 #include "UI/Panel/UITopRightUI.h"
 #include "Inventory.h"
+#include "GameOver.h"
 
 void UIManager::RegisterPlayer(Player* player)
 {
@@ -24,6 +25,7 @@ void UIManager::RegisterPlayer(Player* player)
     player->GetEntityObserverHub().AddObserver(uiStatusPanel);
     player->GetEntityObserverHub().AddObserver(uiQuickSlotToolbar);
     player->GetEntityObserverHub().AddObserver(uiInventoryPanel);
+    player->GetEntityObserverHub().AddObserver(uiGameOver);
 }
 
 void UIManager::RegisterEntity(Entity* entity)
@@ -37,6 +39,7 @@ void UIManager::UnregisterPlayer(Player* player)
     player->GetEntityObserverHub().RemoveObserver(uiStatusPanel);
     player->GetEntityObserverHub().RemoveObserver(uiQuickSlotToolbar);
     player->GetEntityObserverHub().RemoveObserver(uiInventoryPanel);
+    player->GetEntityObserverHub().RemoveObserver(uiGameOver);
 }
 
 void UIManager::UnregisterEntity(Entity* entity)
@@ -82,11 +85,25 @@ UIManager::~UIManager()
 {
 }
 
+void UIManager::SetRestartCallback(std::function<void()> cb)
+{
+    restartCallback = cb;
+}
+
+void UIManager::ClearUiContainers()
+{
+    uiContainers.clear();
+}
+
 void UIManager::Init()
 {
     tmMgr = TimerManager::GetInstance();
     rdt = D2DImage::GetRenderTarget();
     mouseManager = MouseManager::GetInstance();
+
+    UIResourceSubManager::Preload_NinePatch();
+
+    ClearUiContainers();
 
     /* 기본 Load */
     uiStatusToolbar = new UIStatusToolbar();
@@ -96,6 +113,9 @@ void UIManager::Init()
     uiInventoryPanel = new UIInventory();
     uiTextLogPanel = new UITextLogPanel();
     uiEffectManager = new UIEffectManager();
+    uiGameOver = new UIGameOver(); 
+    uiGameOver->Init(); 
+    uiGameOver->SetActive(false);
     uiStatusToolbar->Init();
     uiTopRightUI->Init();
     uiStatusPanel->Init();
@@ -137,6 +157,7 @@ void UIManager::Init()
     uiContainers.push_back(uiTextLogPanel);
     uiContainers.push_back(uiStatusPanel);
     uiContainers.push_back(uiInventoryPanel);
+    uiContainers.push_back(uiGameOver);
     
 }
 
@@ -232,6 +253,7 @@ void UIManager::Release()
     if (uiQuickSlotToolbar) delete uiQuickSlotToolbar;
     if (uiTextLogPanel) delete uiTextLogPanel;
     if (uiEffectManager) delete uiEffectManager;
+    if (uiGameOver) delete uiGameOver;
     
     /* 절대 삭제 금지 */
     tmMgr = nullptr;

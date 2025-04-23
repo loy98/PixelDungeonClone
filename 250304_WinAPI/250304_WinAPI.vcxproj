@@ -192,6 +192,7 @@
     <ClInclude Include="FieldOfView.h" />
     <ClInclude Include="EnvironmentalEffectsManager.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="HealPotion.h" />
     <ClInclude Include="Inventory.h" />

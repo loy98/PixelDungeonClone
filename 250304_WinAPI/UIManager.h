@@ -16,6 +16,7 @@ class UIEffectManager;
 class UIResourceSubManager;
 class UIInventory;
 class UITopRightUI;
+class UIGameOver;
 
 class UIManager : public Singleton<UIManager>
 {
@@ -43,6 +44,7 @@ private:
 	UITopRightUI* uiTopRightUI;
 	UIStatusPanel* uiStatusPanel;
 	UIInventory* uiInventoryPanel;
+	UIGameOver* uiGameOver;
 
 	TextStyle defaultLogStyle{
 		L"pixel",
@@ -52,6 +54,8 @@ private:
 		DWRITE_TEXT_ALIGNMENT_LEADING,
 		DWRITE_PARAGRAPH_ALIGNMENT_NEAR
 	};
+
+	function<void()> restartCallback;
 
 public:
 public:
@@ -66,7 +70,15 @@ public:
 	void SetWorldUISCale(float scale);
 	void UseUIItem(int idx);
 	
+	void SetCurrentPlayer(Player* player) { currentPlayer = player; }
+
 	virtual ~UIManager();
+
+	void SetRestartCallback(std::function<void()> cb);
+
+	UIGameOver* GetUiGameOver() { return uiGameOver; }
+
+	void ClearUiContainers();
 
 	void Init();
 	void Update();

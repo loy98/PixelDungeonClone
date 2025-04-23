@@ -83,6 +83,7 @@ private:
     }
 
     void AddLevelText() {
+
         UIButtonStyle style = {
             { D2DImageManager::GetInstance()->FindImage("status_level") },
             { L"pixel", 16.0f, D2D1::ColorF(D2D1::ColorF::White), true,
