@@ -13,7 +13,7 @@ public:
 	virtual void Update();
 	virtual void Render(HDC hdc);
 
-	GameScene() {};
+	GameScene();
 	virtual ~GameScene() {};
 };
 

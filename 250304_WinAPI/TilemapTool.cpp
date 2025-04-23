@@ -178,19 +178,18 @@ void TilemapTool::Update()
 		}
 
 		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_RIGHT) == true) {
-			POINT dragStartP = MouseManager::GetInstance()->GetDragStartP();
-			POINT prevP = MouseManager::GetInstance()->GetPrevP();
+			POINT dragStartP = MouseManager::GetInstance()->GetDragStartP(MOUSE_RIGHT);
 
-			dragRc.left = min(dragStartP.x, prevP.x);
-			dragRc.right = max(dragStartP.x, prevP.x);
-			dragRc.top = min(dragStartP.y, prevP.y);
-			dragRc.bottom = max(dragStartP.y, prevP.y);
+			dragRc.left = min(dragStartP.x, mouseP.x);
+			dragRc.right = max(dragStartP.x, mouseP.x);
+			dragRc.top = min(dragStartP.y, mouseP.y);
+			dragRc.bottom = max(dragStartP.y, mouseP.y);
 
 		}
 
-		if (MouseManager::GetInstance()->GetDragValueUsed() == false) {
-			POINT dragStartP = MouseManager::GetInstance()->GetDragStartP();
-			POINT dragEndP = MouseManager::GetInstance()->GetDragEndP();
+		if (MouseManager::GetInstance()->GetDragValueUsed(MOUSE_RIGHT) == false) {
+			POINT dragStartP = MouseManager::GetInstance()->GetDragStartP(MOUSE_RIGHT);
+			POINT dragEndP = MouseManager::GetInstance()->GetDragEndP(MOUSE_RIGHT);
 
 			dragRc.left = min(dragStartP.x, dragEndP.x);
 			dragRc.right = max(dragStartP.x, dragEndP.x);
