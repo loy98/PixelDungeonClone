@@ -163,10 +163,13 @@ void TilemapTool::Update()
 			int posY = clickP.y;
 			int tileX = (posX - mainOffset.x) / gridSize;
 			int tileY = (posY - mainOffset.y) / gridSize;
-			tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
+			if (tileX >= 0 && tileX < TILE_X && tileY >= 0 && tileY < TILE_Y) {
+				tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
 
-			MouseManager::GetInstance()->InitPoints();
-			MouseManager::GetInstance()->AlreadyClickUsed();
+				MouseManager::GetInstance()->InitPoints();
+				MouseManager::GetInstance()->AlreadyClickUsed();
+			}
+			
 		}
 
 		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT)==true) {
@@ -174,7 +177,9 @@ void TilemapTool::Update()
 			int posY = mouseP.y;
 			int tileX = (posX - mainOffset.x) / gridSize;
 			int tileY = (posY - mainOffset.y) / gridSize;
-			tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
+			if (tileX >= 0 && tileX < TILE_X && tileY >= 0 && tileY < TILE_Y) {
+				tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
+			}
 		}
 
 		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_RIGHT) == true) {
@@ -481,7 +486,7 @@ void TilemapTool::Paint()
 {
 }
 
-void TilemapTool::MakeARoom()
+void TilemapTool::MakeARoom() /////// 타일 인덱스 예외처리
 {
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
