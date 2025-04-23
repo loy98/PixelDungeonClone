@@ -15,7 +15,7 @@ class Item
 protected:
 	string name;
 	FPOINT position;
-	ItemType type;
+	ItemType itemType;
 
 	D2DImage* image;
 	int imageIdX, imageIdY; // items.png에서의 해당 아이템 인덱스 좌표
@@ -31,6 +31,6 @@ public:
 	FPOINT GetPosition() { return position; }
 	int GetImgIdX() { return imageIdX; }
 	int GetImgIdY() { return imageIdY; }
-	ItemType GetType() { return type; }
+	ItemType GetItemType() { return itemType; }
 };
 

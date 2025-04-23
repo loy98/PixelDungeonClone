@@ -48,12 +48,6 @@
       <Filter>MainGame\GamePlay</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Consumable.cpp">
-      <Filter>Item</Filter>
-    </ClCompile>
-    <ClCompile Include="HealPotion.cpp">
-      <Filter>Item</Filter>
-    </ClCompile>
     <ClCompile Include="Item.cpp">
       <Filter>Item</Filter>
     </ClCompile>
@@ -99,12 +93,6 @@
     <ClCompile Include="CombatSyetem.cpp">
       <Filter>MainGame\GamePlay</Filter>
     </ClCompile>
-    <ClCompile Include="Equipment.cpp">
-      <Filter>Item</Filter>
-    </ClCompile>
-    <ClCompile Include="Sword.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="Observer\EntityObserverHub.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -116,6 +104,18 @@
     </ClCompile>
     <ClCompile Include="Animator.cpp">
       <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="Consumable.cpp">
+      <Filter>Item\Consumable</Filter>
+    </ClCompile>
+    <ClCompile Include="HealPotion.cpp">
+      <Filter>Item\Consumable</Filter>
+    </ClCompile>
+    <ClCompile Include="Equipment.cpp">
+      <Filter>Item\Equipment</Filter>
+    </ClCompile>
+    <ClCompile Include="Weapon.cpp">
+      <Filter>Item\Equipment</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -172,12 +172,6 @@
       <Filter>MainGame\GamePlay</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Consumable.h">
-      <Filter>Item</Filter>
-    </ClInclude>
-    <ClInclude Include="HealPotion.h">
-      <Filter>Item</Filter>
-    </ClInclude>
     <ClInclude Include="Item.h">
       <Filter>Item</Filter>
     </ClInclude>
@@ -307,12 +301,6 @@
     <ClInclude Include="CombatSyetem.h">
       <Filter>MainGame\GamePlay</Filter>
     </ClInclude>
-    <ClInclude Include="Equipment.h">
-      <Filter>Item</Filter>
-    </ClInclude>
-    <ClInclude Include="Sword.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="Observer\IEntityObserver.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -339,6 +327,18 @@
     </ClInclude>
     <ClInclude Include="Animator.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Consumable.h">
+      <Filter>Item\Consumable</Filter>
+    </ClInclude>
+    <ClInclude Include="HealPotion.h">
+      <Filter>Item\Consumable</Filter>
+    </ClInclude>
+    <ClInclude Include="Equipment.h">
+      <Filter>Item\Equipment</Filter>
+    </ClInclude>
+    <ClInclude Include="Weapon.h">
+      <Filter>Item\Equipment</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -406,6 +406,12 @@
     </Filter>
     <Filter Include="2D Framework\UI\Util">
       <UniqueIdentifier>{1d1d6fbf-100e-47bc-a3e8-b930cca41eb2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Item\Consumable">
+      <UniqueIdentifier>{06098c6b-c940-4750-ab6e-de959b654139}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Item\Equipment">
+      <UniqueIdentifier>{ce0e6fd1-2af8-42ca-9acf-26f3cc12e9b0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
