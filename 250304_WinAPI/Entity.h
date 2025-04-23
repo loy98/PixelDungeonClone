@@ -70,6 +70,7 @@ public:
     virtual void Render(HDC hdc);
     virtual void Act(Level* level);
     virtual void Attack(Level* level) {};
+    void SetAimData(int start, int end, float maxTime);
 
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;

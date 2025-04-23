@@ -74,7 +74,7 @@ void Player::Update()
 void Player::Render(HDC hdc)
 {
     if (image)
-        image->Middle_RenderFrameScale(position.x, position.y, 2.f, 2.f, 1, 1);
+        image->Middle_RenderFrameScale(position.x, position.y, 2.f, 2.f, curAnimFrame, 1);
 }
 
 void Player::Act(Level* level)
@@ -119,9 +119,9 @@ void Player::ActIdle(Level* level)
         }
     }
 
+    if (position == destPos) return;
     if (finder->FindPath(position, destPos, level, OUT path))
         targetPos = path[1];
-    if (position == destPos) return;
 
     target = level->GetActorAt(targetPos);
     if (target)
@@ -154,38 +154,23 @@ void Player::SetState(EntityState state)
     switch (state)
     {
     case EntityState::IDLE:
-        startFrame = 0;
-        endFrame = 1;
-        curAnimFrame = startFrame;
-        stayEndFrame = false;
-        maxAnimTime = 0.5f;
+        SetAimData(0, 1, 0.5);
         curState = EntityState::IDLE;
         break;
     case EntityState::MOVE:
-        startFrame = 3;
-        endFrame = 7;
-        curAnimFrame = startFrame;
-        stayEndFrame = false;
-        maxAnimTime = 0.2f;
+        SetAimData(2, 8, 0.2);
         curState = EntityState::MOVE;
         break;
     case EntityState::ATTACK:
-        startFrame = 13;
-        endFrame = 15;
-        curAnimFrame = startFrame;
-        stayEndFrame = false;
-        maxAnimTime = 0.1f;
+        SetAimData(13, 15, 0.3);
         curState = EntityState::ATTACK;
         break;
     case EntityState::DEAD:
-        startFrame = 8;
-        endFrame = 12;
-        curAnimFrame = startFrame;
-        stayEndFrame = true;
-        maxAnimTime = 0.1f;
+        SetAimData(8, 12, 0.3);
         curState = EntityState::DEAD;
         break;
     }
+
 }
 
 void Player::Move(Level* level)

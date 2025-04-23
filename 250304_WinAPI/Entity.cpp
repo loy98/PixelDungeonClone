@@ -21,20 +21,21 @@ void Entity::Update()
 	curTime += TimerManager::GetInstance()->GetDeltaTime();
 	if (curTime > maxAnimTime)
 	{
+		curAnimFrame++;
+		curTime = 0;
 		if (!stayEndFrame)
 		{
-			if (curAnimFrame >= endFrame)
+			if (curAnimFrame > endFrame)
 			{
 				curAnimFrame = startFrame;
 			}
 		}
-		else if (curAnimFrame >= endFrame)
+		else if (curAnimFrame > endFrame)
 		{
 			curAnimFrame = endFrame;
 			return;
 		}
-		curAnimFrame++;
-		curTime = 0;
+		
 	}
 }
 
@@ -53,6 +54,16 @@ void Entity::Render(HDC hdc)
 
 void Entity::Act(Level* level)
 {
+}
+
+void Entity::SetAimData(int start, int end, float maxTime)
+{
+	startFrame = start;
+	endFrame = end;
+	maxAnimTime = maxTime;
+	curAnimFrame = startFrame;
+	stayEndFrame = false;
+	curTime = 0;
 }
 
 void Entity::TakeDamage(int dmg)

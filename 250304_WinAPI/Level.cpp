@@ -1,4 +1,4 @@
-#include "Level.h"
+﻿#include "Level.h"
 #include "DungeonGenerator.h"
 #include "config.h"
 #include <random>
@@ -28,7 +28,7 @@ void Level::Init()
     camera->Init();*/
 
     sampleTile = D2DImageManager::GetInstance()->AddImage(
-        "배틀시티_샘플타일", L"Image/tiles_sewers.png",
+        "배틀시티_샘플타일", L"Image/tiles_sewers.png", 
         16, 16);
 
 
@@ -239,11 +239,11 @@ void Level::Update()
         mapRc.bottom += tempDeltaY;
     }*/
 
-    turnManager->ProcessTurns(this);
     for (auto actor : actors)
     {
         if (actor) actor->Update();
     }
+    turnManager->ProcessTurns(this);
 }
 
 void Level::Render(HDC hdc)
