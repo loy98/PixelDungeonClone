@@ -25,6 +25,10 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     level = 1;
     exp = 0;
 
+    startFrame = 0;
+    endFrame = 1;
+    stayEndFrame = false;
+    maxAnimTime = 0.5f;
 
     type = EntityType::PLAYER;
     curState = EntityState::IDLE;
@@ -40,10 +44,31 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     //image = D2DImageManager::GetInstance()->AddImage("player", L"Image/warrior.png", 21, 7); 
 
     inven = new Inventory(this);
+
+    image = D2DImageManager::GetInstance()->AddImage("warrior", L"Image/warrior.png", 21, 7);
 }
 
 Player::~Player()
 {
+}
+
+void Player::Update()
+{
+    Super::Update();
+    switch (curState)
+    {
+    case EntityState::IDLE:
+        return;
+    case EntityState::MOVE:
+        return;
+    case EntityState::ATTACK:
+        if (curAnimFrame == endFrame)
+            SetState(EntityState::IDLE);
+        return;
+    case EntityState::DEAD:
+        // player는 죽은채로 계속 애니메이션 돼야함
+        return;
+    }
 }
 
 void Player::Render(HDC hdc)
@@ -77,7 +102,9 @@ void Player::Attack(Level* level)
     {
         CombatSyetem::GetInstance()->ProcessAttack(this, target);
         Stop();
-        curState = EntityState::IDLE;
+        
+
+        //SetState(EntityState::IDLE);
     }
 }
 
@@ -99,12 +126,12 @@ void Player::ActIdle(Level* level)
     target = level->GetActorAt(targetPos);
     if (target)
     {
-        curState = EntityState::ATTACK;
+        SetState(EntityState::ATTACK);
         return;
     }    
     if (!level->GetMap(targetPos.x, targetPos.y)->CanGo()) return;
 
-    curState = EntityState::MOVE;
+    SetState(EntityState::MOVE);
 }
 
 void Player::GetItem(Item* item)
@@ -119,6 +146,45 @@ void Player::Heal(int healAmount)
 {
     hp += healAmount;
     if (hp >= maxHp) hp = maxHp;
+}
+
+void Player::SetState(EntityState state)
+{
+    switch (state)
+    {
+    case EntityState::IDLE:
+        startFrame = 0;
+        endFrame = 1;
+        curAnimFrame = startFrame;
+        stayEndFrame = false;
+        maxAnimTime = 0.5f;
+        curState = EntityState::IDLE;
+        break;
+    case EntityState::MOVE:
+        startFrame = 3;
+        endFrame = 7;
+        curAnimFrame = startFrame;
+        stayEndFrame = false;
+        maxAnimTime = 0.2f;
+        curState = EntityState::MOVE;
+        break;
+    case EntityState::ATTACK:
+        startFrame = 13;
+        endFrame = 15;
+        curAnimFrame = startFrame;
+        stayEndFrame = false;
+        maxAnimTime = 0.1f;
+        curState = EntityState::ATTACK;
+        break;
+    case EntityState::DEAD:
+        startFrame = 8;
+        endFrame = 12;
+        curAnimFrame = startFrame;
+        stayEndFrame = true;
+        maxAnimTime = 0.1f;
+        curState = EntityState::DEAD;
+        break;
+    }
 }
 
 void Player::Move(Level* level)
@@ -143,6 +209,6 @@ void Player::Move(Level* level)
     if (delta.Length() <= 10.f)
     {
         position = targetPos;
-        curState = EntityState::IDLE;
+        SetState(EntityState::IDLE);
     }
 }

@@ -26,7 +26,9 @@ protected:
     //test
     D2DImage* image;
     int curAnimFrame;
-    float curTime;
+    float curTime, maxAnimTime;
+    int startFrame, endFrame;
+    bool stayEndFrame;
 
     // 공통 속성
     EntityType type;
@@ -60,7 +62,7 @@ public:
     Entity();
     virtual ~Entity();
 
-    void Update();
+    virtual void Update();
     virtual void Render(HDC hdc);
     virtual void Act(Level* level);
     virtual void Attack(Level* level) {};
@@ -94,6 +96,7 @@ public:
     virtual void Heal(int healAmount) {};   // HealthPotion
 
     void Stop() { destPos = position; }
+    virtual void SetState(EntityState state) {};
 
     // TODO UI HP 관련임시
     inline int GetHP() const { return hp; };
