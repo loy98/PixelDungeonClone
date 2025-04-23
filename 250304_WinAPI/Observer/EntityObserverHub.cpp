@@ -2,6 +2,7 @@
 #include "IEntityObserver.h"
 #include "../UI/VisualStyle.h"
 #include "../Entity.h"
+#include "../Player.h"
 
 
 void EntityObserverHub::AddObserver(IEntityObserver* obs) {
@@ -33,4 +34,9 @@ void EntityObserverHub::NotifyDamageTaken(Entity* e, int dmg, D2D1::ColorF color
 
 void EntityObserverHub::NotifyDeath(Entity* e) {
     for (auto* obs : observers) obs->OnEntityDied(e);
+}
+
+void EntityObserverHub::NotifyChangePlayerInven(Player* p)
+{
+    for (auto* obs : observers) obs->OnChangePlayerInven(p);
 }

@@ -139,6 +139,7 @@ void Player::GetItem(Item* item)
     if (inven)
     {
         inven->AddItem(item);
+        entityObserver.NotifyChangePlayerInven(this);
     }
 }
 

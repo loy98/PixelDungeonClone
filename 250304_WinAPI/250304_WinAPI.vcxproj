@@ -225,6 +225,7 @@
     <ClInclude Include="UIManager.h" />
     <ClInclude Include="UI\Bar\UIValueBar.h" />
     <ClInclude Include="UI\Bar\ValueAnimator.h" />
+    <ClInclude Include="UI\Button\UIImageTextButton.h" />
     <ClInclude Include="UI\Core\UIComponent.h" />
     <ClInclude Include="UI\Core\UIContainer.h" />
     <ClInclude Include="UI\Core\UIContainerBase.h" />

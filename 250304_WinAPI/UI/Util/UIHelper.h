@@ -42,7 +42,7 @@ namespace UIHelper {
     void SetButtonImage(const UIImageTextButton& btn, const NinePatchStyle& style, size_t index = 0);
     /* 인벤 전용 */
     void SetInventorySlotData(const UIImageTextButton& target, const UIInventorySlotData* data);
-    void UpdateInventorySlot(UIImageTextButton& slot, const UIInventorySlotStyle& style,
+    void UpdateInventorySlot(UIImageTextButton& slot,
                              const UIInventorySlotData& data, const std::function<void()>& onClick = nullptr);
     
 

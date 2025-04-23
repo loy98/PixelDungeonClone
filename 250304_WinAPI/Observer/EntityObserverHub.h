@@ -7,6 +7,7 @@ class Entity;
 struct EffectStyle;
 struct TextStyle;
 class IEntityObserver;
+class Player;
 
 
 // 공통 Entity 옵저버 허브
@@ -19,4 +20,5 @@ public:
     void RemoveObserver(IEntityObserver* obs);
     void NotifyDamageTaken(Entity* e, int dmg, D2D1::ColorF color);
     void NotifyDeath(Entity* e);
+    void NotifyChangePlayerInven(Player* p);
 };

@@ -14,6 +14,7 @@ public:
     
     virtual void OnEntityDamageTaken(DamageTakenData data) {}
     virtual void OnEntityDied(Entity* entity) {}
+    virtual void OnChangePlayerInven(Player* entity) {}
     virtual ~IEntityObserver() = default;
 };
 
