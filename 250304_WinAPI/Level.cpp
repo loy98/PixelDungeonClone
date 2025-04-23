@@ -1,4 +1,4 @@
-﻿#include "Level.h"
+#include "Level.h"
 #include "DungeonGenerator.h"
 #include "config.h"
 #include <random>
@@ -118,14 +118,16 @@ void Level::Init()
 
 void Level::Release()
 {
-    for (auto actor : actors)
-    {
-        if (actor)
-        {
-            delete actor;
-            actor = nullptr;
-        }
-    }
+    
+	for (auto actor : actors)
+	{
+		if (actor)
+		{
+			delete actor;
+			actor = nullptr;
+		}
+	}
+    
     if (player)
     {
         // delete player;
@@ -142,6 +144,11 @@ void Level::Release()
         }
     }
     uiManager = nullptr;
+
+    if (camera) {
+        camera = nullptr;
+    }
+
 }
 
 void Level::Update()

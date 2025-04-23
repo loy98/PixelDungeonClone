@@ -211,6 +211,7 @@
     <ClInclude Include="Observer\ObserverEventData.h" />
     <ClInclude Include="PathFinder.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="resource4.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="Sword.h" />
@@ -254,6 +255,9 @@
     <ClInclude Include="UI\Util\UIResourceSubManager.h" />
     <ClInclude Include="UI\Util\UITextPool.h" />
     <ClInclude Include="UI\VisualStyle.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="250304_WinAPI.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

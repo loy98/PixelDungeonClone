@@ -1,4 +1,4 @@
-#include "Button.h"
+ï»¿#include "Button.h"
 
 #include "D2DImage.h"
 #include "D2DImageManager.h"
@@ -8,7 +8,7 @@ HRESULT Button::Init(int posX, int posY)
 {
 	state = ButtonState::None;
 	image = D2DImageManager::GetInstance()->
-		AddImage("¹öÆ°", L"Image/button.bmp", 1, 2);
+		AddImage("ë²„íŠ¼", L"Image/button.bmp", 1, 2);
 	if (image == nullptr)
 	{
 		return E_FAIL;
@@ -35,16 +35,15 @@ void Button::Update()
 {
 	if (PtInRect(&rc, g_ptMouse))
 	{
-		if (KeyManager::GetInstance()->IsOnceKeyDown(VK_LBUTTON))
+		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT) == true)
 		{
 			state = ButtonState::Down;
 		}
 		else if (state == ButtonState::Down &&
-			KeyManager::GetInstance()->IsOnceKeyUp(VK_LBUTTON))
+			MouseManager::GetInstance()->GetClickValueUsed()==false)
 		{
 			state = ButtonState::Up;
-
-			// ±â´É ¼öÇà
+			// ê¸°ëŠ¥ ìˆ˜í–‰
 			// TilemapTool::Save()
 			//if (buttonFunc && obj)	obj->buttonFunc();
 			if (buttonFunc) buttonFunc();
