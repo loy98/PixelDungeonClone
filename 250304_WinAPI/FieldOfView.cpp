@@ -32,8 +32,8 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int viewRange, int tileId
 			if (leftSlope < endSlope)      break;
 
 			// 2) 월드 좌표 변환
-			int idX = tileIdX + dx * direction.horizonX + dy * direction.horizonY;
-			int idY = tileIdY + dx * direction.verticalX + dy * direction.verticalY;
+			int idX = tileIdX + dx * direction.horizonX + -dy * direction.horizonY;
+			int idY = tileIdY + dx * direction.verticalX + -dy * direction.verticalY;
 			if (idX < 0 || idX >= TILE_X || idY < 0 || idY >= TILE_Y)
 				continue;
 
@@ -58,7 +58,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int viewRange, int tileId
 				blocked = true;
 				Calculate(map, 0, tileIdX, tileIdY,
 					depth + 1, startSlope, leftSlope, direction);
-				nextStart = rightSlope;
+				nextStart = abs(rightSlope);
 			}
 			// 5) 그림자 끝 지점 복귀
 			else if (blocked && tile.type == 0) {
