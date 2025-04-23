@@ -75,22 +75,16 @@ void Level::Init()
     mapWidth = TILE_X;
     mapHeight = TILE_Y;
 
+
     // Generate dungeon
     dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
 
     // Place player near entrance
     FPOINT playerPos = GetEntranceSpawnPosition();
-    //TODO:MergeCheck
-    //   Player* player = new Player(playerPos, 50.0f);
-
-    // 시작 위치 테스트용 매직넘버
-    player = new Player(playerPos, 1000.f, 20, 5, 2);
-    // Entity* monster1 = new Monster(GetPosByGridIndex(5, 4), 300.f, 15, 4, 3);
-    // Entity* monster2 = new Monster(GetPosByGridIndex(4, 5), 300.f, 15, 4, 3);
-
+    player = new Player(playerPos, 1000.f, 20, 50, 2);
     AddActor(player);
-    // AddActor(monster1);
-    // AddActor(monster2);
+
+    //TODO:MergeCheck
     
     camera = new Camera();
     camera->Init(player->GetPosition());
@@ -351,8 +345,9 @@ void Level::Render(HDC hdc)
     // Render actors
     for (auto actor : actors)
     {
-        if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
-        {
+        //if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
+        //{
+        //}
             if (actor->GetImage()) {
                 actor->GetImage()->
                     Middle_RenderFrameScale(
@@ -360,7 +355,6 @@ void Level::Render(HDC hdc)
                         camera->ConvertToRendererY(actor->GetPosition().y),
                         camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, actor->GetCurAnimIdx(), 0);
             }
-        }
     }
 
     // UI

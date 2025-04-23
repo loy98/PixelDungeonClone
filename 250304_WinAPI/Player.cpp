@@ -10,6 +10,7 @@
 #include "CombatSyetem.h"
 #include "Item.h"
 #include "Inventory.h"
+#include "Animator.h"
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -24,6 +25,7 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     isActive = true;
     level = 1;
     exp = 0;
+    maxExp = 5;
 
     startFrame = 0;
     endFrame = 1;
@@ -41,11 +43,22 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     finder = new PathFinder();
     destPos = position;
 
-    //image = D2DImageManager::GetInstance()->AddImage("player", L"Image/warrior.png", 21, 7); 
-
     inven = new Inventory(this);
 
     image = D2DImageManager::GetInstance()->AddImage("warrior", L"Image/warrior.png", 21, 7);
+
+    animator->AddClip("Idle", { 0,  1, 0.5f, true,  nullptr });
+    animator->AddClip("Move", { 2,  8, 0.2f, true,  nullptr });
+    animator->AddClip("Attack", { 13, 15, 0.1f, false, [this]() {
+        // 공격 애니 끝나고 실행할 콜백
+        if (target)
+        {
+            CombatSyetem::GetInstance()->ProcessAttack(this, target);
+            Stop();
+            SetState(EntityState::DUMMY);
+        }
+    } });
+    animator->AddClip("Dead", { 8, 12, 0.3f, false, nullptr });
 }
 
 Player::~Player()
@@ -62,8 +75,8 @@ void Player::Update()
     case EntityState::MOVE:
         return;
     case EntityState::ATTACK:
-        if (curAnimFrame == endFrame)
-            SetState(EntityState::IDLE);
+        //if (curAnimFrame == endFrame)
+        //    curState = EntityState::DUMMY;
         return;
     case EntityState::DEAD:
         // player는 죽은채로 계속 애니메이션 돼야함
@@ -93,19 +106,21 @@ void Player::Act(Level* level)
     case EntityState::DEAD:
         // player는 죽은채로 계속 애니메이션 돼야함
         return;
+    case EntityState::DUMMY:
+        SetState(EntityState::IDLE);
+        return;
     }
 }
 
 void Player::Attack(Level* level)
 {
-    if (target)
-    {
-        CombatSyetem::GetInstance()->ProcessAttack(this, target);
-        Stop();
-        
+    //if (target)
+    //{
+    //    CombatSyetem::GetInstance()->ProcessAttack(this, target);
+    //    Stop();
 
-        //SetState(EntityState::IDLE);
-    }
+    //    //SetState(EntityState::IDLE);
+    //}
 }
 
 void Player::ActIdle(Level* level)
@@ -154,20 +169,27 @@ void Player::SetState(EntityState state)
     switch (state)
     {
     case EntityState::IDLE:
-        SetAimData(0, 1, 0.5);
+        // SetAimData(0, 1, 2.0);
         curState = EntityState::IDLE;
+        animator->Play("Idle");
         break;
     case EntityState::MOVE:
-        SetAimData(2, 8, 0.2);
+        // SetAimData(2, 8, 0.1);
         curState = EntityState::MOVE;
+        animator->Play("Move");
         break;
     case EntityState::ATTACK:
-        SetAimData(13, 15, 0.3);
+        // SetAimData(13, 15, 0.1);
         curState = EntityState::ATTACK;
+        animator->Play("Attack");
         break;
     case EntityState::DEAD:
-        SetAimData(8, 12, 0.3);
+        // SetAimData(8, 12, 0.3);
         curState = EntityState::DEAD;
+        animator->Play("Dead");
+        break;
+    case EntityState::DUMMY:
+        curState = EntityState::DUMMY;
         break;
     }
 

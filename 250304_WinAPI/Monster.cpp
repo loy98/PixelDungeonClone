@@ -46,6 +46,7 @@ void Monster::Act(Level* level)
         Attack(level);
         return;
     case EntityState::DEAD:
+        isActive = false;
         // 애니메이션 끝나면 actor 목록에서 지워야함
         return;
     }

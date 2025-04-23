@@ -114,6 +114,9 @@
     <ClCompile Include="UI\UIEffectManager.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Animator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -331,6 +334,12 @@
     <ClInclude Include="UI\Button\UIImageTextButton.h">
       <Filter>2D Framework\UI\Button</Filter>
     </ClInclude>
+    <ClInclude Include="resource4.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Animator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="2D Framework">
@@ -398,5 +407,8 @@
     <Filter Include="2D Framework\UI\Util">
       <UniqueIdentifier>{1d1d6fbf-100e-47bc-a3e8-b930cca41eb2}</UniqueIdentifier>
     </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="250304_WinAPI.rc" />
   </ItemGroup>
 </Project>
