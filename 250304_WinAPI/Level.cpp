@@ -128,6 +128,8 @@ void Level::Release()
 
 void Level::Update()
 {
+    uiManager->Update();
+    
     if (player->GetState() == EntityState::MOVE) {
         camera->UpdateCenter(player->GetPosition());
     }
@@ -204,8 +206,6 @@ void Level::Update()
     for (auto actor : actors)
     {
         if (actor) actor->Update();
-        //UIManager가 여기서 HP 연동
-
     }
 }
 

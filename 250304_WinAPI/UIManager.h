@@ -61,9 +61,10 @@ public:
 	void UnregisterEntity(Entity* entity);
 
 	void SendLog(const wstring& msg, D2D1_COLOR_F color);
-	void SendTextEffect(const std::wstring& text, TextStyle style, const D2D1_RECT_F& rect, const EffectStyle& effectStyle);
+	void SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect, TextStyle* textStyle = nullptr , EffectStyle* effectStyle = nullptr);
 
 	void SetWorldUISCale(float scale);
+	void UseUIItem(int idx);
 	
 	virtual ~UIManager();
 

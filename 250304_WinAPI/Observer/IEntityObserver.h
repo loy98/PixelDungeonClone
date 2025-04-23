@@ -16,3 +16,10 @@ public:
     virtual void OnEntityDied(Entity* entity) {}
     virtual ~IEntityObserver() = default;
 };
+
+class ISystemObserver
+{
+public:
+    virtual void OnEndGame() {};
+
+};

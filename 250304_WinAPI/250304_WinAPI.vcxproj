@@ -229,6 +229,7 @@
     <ClInclude Include="UI\Image\UIBaseImage.h" />
     <ClInclude Include="UI\Image\UIImage.h" />
     <ClInclude Include="UI\Panel\UIInventory.h" />
+    <ClInclude Include="UI\Panel\UIItemPanel.h" />
     <ClInclude Include="UI\Panel\UIQuickSlotToolbar.h" />
     <ClInclude Include="UI\Panel\UIStatusPanel.h" />
     <ClInclude Include="UI\Panel\UIStatusTollbar.h" />

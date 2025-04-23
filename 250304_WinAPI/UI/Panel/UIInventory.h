@@ -9,11 +9,14 @@
 #include "../Util/UIHelper.h"
 #include "../Image/UI9PatchImage.h"
 
-class UIInventory : public UIContainer {
+class UIInventory : public UIContainer, public IEntityObserver {
 private:
     UITextBox* titleText = nullptr;
     UIContainer* gridArea = nullptr;
     UIContainer* bottomSection = nullptr;
+    // UIItemPanel* uiItemPanel = nullptr;
+
+    vector<UIImageTextButton*> itemSlots;
     
     const int numCols = 5;
     const int numRows = 5;
@@ -30,6 +33,18 @@ public:
         AddTitleSection();
         AddGridSection();
         AddBottomSection();
+    }
+
+    void UpdateItemSlot(int idx, const UIInventorySlotStyle& style,
+                         const UIInventorySlotData& data, const std::function<void()>& onClick)
+    {
+        UIHelper::UpdateInventorySlot(*itemSlots[idx], style, data, onClick);
+    }
+
+    int UseItemSlot(int idx)
+    {
+        UIManager::GetInstance()->UseUIItem(idx);
+        return idx;
     }
 
 private:
@@ -88,8 +103,11 @@ private:
             slot->SetOnClick([this, i, slot]()
             {
                 wstring debugString = (L"클릭 대상 [" + to_wstring(i) + L"] 클릭\n");
-                UITestEffectManager::GetInstance()->AddEffect(debugString, slot->GetWorldRect());
+                UIManager::GetInstance()->SendLog(debugString, D2D1::ColorF(D2D1::ColorF::Yellow));
+                UseItemSlot(i);
             });
+
+            itemSlots.push_back(slot);
         }
 
         gridArea->UpdateLayout();

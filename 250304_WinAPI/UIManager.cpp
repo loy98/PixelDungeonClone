@@ -51,18 +51,23 @@ void UIManager::SendLog(const wstring& msg, D2D1_COLOR_F color)
     }
 }
 
-void UIManager::SendTextEffect(const std::wstring& text, TextStyle textStyle, const D2D1_RECT_F& rect,
-    const EffectStyle& effectStyle)
+void UIManager::SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect, TextStyle* textStyle,
+                               EffectStyle* effectStyle)
 {
     if (uiEffectManager)
     {
-        uiEffectManager->AddEffect(text, textStyle, rect, effectStyle);
+        uiEffectManager->AddEffect(text, *textStyle, rect, *effectStyle);
     }
 }
 
 void UIManager::SetWorldUISCale(float scale)
 {
     
+}
+
+void UIManager::UseUIItem(int idx)
+{
+    SendLog(L"Item 사용", D2D1::ColorF(D2D1::ColorF::Blue));
 }
 
 UIManager::~UIManager()
@@ -75,6 +80,7 @@ void UIManager::Init()
     rdt = D2DImage::GetRenderTarget();
     mouseManager = MouseManager::GetInstance();
 
+    /* 기본 Load */
     uiStatusToolbar = new UIStatusToolbar();
     uiQuickSlotToolbar = new UIQuickSlotToolbar();
     uiTopRightUI = new UITopRightUI();
@@ -90,6 +96,31 @@ void UIManager::Init()
     uiInventoryPanel->SetActive(false);
     uiQuickSlotToolbar->Init();
     uiTextLogPanel->Init();
+
+    /* UIContainers 버튼 연결 */
+    uiQuickSlotToolbar->SetActionOnClick(0, [this](){});
+    uiQuickSlotToolbar->SetActionOnClick(1, [this](){});
+    uiQuickSlotToolbar->SetActionOnClick(2, [this]()
+    {
+        uiInventoryPanel->SetActive(true);
+    
+        float mx = mouseManager->GetMousePos().x;
+        float my = mouseManager->GetMousePos().y;
+    
+        D2D1_RECT_F effectRect = D2D1::RectF(mx - 10, my - 10, mx + 10, my + 10);
+
+        TextStyle style;
+        style.fontName = L"pixel";
+        style.fontSize = 14.0f;
+        style.color = D2D1::ColorF(D2D1::ColorF::White);
+        style.bold = true;
+        style.horizontalAlign = DWRITE_TEXT_ALIGNMENT_CENTER;
+        style.verticalAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+        EffectStyle effectStyle;
+
+        SendTextEffect(L"Click", effectRect,&style, &effectStyle);
+        SendLog(L"Inventory Quick Click", D2D1::ColorF(D2D1::ColorF::Yellow));
+    });
 
     /* Add UIContainers */
     uiContainers.push_back(uiStatusToolbar);
@@ -111,14 +142,13 @@ void UIManager::Update()
         
         for (auto uiContainer_it = uiContainers.begin(); uiContainer_it != uiContainers.end(); ++uiContainer_it)
         {
-            (*uiContainer_it)->HandleClick(mx, my);
+            if ((*uiContainer_it)->HandleClick(mx, my))
+            {
+                MouseManager::GetInstance()->InitPoints();
+                MouseManager::GetInstance()->AlreadyClickUsed();
+                break;
+            }
         }
-
-        wstring handleClick = L"MousePos: " + to_wstring(mouseManager->GetMousePos().x) + L"__" + to_wstring(mouseManager->GetMousePos().y) + L"\n";
-        UIManager::GetInstance()->SendLog(handleClick, D2D1::ColorF(D2D1::ColorF::Blue));
-        
-        MouseManager::GetInstance()->InitPoints();
-        MouseManager::GetInstance()->AlreadyClickUsed();
     }
     /////////
 
