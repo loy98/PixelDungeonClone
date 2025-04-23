@@ -25,12 +25,13 @@ void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
     else if (isAlert)
     {
         // 타겟 위치 전달 필요
+        target = level->GetActorAt(level->GetPlayerPos());
+        monster->SetTarget(target);
         Hunting(level, monster);
     }
     else
     {
-        //if (InFov(level, monster))  // 시야에 있는지 체크-있으면 안에서 타겟설정 및 갈 위치 설정함
-        if(UpdateFovInfo(level, monster))
+        if (InFov(level, monster))  // 시야에 있는지 체크-있으면 안에서 타겟설정 및 갈 위치 설정함
         {
             Hunting(level, monster); // monsterAIState: Follow of Attack
         }
@@ -76,8 +77,7 @@ void MonsterAI::Hunting(Level* level, Monster* monster)
     }
     else
     {
-        // destPos를 타겟의 targetPos로 설정
-        monster->SetDestPos(level->GetPlayerTargetPos());
+        monster->SetDestPos(level->GetPlayerPos());
         currMonsterState = MonsterState::FOLLOW;
     }
 }
@@ -118,38 +118,19 @@ void MonsterAI::Wandering(Level* level, Monster* monster)
     currMonsterState = MonsterState::WANDER;
 }
 
-// 임시-
-void MonsterAI::SetFov(Level* level, Monster* monster)
-{
-    // 적의 시야를 가져오는 함수
-    if (!fovList.empty())
-    {
-        fovList.clear();
-    }
-
-    int dx[5] = { -2, -1, 0, 1, 2 };
-    int dy[5] = { -2, -1, 0, 1, 2 };
-    // 주변 24방향 탐색
-
-    for (int i = 0; i < 5; i++)
-    {
-        for (int j = 0; j < 5; j++)
-        {
-            float nx = monster->GetPosition().x + TILE_SIZE* dx[j];
-            float ny = monster->GetPosition().y + TILE_SIZE * dy[i];
-
-            fovList.push_back({nx, ny});
-        }
-    }
-}
-
 bool MonsterAI::InFov(Level* level, Monster* monster)
 {
-    FPOINT startPos = monster->GetPosition();
-    FPOINT endPos = level->GetPlayerTargetPos();
+    int startIndex = level->GetMapIndex((int)monster->GetPosition().x, (int)monster->GetPosition().y);
+    int endIndex = level->GetMapIndex((int)level->GetPlayerPos().x, (int)level->GetPlayerPos().y);
 
-    int w = endPos.x - startPos.x;
-    int h = endPos.y = startPos.y;
+    int startPosX = startIndex % TILE_X;
+    int startPosY = startIndex / TILE_X;
+
+    int endPosX = endIndex % TILE_X;
+    int endPosY = endIndex / TILE_X;
+
+    int w = endPosX - startPosX;
+    int h = endPosY - startPosY;
 
     // 직선이 완만한지 판단-true면 완만, false면 급경사
     bool slopeFlag = abs(w) > abs(h);
@@ -168,18 +149,14 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
     int t = slopeFlag ? 2 * fh : 2 * fw;
     int s = slopeFlag ? -2 * fw : -2 * fh;
 
-    int curX = startPos.x;
-    int curY = startPos.y;
+    int curX = startPosX;
+    int curY = startPosY;
 
     if (slopeFlag)
     {
-        for (int i = 0; i< 100 && curX != endPos.x; ++i)
+        for (int i = 0; i< 20 && curX != endPosX; ++i)
         {
-            // 인덱스 구하기
-            int idX = dx / TILE_SIZE;
-            int idY = dy / TILE_SIZE;
-
-            if (level->IsSolid(idX, idY))
+            if (level->IsSolid(curX, curY))
                 return false;
 
             if (f >= 0)
@@ -191,16 +168,19 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
             curX += dx;
             f += t;
         }
+        if (curX == endPosX)
+        {
+            target = level->GetActorAt(level->GetPlayerPos());
+            monster->SetTarget(target);  // 이게 맞나..
+            return true;
+        }
+
     }
     else
     {
-        for (int i = 0; i < 100 && curY != endPos.y; ++i)
+        for (int i = 0; i < 20 && curY != endPosY; ++i)
         {
-            // 인덱스 구하기
-            int idX = dx / TILE_SIZE;
-            int idY = dy / TILE_SIZE;
-
-            if (level->IsSolid(idX, idY))
+            if (level->IsSolid(curX, curY))
                 return false;
 
             if (f >= 0)
@@ -212,45 +192,14 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
             curY += dy;
             f += t;
         }
-    }
-
-    target = level->GetActorAt(endPos);
-    monster->SetTarget(target);  // 이게 맞나..
-
-    return true;
-}
-
-bool MonsterAI::UpdateFovInfo(Level* level, Monster* monster)
-{
-    // 시야 얻음
-    SetFov(level, monster);
-
-    // 플레이어 위치 타일 찾기
-    Entity* actor;
-
-    for (int i = 0; i < fovList.size(); i++)
-    {
-        actor = level->GetActorAt(fovList[i]);
-        if(actor)
+        if (curY == endPosY)
         {
-            if (actor->GetType() == EntityType::PLAYER)
-            {
-                target = actor;
-                monster->SetTarget(target);
-                //monster->SetTargetPos(fovList[i]);
-                return true;
-            }
-            else if (actor->GetType() == EntityType::MONSTER)
-            {
-                // 주변 몬스터 상태 정보(피격 상태면 사냥모드로 돌입)
-                break;
-            }
+            target = level->GetActorAt(level->GetPlayerPos());
+            monster->SetTarget(target);  // 이게 맞나..
+            return true;
         }
-
-      
     }
 
-   // currMonsterState = MonsterState::IDLE;
     return false;
 }
 

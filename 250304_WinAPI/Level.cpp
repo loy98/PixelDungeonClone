@@ -310,9 +310,9 @@ Level::~Level()
 {
 }
 
-FPOINT Level::GetPlayerTargetPos()
+FPOINT Level::GetPlayerPos()
 {
-    return player->GetTargetPos();
+    return player->GetPosition();
 }
 
 

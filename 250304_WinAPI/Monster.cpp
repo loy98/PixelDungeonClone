@@ -64,12 +64,6 @@ void Monster::Act(Level* level)
         break;
     }
 
-    //if(curState == EntityState::IDLE)
-    //{
-    //    // AI는 curState 상태와 도착지를 정한다
-    //    
-    //}
-
     // 새로운 destPos로 길찾기-move State에서는 targetPos가 여기서 결정됨.
     finder->FindPath(position, destPos, level, OUT path);
 

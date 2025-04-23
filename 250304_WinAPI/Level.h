@@ -152,6 +152,6 @@ public:
 	
 
 	// AI
-	FPOINT GetPlayerTargetPos();
+	FPOINT GetPlayerPos();
 };
 
