@@ -102,6 +102,7 @@ public:
 	FPOINT GetEntranceSpawnPosition() const;
 	void ResetVisibleTile();
 	void SetVisibleTile();
+	void Render8x8Tiles(HDC hdc);
 
 	Level();
 	~Level();

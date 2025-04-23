@@ -74,7 +74,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY,
 			if (isBlock)
 			{
 				//TODO: convert raw value to enum
-				if (tile->type == 0)
+				if (tile->type == 0 || tile->type == 6)
 				{
 					if (dx == 0)
 					{
@@ -100,7 +100,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int tileIdX, int tileIdY,
 			}
 			else
 			{
-				if (tile->type == 0)
+				if (tile->type == 0 || tile->type == 6)
 				{	
 					Calculate(map, tileIdX, tileIdY, dy + 1, nextStartSlope, leftSlope, direction);
 

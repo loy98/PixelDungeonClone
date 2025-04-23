@@ -39,7 +39,7 @@ private:
     static constexpr int MAX_STANDARD_ROOM_SIZE = 8;
     static constexpr int MAX_LARGE_ROOM_SIZE = 12;
     static constexpr int MAX_GIANT_ROOM_SIZE = 16;
-    static constexpr int ROOM_MARGIN = 1;
+    static constexpr int ROOM_MARGIN = 2;
     
     // 던전 생성 관련 메서드들
     std::vector<Room> GenerateRooms(int width, int height, int minRooms, int maxRooms);

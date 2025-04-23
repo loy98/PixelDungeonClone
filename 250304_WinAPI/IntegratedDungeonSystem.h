@@ -8,6 +8,7 @@ class Level;
 class IntegratedDungeonSystem {
 private:
     IDungeonGenerator* dungeonGenerator;
+    // DungeonGenerator* dungeonGenerator;
     MonsterGenerator monsterGenerator;
 
 public:

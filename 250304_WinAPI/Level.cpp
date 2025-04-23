@@ -14,6 +14,8 @@
 #include "TurnManager.h"
 #include "Camera.h"
 #include "FieldOfView.h"
+#include "IDungeonGenerator.h"
+#include "TileMapping8x8.h"
 #include "UI/Test/UITestView.h"
 
 
@@ -174,88 +176,31 @@ void Level::Update()
 
 void Level::Render(HDC hdc)
 {
-    // PatBlt(hdc, 0, 0, WINSIZE_X, WINSIZE_Y, WHITENESS);
-
-    // RenderRect(hdc, mapRc);
-    //sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
-
-    for (int i = 0; i < TILE_Y; ++i)
-    {
-        for (int j = 0; j < TILE_X; ++j)
-        {
-            if (!shouldBeRender[TILE_X * i + j]) continue;
-
-            bool isVisible = map[TILE_X * i + j].visible;
-            int tileType = rendermap[TILE_X * i + j];
-            int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
-            int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
-
-            // Get the current frame coordinates for this tile type
-            POINT frame = GetCurrentFrame(tileType);
-
-            // Render the tile using the frame coordinates
-            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f,
-                                                camera->GetZoomScale() * 2.f, frame.x, frame.y);
-            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f,
-                                    camera->GetZoomScale() * 2.f, 0, 9, 0, false, false, isVisible ? 0.f : 0.5f);
-            // switch (map[TILE_X * i + j].type) {
-            // 	case TT::WALL :
-            // 		sampleTile->RenderFrameScale(
-            // 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-            // 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-            // 			camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
-            // 		// hOldBrush = (HBRUSH)SelectObject(hdc, GreyBrush);
-            // 		// RenderRect(hdc, tempTile[20 * i + j]);
-            // 		// SelectObject(hdc, hOldBrush);
-            // 		break;
-            // 	case TT::FLOOR:
-            // 		sampleTile->RenderFrameScale(
-            // 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-            // 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-            // 			camera->GetZoomScale(), camera->GetZoomScale(), 3, 0);
-            // 		// hOldBrush = (HBRUSH)SelectObject(hdc, WhiteBrush);
-            // 		// RenderRect(hdc, tempTile[20 * i + j]);
-            // 		// SelectObject(hdc, hOldBrush);
-            // 		break;
-            // 	case TT::NONE:
-            // 		sampleTile->RenderFrameScale(
-            // 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-            // 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-            // 			camera->GetZoomScale(), camera->GetZoomScale(), 0, 0);
-            // 		// hOldBrush = (HBRUSH)SelectObject(hdc, BlackBrush);
-            // 		// RenderRect(hdc, tempTile[20 * i + j]);
-            // 		// SelectObject(hdc, hOldBrush);
-            // 		break;
-            // 	default:
-            // 		sampleTile->RenderFrameScale(
-            // 			(camera->ConvertToRendererX(tempTile[TILE_X * i + j].left)),
-            // 			(camera->ConvertToRendererY(tempTile[TILE_X * i + j].top)),
-            // 			camera->GetZoomScale(), camera->GetZoomScale(), 1, 0);
-            // 		// hOldBrush = (HBRUSH)SelectObject(hdc, RedBrush);
-            // 		// RenderRect(hdc, tempTile[20 * i + j]);
-            // 		// SelectObject(hdc, hOldBrush);
-            // 		break;
-            // }
-        }
-    }
-
-    // sampleTile->DrawRect({(float)mapRc.left, (float)mapRc.top}, {(float)mapRc.right, (float)mapRc.bottom}, 1, 1);
-
+    // 8x8 타일 렌더링 사용
+    Render8x8Tiles(hdc);
+    
     // for (int i = 0; i < TILE_Y; ++i)
     // {
     //     for (int j = 0; j < TILE_X; ++j)
     //     {
-    //         int tileType = map[TILE_X * i + j].type;
-    //         int tileX = static_cast<int>(tempTile[TILE_X * i + j].left);
-    //         int tileY = static_cast<int>(tempTile[TILE_X * i + j].top);
-    //         
+    //         if (!shouldBeRender[TILE_X * i + j]) continue;
+    //
+    //         bool isVisible = map[TILE_X * i + j].visible;
+    //         int tileType = rendermap[TILE_X * i + j];
+    //         int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
+    //         int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
+    //
     //         // Get the current frame coordinates for this tile type
     //         POINT frame = GetCurrentFrame(tileType);
-    //         
+    //
     //         // Render the tile using the frame coordinates
-    //         sampleTile->Middle_RenderFrameScale(tileX, tileY, 2.f, 2.f, frame.x, frame.y);
+    //         sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f,
+    //                                             camera->GetZoomScale() * 2.f, frame.x, frame.y);
+    //         sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f,
+    //                                 camera->GetZoomScale() * 2.f, 0, 9, 0, false, false, isVisible ? 0.f : 0.5f);
     //     }
     // }
+
 
     // Render actors
     for (auto actor : actors)
@@ -351,10 +296,10 @@ void Level::GenerateMap(int width, int height)
             int index = y * width + x;
             // 맵 타일 위치 설정 (기존 코드 참고)
             tempTile[index] = {
-                GRID_POS_OFFSET.x + x * TILE_SIZE,
-                GRID_POS_OFFSET.y + y * TILE_SIZE,
-                GRID_POS_OFFSET.x + (x + 1) * TILE_SIZE,
-                GRID_POS_OFFSET.y + (y + 1) * TILE_SIZE
+                GRID_POS_OFFSET.x + x * TILE_SIZE / 2,
+                GRID_POS_OFFSET.y + y * TILE_SIZE / 2,
+                GRID_POS_OFFSET.x + (x + 1) * TILE_SIZE / 2,
+                GRID_POS_OFFSET.y + (y + 1) * TILE_SIZE / 2
             };
 
             // 타일 속성 초기화
@@ -440,57 +385,82 @@ FPOINT Level::GetRandomFloorTile() const
 // Add GetCurrentFrame implementation
 POINT Level::GetCurrentFrame(int tileType) const
 {
-    // // If we have frame data for this tile type
-    // if (tileType >= 0 && tileType < frameMap.size() && !frameMap[tileType].empty())
-    // {
-    //     // Calculate current frame index based on time
-    //     int frameIndex = static_cast<int>((frameTimer / FRAME_CHANGE_TIME) * frameMap[tileType].size()) % frameMap[tileType].size();
-    //     return frameMap[tileType][frameIndex];
-    // }
-
-    // Default frames for basic tiles if no frame data exists
+    // Shattered Pixel Dungeon 타일맵 에셋과 매핑
     switch (tileType)
     {
-    case 0: // Wall
-        return {0, 3};
-    case 1: // Floor
-        return {0, 0};
-    case 2: // Door
-        return {8, 3};
-    case 3: // Entrance
-        return {0, 1};
-    case 4: // Exit
-        return {1, 1};
-    case 5: // Hidden door
-        return {13, 3};
-    case 6: // Empty space
-        return {0, 9};
-    case 10: // Top wall
-        return {0, 6};
-    case 11: // Bottom wall
-        return {0, 12};
-    case 12: // Left wall
-        return {2, 9};
-    case 13: // Right wall
-        return {4, 9};
-    case 14: // Top-left corner
-        return {9, 6};
-    case 15: // Top-right corner
-        return {1, 13};
-    case 16: // Bottom-left corner
-        return {3, 13};
-    case 17: // Bottom-right corner
-        return {0, 13};
-    case 20: // Floor normal
-        return {0, 0};
-    case 21: // Floor mossy
-        return { 1, 0};
-    case 22: // Floor rough
-        return { 2, 0};
-    case 23: // Floor rough
-        return { 6, 0};
+    // 기본 타일
+    case IDungeonGenerator::TILE_WALL:
+        return {0, 3}; // 일반 벽 타일
+    case IDungeonGenerator::TILE_FLOOR:
+        return {0, 0}; // 일반 바닥 타일
+    case IDungeonGenerator::TILE_DOOR:
+        return {8, 3}; // 문
+    case IDungeonGenerator::TILE_ENTRANCE:
+        return {0, 1}; // 입구
+    case IDungeonGenerator::TILE_EXIT:
+        return {1, 1}; // 출구
+    case IDungeonGenerator::TILE_HIDDEN_DOOR:
+        return {13, 3}; // 숨겨진 문
+    case IDungeonGenerator::TILE_NONE:
+        return {0, 9}; // 빈 공간
+        
+    // 벽 변형 타일
+    case IDungeonGenerator::TILE_WALL_TOP:
+        return {0, 6}; // 상단 벽(위쪽이 바닥)
+    case IDungeonGenerator::TILE_WALL_BOTTOM:
+        return {5, 8}; // 하단 벽(아래쪽이 바닥)
+    case IDungeonGenerator::TILE_WALL_LEFT:
+        return {2, 9}; // 좌측 벽(왼쪽이 바닥)
+    case IDungeonGenerator::TILE_WALL_RIGHT:
+        return {4, 9}; // 우측 벽(오른쪽이 바닥)
+        
+    // 코너 타일
+    case IDungeonGenerator::TILE_WALL_CORNER_TL:
+        return {9, 6}; // 상단 좌측 코너(북서쪽 코너)
+    case IDungeonGenerator::TILE_WALL_CORNER_TR:
+        return {1, 13}; // 상단 우측 코너(북동쪽 코너)
+    case IDungeonGenerator::TILE_WALL_CORNER_BL:
+        return {3, 13}; // 하단 좌측 코너(남서쪽 코너)
+    case IDungeonGenerator::TILE_WALL_CORNER_BR:
+        return {5, 13}; // 하단 우측 코너(남동쪽 코너)
+        
+    // 모서리 타일
+    case IDungeonGenerator::TILE_WALL_TOP_LEFT:
+        return {0, 7}; // 상단 좌측 모서리(위쪽과 왼쪽이 바닥)
+    case IDungeonGenerator::TILE_WALL_TOP_RIGHT:
+        return {2, 7}; // 상단 우측 모서리(위쪽과 오른쪽이 바닥)
+    case IDungeonGenerator::TILE_WALL_BOTTOM_LEFT:
+        return {1, 9}; // 하단 좌측 모서리(아래쪽과 왼쪽이 바닥)
+    case IDungeonGenerator::TILE_WALL_BOTTOM_RIGHT:
+        return {8, 9}; // 하단 우측 모서리(아래쪽과 오른쪽이 바닥)
+        
+    // 내부 벽 및 특수 타일
+    case IDungeonGenerator::TILE_WALL_INNER:
+        return {1, 8}; // 내부 벽(모든 방향이 벽)
+    case IDungeonGenerator::TILE_WALL_SOLO:
+        return {3, 8}; // 독립된 벽(주변에 벽이 없음)
+    case IDungeonGenerator::TILE_WALL_SIDE_TOP:
+        return {6, 9}; // 측면 상단(위쪽과 아래쪽이 바닥)
+    case IDungeonGenerator::TILE_WALL_SIDE_BOTTOM:
+        return {7, 9}; // 측면 하단(왼쪽과 오른쪽이 바닥)
+    case IDungeonGenerator::TILE_WALL_SIDE_LEFT:
+        return {3, 9}; // 측면 좌측(왼쪽이 바닥, 위아래가 벽)
+    case IDungeonGenerator::TILE_WALL_SIDE_RIGHT:
+        return {5, 9}; // 측면 우측(오른쪽이 바닥, 위아래가 벽)
+        
+    // 바닥 변형 타일
+    case IDungeonGenerator::TILE_FLOOR_NORMAL:
+        return {0, 0}; // 일반 바닥
+    case IDungeonGenerator::TILE_FLOOR_FANCY:
+        return {1, 0}; // 장식된 바닥
+    case IDungeonGenerator::TILE_FLOOR_CRACKED:
+        return {2, 0}; // 금이 간 바닥
+    case IDungeonGenerator::TILE_FLOOR_MOSSY:
+        return {6, 0}; // 이끼 낀 바닥
+        
+    // 기본값 (알 수 없는 타일 타입)
     default:
-        return {0, 4}; // Default/unknown tile
+        return {0, 4}; // 기본 타일 (알 수 없는 타일 타입)
     }
 }
 
@@ -632,3 +602,91 @@ void Level::SetVisibleTile()
                        1.0f, 0.0f, scanDirection);
     }
 }
+
+
+void Level::Render8x8Tiles(HDC hdc)
+{
+    // 기본 TILE_SIZE는 90으로 유지
+    // const int TILE_SIZE = 90;
+    // 8x8 타일 크기는 기본 타일 크기의 절반
+    const int SUBTILE_SIZE = TILE_SIZE / 2;
+    
+    // TileMapping8x8 인스턴스 생성
+    TileMapping8x8 tileMapping;
+    
+    // 16x16 맵을 8x8 맵으로 변환
+    std::vector<std::vector<int>> map8x8 = tileMapping.ApplyEdgeTiles(mapData);
+    
+    // 맵 크기 계산
+    int height8x8 = map8x8.size();
+    int width8x8 = map8x8[0].size();
+    
+    // 8x8 타일 렌더링
+    for (int y = 0; y < height8x8; y++)
+    {
+        for (int x = 0; x < width8x8; x++)
+        {
+            // 타일 ID 가져오기
+            int tileID = map8x8[y][x];
+            
+            // 타일 위치 계산 (SUBTILE_SIZE 사용)
+            int tileX = GRID_POS_OFFSET.x + x * SUBTILE_SIZE;
+            int tileY = GRID_POS_OFFSET.y + y * SUBTILE_SIZE;
+            
+            // 화면 밖의 타일은 렌더링하지 않음
+            if (!shouldBeRender[y / 2 * TILE_X + x / 2]) continue;
+            
+            // 타일 가시성 확인
+            bool isVisible = map[y / 2 * TILE_X + x / 2].visible;
+            
+            // 타일 이미지 위치 가져오기
+            POINT frame = tileMapping.GetImagePosition(tileID);
+            
+            // 타일 렌더링 (SUBTILE_SIZE에 맞게 스케일 조정)
+            sampleTile->RenderFrameScale(
+                camera->ConvertToRendererX(tileX),
+                camera->ConvertToRendererY(tileY),
+                camera->GetZoomScale() * 2.f *(SUBTILE_SIZE / 16.0f),
+                camera->GetZoomScale()* 2.f * (SUBTILE_SIZE / 16.0f),
+                frame.x, frame.y);
+            
+            // 가시성에 따른 어두운 오버레이 렌더링
+            if (!isVisible) {
+                sampleTile->RenderFrameScale(
+                    camera->ConvertToRendererX(tileX),
+                    camera->ConvertToRendererY(tileY),
+                    camera->GetZoomScale() * 2.f* (SUBTILE_SIZE / 16.0f),
+                    camera->GetZoomScale() * 2.f* (SUBTILE_SIZE / 16.0f),
+                    0, 9, 0, false, false, 0.5f);
+            }
+        }
+    }
+}
+
+unsigned char CalculateBitmask(const std::vector<std::vector<int>>& map, int x, int y) {
+    // 8방향 오프셋 (시계 방향으로 좌상, 상, 우상, 우, 우하, 하, 좌하, 좌)
+    const int dx[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+    const int dy[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+    
+    unsigned char bitmask = 0;
+    
+    for (int i = 0; i < 8; i++) {
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+        
+        // 맵 범위 확인
+        if (nx < 0 || nx >= map[0].size() || ny < 0 || ny >= map.size()) {
+            // 맵 밖은 벽으로 처리
+            bitmask |= (1 << i);
+            continue;
+        }
+        
+        // 벽 타일 확인
+        if (IsWall(map[ny][nx])) {
+            bitmask |= (1 << i);
+        }
+    }
+    
+    return bitmask;
+}
+

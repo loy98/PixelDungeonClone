@@ -581,74 +581,173 @@ int ProceduralDungeonGenerator::DetermineWallVariation(const std::vector<std::ve
     int height = map.size();
     int width = map[0].size();
     
+    // 주변 타일이 벽인지 확인하는 헬퍼 함수
     auto isWall = [&](int x, int y) -> bool {
-        if (x < 0 || x >= width || y < 0 || y >= height) return true;
-        return map[y][x] == TILE_WALL || map[y][x] == TILE_NONE;
+        if (x < 0 || x >= width || y < 0 || y >= height) return true; // 맵 경계 밖은 벽으로 처리
+        return map[y][x] == TILE_WALL || 
+               map[y][x] == TILE_WALL_TOP || 
+               map[y][x] == TILE_WALL_BOTTOM || 
+               map[y][x] == TILE_WALL_LEFT || 
+               map[y][x] == TILE_WALL_RIGHT || 
+               map[y][x] == TILE_WALL_CORNER_TL || 
+               map[y][x] == TILE_WALL_CORNER_TR || 
+               map[y][x] == TILE_WALL_CORNER_BL || 
+               map[y][x] == TILE_WALL_CORNER_BR || 
+               map[y][x] == TILE_WALL_INNER || 
+               map[y][x] == TILE_WALL_SOLO || 
+               map[y][x] == TILE_WALL_TOP_LEFT || 
+               map[y][x] == TILE_WALL_TOP_RIGHT || 
+               map[y][x] == TILE_WALL_BOTTOM_LEFT || 
+               map[y][x] == TILE_WALL_BOTTOM_RIGHT || 
+               map[y][x] == TILE_WALL_SIDE_TOP || 
+               map[y][x] == TILE_WALL_SIDE_BOTTOM || 
+               map[y][x] == TILE_WALL_SIDE_LEFT || 
+               map[y][x] == TILE_WALL_SIDE_RIGHT;
     };
     
+    // 주변 타일이 바닥인지 확인하는 헬퍼 함수
     auto isFloor = [&](int x, int y) -> bool {
-        if (x < 0 || x >= width || y < 0 || y >= height) return false;
+        if (x < 0 || x >= width || y < 0 || y >= height) return false; // 맵 경계 밖은 바닥이 아님
         return map[y][x] == TILE_FLOOR || 
-               map[y][x] == TILE_DOOR || 
+               map[y][x] == TILE_FLOOR_NORMAL || 
+               map[y][x] == TILE_FLOOR_FANCY || 
+               map[y][x] == TILE_FLOOR_CRACKED || 
+               map[y][x] == TILE_FLOOR_MOSSY || 
                map[y][x] == TILE_ENTRANCE || 
-               map[y][x] == TILE_EXIT ||
+               map[y][x] == TILE_EXIT || 
+               map[y][x] == TILE_DOOR || 
                map[y][x] == TILE_HIDDEN_DOOR;
     };
+
+    // 8방향 비트마스크 계산
+    unsigned char bitmask = 0;
     
-    bool hasFloorAbove = isFloor(x, y-1);
-    bool hasFloorBelow = isFloor(x, y+1);
-    bool hasFloorLeft = isFloor(x-1, y);
-    bool hasFloorRight = isFloor(x+1, y);
+    // 각 방향에 대한 비트 설정
+    if (isWall(x, y-1)) bitmask |= 1;      // North (0)
+    if (isWall(x+1, y-1)) bitmask |= 2;    // North-East (1)
+    if (isWall(x+1, y)) bitmask |= 4;      // East (2)
+    if (isWall(x+1, y+1)) bitmask |= 8;    // South-East (3)
+    if (isWall(x, y+1)) bitmask |= 16;     // South (4)
+    if (isWall(x-1, y+1)) bitmask |= 32;   // South-West (5)
+    if (isWall(x-1, y)) bitmask |= 64;     // West (6)
+    if (isWall(x-1, y-1)) bitmask |= 128;  // North-West (7)
     
-    bool hasFloorTopLeft = isFloor(x-1, y-1);
-    bool hasFloorTopRight = isFloor(x+1, y-1);
-    bool hasFloorBottomLeft = isFloor(x-1, y+1);
-    bool hasFloorBottomRight = isFloor(x+1, y+1);
+    // 비트마스크에 따른 타일 매핑
     
-    // 모서리 벽 결정
-    if (hasFloorBelow && hasFloorRight && !hasFloorBottomRight) {
-        bool hasWallBelow = isWall(x, y+1);
-        bool hasWallRight = isWall(x+1, y);
-        if (hasWallBelow && hasWallRight) {
-            return TILE_WALL_CORNER_BR;
-        }
-    }
-    if (hasFloorBelow && hasFloorLeft && !hasFloorBottomLeft) {
-        bool hasWallBelow = isWall(x, y+1);
-        bool hasWallLeft = isWall(x-1, y);
-        if (hasWallBelow && hasWallLeft) {
-            return TILE_WALL_CORNER_BL;
-        }
-    }
-    if (hasFloorAbove && hasFloorRight && !hasFloorTopRight) {
-        bool hasWallAbove = isWall(x, y-1);
-        bool hasWallRight = isWall(x+1, y);
-        if (hasWallAbove && hasWallRight) {
-            return TILE_WALL_CORNER_TR;
-        }
-    }
-    if (hasFloorAbove && hasFloorLeft && !hasFloorTopLeft) {
-        bool hasWallAbove = isWall(x, y-1);
-        bool hasWallLeft = isWall(x-1, y);
-        if (hasWallAbove && hasWallLeft) {
-            return TILE_WALL_CORNER_TL;
-        }
+    // 모든 방향이 벽인 경우 (내부 벽)
+    if (bitmask == 255) {
+        return TILE_WALL_INNER;
     }
     
-    // 일반 벽 결정
-    if (hasFloorAbove && !hasFloorBelow && !hasFloorLeft && !hasFloorRight) {
-        return TILE_WALL_BOTTOM;
+    // 독립된 벽 (주변에 벽이 없는 경우)
+    if (bitmask == 0) {
+        return TILE_WALL_SOLO;
     }
-    if (!hasFloorAbove && hasFloorBelow && !hasFloorLeft && !hasFloorRight) {
-        return TILE_WALL_TOP;
+    
+    // 4방향 체크 (상하좌우)
+    bool wallN = (bitmask & 1) != 0;   // North
+    bool wallE = (bitmask & 4) != 0;   // East
+    bool wallS = (bitmask & 16) != 0;  // South
+    bool wallW = (bitmask & 64) != 0;  // West
+    
+    // 대각선 방향 체크
+    bool wallNE = (bitmask & 2) != 0;  // North-East
+    bool wallSE = (bitmask & 8) != 0;  // South-East
+    bool wallSW = (bitmask & 32) != 0; // South-West
+    bool wallNW = (bitmask & 128) != 0;// North-West
+    
+    // 상단 모서리 (북쪽에 바닥이 있는 경우)
+    if (!wallN) {
+        // 상단 좌측 모서리 (북쪽과 서쪽에 바닥이 있는 경우)
+        if (!wallW && isFloor(x, y-1) && isFloor(x-1, y)) {
+            return TILE_WALL_TOP_LEFT;
+        }
+        
+        // 상단 우측 모서리 (북쪽과 동쪽에 바닥이 있는 경우)
+        if (!wallE && isFloor(x, y-1) && isFloor(x+1, y)) {
+            return TILE_WALL_TOP_RIGHT;
+        }
+        
+        // 상단 벽 (북쪽에만 바닥이 있는 경우)
+        if (wallE && wallS && wallW) {
+            return TILE_WALL_TOP;
+        }
     }
-    if (!hasFloorAbove && !hasFloorBelow && hasFloorLeft && !hasFloorRight) {
-        return TILE_WALL_RIGHT;
+    
+    // 하단 모서리 (남쪽에 바닥이 있는 경우)
+    if (!wallS) {
+        // 하단 좌측 모서리 (남쪽과 서쪽에 바닥이 있는 경우)
+        if (!wallW && isFloor(x, y+1) && isFloor(x-1, y)) {
+            return TILE_WALL_BOTTOM_LEFT;
+        }
+        
+        // 하단 우측 모서리 (남쪽과 동쪽에 바닥이 있는 경우)
+        if (!wallE && isFloor(x, y+1) && isFloor(x+1, y)) {
+            return TILE_WALL_BOTTOM_RIGHT;
+        }
+        
+        // 하단 벽 (남쪽에만 바닥이 있는 경우)
+        if (wallE && wallN && wallW) {
+            return TILE_WALL_BOTTOM;
+        }
     }
-    if (!hasFloorAbove && !hasFloorBelow && !hasFloorLeft && hasFloorRight) {
+    
+    // 측면 벽
+    
+    // 좌측 벽 (서쪽에만 바닥이 있는 경우)
+    if (!wallW && wallN && wallE && wallS) {
         return TILE_WALL_LEFT;
     }
     
+    // 우측 벽 (동쪽에만 바닥이 있는 경우)
+    if (!wallE && wallN && wallS && wallW) {
+        return TILE_WALL_RIGHT;
+    }
+    
+    // 측면 상단 (북쪽과 남쪽에 벽이 없는 경우)
+    if (!wallN && !wallS && wallE && wallW) {
+        return TILE_WALL_SIDE_TOP;
+    }
+    
+    // 측면 하단 (동쪽과 서쪽에 벽이 없는 경우)
+    if (!wallE && !wallW && wallN && wallS) {
+        return TILE_WALL_SIDE_BOTTOM;
+    }
+    
+    // 측면 좌측 (서쪽에 벽이 없고 다른 방향에 벽이 있는 경우)
+    if (!wallW && wallN && wallS) {
+        return TILE_WALL_SIDE_LEFT;
+    }
+    
+    // 측면 우측 (동쪽에 벽이 없고 다른 방향에 벽이 있는 경우)
+    if (!wallE && wallN && wallS) {
+        return TILE_WALL_SIDE_RIGHT;
+    }
+    
+    // 코너 케이스
+    
+    // 상단 좌측 코너 (북서쪽 코너)
+    if (wallS && wallE && !wallN && !wallW) {
+        return TILE_WALL_CORNER_TL;
+    }
+    
+    // 상단 우측 코너 (북동쪽 코너)
+    if (wallS && wallW && !wallN && !wallE) {
+        return TILE_WALL_CORNER_TR;
+    }
+    
+    // 하단 좌측 코너 (남서쪽 코너)
+    if (wallN && wallE && !wallS && !wallW) {
+        return TILE_WALL_CORNER_BL;
+    }
+    
+    // 하단 우측 코너 (남동쪽 코너)
+    if (wallN && wallW && !wallS && !wallE) {
+        return TILE_WALL_CORNER_BR;
+    }
+    
+    // 기본 케이스 - 일반 벽
+    // 특정 패턴에 맞지 않는 경우 기본 벽 타일 반환
     return TILE_WALL;
 }
 
