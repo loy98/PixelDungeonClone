@@ -29,7 +29,8 @@ void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
     }
     else
     {
-        if (InFov(level, monster))  // 시야에 있는지 체크-있으면 안에서 타겟설정 및 갈 위치 설정함
+        //if (InFov(level, monster))  // 시야에 있는지 체크-있으면 안에서 타겟설정 및 갈 위치 설정함
+        if(UpdateFovInfo(level, monster))
         {
             Hunting(level, monster); // monsterAIState: Follow of Attack
         }
@@ -118,29 +119,29 @@ void MonsterAI::Wandering(Level* level, Monster* monster)
 }
 
 // 임시-
-//void MonsterAI::SetFov(Level* level, Monster* monster)
-//{
-//    // 적의 시야를 가져오는 함수
-//    if (!fovList.empty())
-//    {
-//        fovList.clear();
-//    }
-//
-//    int dx[5] = { -2, -1, 0, 1, 2 };
-//    int dy[5] = { -2, -1, 0, 1, 2 };
-//    // 주변 24방향 탐색
-//
-//    for (int i = 0; i < 5; i++)
-//    {
-//        for (int j = 0; j < 5; j++)
-//        {
-//            float nx = monster->GetPosition().x + TILE_SIZE* dx[j];
-//            float ny = monster->GetPosition().y + TILE_SIZE * dy[i];
-//
-//            fovList.push_back({nx, ny});
-//        }
-//    }
-//}
+void MonsterAI::SetFov(Level* level, Monster* monster)
+{
+    // 적의 시야를 가져오는 함수
+    if (!fovList.empty())
+    {
+        fovList.clear();
+    }
+
+    int dx[5] = { -2, -1, 0, 1, 2 };
+    int dy[5] = { -2, -1, 0, 1, 2 };
+    // 주변 24방향 탐색
+
+    for (int i = 0; i < 5; i++)
+    {
+        for (int j = 0; j < 5; j++)
+        {
+            float nx = monster->GetPosition().x + TILE_SIZE* dx[j];
+            float ny = monster->GetPosition().y + TILE_SIZE * dy[i];
+
+            fovList.push_back({nx, ny});
+        }
+    }
+}
 
 bool MonsterAI::InFov(Level* level, Monster* monster)
 {
@@ -222,7 +223,7 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
 bool MonsterAI::UpdateFovInfo(Level* level, Monster* monster)
 {
     // 시야 얻음
-   /* SetFov(level, monster);*/
+    SetFov(level, monster);
 
     // 플레이어 위치 타일 찾기
     Entity* actor;

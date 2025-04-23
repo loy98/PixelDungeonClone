@@ -30,7 +30,7 @@ public:
     bool CanAttack(Level* level, Monster* monster);
     void Hunting(Level* level, Monster* monster);
     void Wandering(Level* level, Monster* monster);;
-   // void SetFov(Level* level, Monster* monster);
+    void SetFov(Level* level, Monster* monster);
     bool InFov(Level* level, Monster* monster);
 
     bool UpdateFovInfo(Level* level, Monster* monster);
