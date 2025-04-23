@@ -33,8 +33,12 @@ public:
     MonsterAI* monsterAi;
     void SetEntityState(EntityState state) { this->curState = state; }
     void SetTarget(Entity* actor) { this->target = actor; }
-    void SetTargetPos(FPOINT destPos) { targetPos = destPos; }
-    FPOINT GetTargetPos() { return targetPos; }
+    void SetTargetPos(FPOINT targetPos) { this->targetPos = targetPos; }
+    void SetDestPos(FPOINT destPos) { this->destPos = destPos; }
+    //FPOINT GetTargetPos() { return targetPos; }
     Entity* GetTarget() { return target; }
+
+
+    // 타겟 위치를 destPos로 잡고, 매 targetPos(지금 갈 곳)을 paht 1로 설정?
 };
 

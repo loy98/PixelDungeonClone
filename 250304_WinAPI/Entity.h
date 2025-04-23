@@ -88,4 +88,7 @@ public:
     void UseEnergy() { energy -= actionCost; }
 
     void Stop() { destPos = position; }
+
+    // AI
+    FPOINT GetTargetPos() { return targetPos; }
 };

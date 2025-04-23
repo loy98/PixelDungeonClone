@@ -3,66 +3,93 @@
 #include "Level.h"
 #include "CombatSyetem.h"
 
-void MonsterAI::Act(EntityState entityState, Level* level, Monster* monster, bool isAlert)
+MonsterAI::MonsterAI()
 {
-	// 시야에 보이는지-시야 범위 있어야 함.
-    // 시야 얻음
-    UpdateFovInfo(level, monster);
+    currMonsterState = MonsterState::SLEEP;
+    target = nullptr;
+}
 
+void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
+{
+
+    prevMonsterState = currMonsterState;
+	// 시야에 보이는지-시야 범위 있어야 함.
+
+    // 몬스터 destPos(hunting시) 바꿔줌
+    // 타겟위치로 도착지 설정(findpath destPos 설정)
     if (isAlert)
     {
-        currMonsterState = MonsterState::HUNT;
+        // 타겟 위치 전달 필요
+        Hunting(level, monster);
+    }
+    else
+    {
+        if (UpdateFovInfo(level, monster))  // 시야에 있는지 체크-있으면 안에서 타겟설정 및 갈 위치 설정함
+        {
+            Hunting(level, monster); // monsterAIState: Follow of Attack
+        }
+        else
+        {
+            Wandering(level, monster);  // monsterAIState: wander or sleep
+        }
     }
 
+    // 몬스터 상태 바꿔줌
     switch (currMonsterState)
     {
-    case MonsterState::IDLE:
-        // 시야 정보 업데이트
-        return;
+    case MonsterState::SLEEP:
+        if (prevMonsterState == MonsterState::SLEEP)
+        {
+            monster->SetEntityState(EntityState::WAIT);
+        }
+        else
+        {
+            monster->SetEntityState(EntityState::SLEEP);
+        }
         break;
-    //case MonsterState::SLEEP:
-    //    // 턴 소모
-    //    monster->SetEntityState(EntityState::IDLE);
-    //    break;
-    case MonsterState::HUNT:
-        // 타겟위치로 도착지 설정
-        Follow(level, monster);
+    case MonsterState::FOLLOW:
+        monster->SetEntityState(EntityState::MOVE);
         break;
     case MonsterState::ATTACK:
         monster->SetEntityState(EntityState::ATTACK);
         break;
     case MonsterState::WANDER:
-        Wandering(level, monster);
+        monster->SetEntityState(EntityState::MOVE);
         break;
     }
+
+    // test
+    //monster->SetTargetPos(fovList[0]);
+    //monster->SetEntityState(EntityState::MOVE);
 }
-//
-//void MonsterAI::Move(Level* level, Monster* monster)
-//{
-//    switch (currMonsterState)
-//    {
-//    case MonsterState::HUNT:
-//        Follow(level, monster);
-//        break;
-//    case MonsterState::WANDER:
-//        Wandering(level, monster);
-//        break;
-//    }
-//}
 
-void MonsterAI::Follow(Level* level, Monster* monster)
+void MonsterAI::Hunting(Level* level, Monster* monster)
 {
-    // 공격가능?
-    // 목표 위치에 액터?
-    Entity* actor = level->GetActorAt(monster->GetTargetPos());
-
-    if (actor == monster->GetTarget())
+    if (CanAttack(level, monster))
     {
         monster->SetEntityState(EntityState::ATTACK);
     }
+    else
+    {
+        // destPos를 타겟의 targetPos로 설정
+        monster->SetDestPos(target->GetTargetPos());
+        currMonsterState = MonsterState::FOLLOW;
+    }
+}
 
-    monster->SetEntityState(EntityState::MOVE);
-    currMonsterState = MonsterState::HUNT;
+bool MonsterAI::CanAttack(Level* level, Monster* monster)
+{
+    // 타겟 pos로 확인
+    Entity* actor = level->GetActorAt(monster->GetTargetPos());
+
+    if(actor)
+    {
+        if (actor == target)
+        {
+            return true;
+        }
+        return false;
+    }
 }
 
 void MonsterAI::Attack(Level* level, Monster* monster)
@@ -70,11 +97,18 @@ void MonsterAI::Attack(Level* level, Monster* monster)
     // 한번더 가능이면 attack, 아니면 follow
     if (monster->GetTarget())
     {
-        CombatSyetem::GetInstance()->ProcessAttack(monster, monster->GetTarget());
-        
-        currMonsterState = MonsterState::HUNT;
-        monster->SetEntityState(EntityState::MOVE);
-
+        //CombatSyetem::GetInstance()->ProcessAttack(monster, monster->GetTarget());
+        if (level->GetActorAt(monster->GetTargetPos()) == target)
+        {
+            currMonsterState = MonsterState::ATTACK;
+            monster->SetEntityState(EntityState::ATTACK);
+        }
+        else
+        {
+            // 타겟 위치로 이동?-어떻게 이동할 건지.
+            currMonsterState = MonsterState::FOLLOW;
+            monster->SetEntityState(EntityState::MOVE);
+        }
     }
 }
 
@@ -82,15 +116,22 @@ void MonsterAI::Wandering(Level* level, Monster* monster)
 {
     SetRandomTargetPos(level, monster);
 
+    if (monster->GetTargetPos() == monster->GetPosition())
+    {
+        currMonsterState = MonsterState::SLEEP;
+        return;
+    }
+
     // move;
     auto map = level->GetMap(monster->GetTargetPos().x, monster->GetTargetPos().y);
     Entity* actor = level->GetActorAt(monster->GetTargetPos());
     
     if ((map && !map->CanGo()) || actor)
     {
-        //currMonsterState = MonsterState::SLEEP;
+        currMonsterState = MonsterState::SLEEP;
     }
-    monster->SetEntityState(EntityState::MOVE);
+
+    currMonsterState = MonsterState::WANDER;
 }
 
 // 임시
@@ -110,7 +151,7 @@ void MonsterAI::SetFov(Level* level, Monster* monster)
     {
         for (int j = 0; j < 5; j++)
         {
-            float nx = monster->GetPosition().x + TILE_SIZE * dx[j];
+            float nx = monster->GetPosition().x + TILE_SIZE* dx[j];
             float ny = monster->GetPosition().y + TILE_SIZE * dy[i];
 
             fovList.push_back({nx, ny});
@@ -120,11 +161,10 @@ void MonsterAI::SetFov(Level* level, Monster* monster)
 
 bool MonsterAI::UpdateFovInfo(Level* level, Monster* monster)
 {
-    // 시야 업데이트
+    // 시야 얻음
     SetFov(level, monster);
 
     // 플레이어 위치 타일 찾기
-
     Entity* actor;
 
     for (int i = 0; i < fovList.size(); i++)
@@ -134,9 +174,9 @@ bool MonsterAI::UpdateFovInfo(Level* level, Monster* monster)
         {
             if (actor->GetType() == EntityType::PLAYER)
             {
-                monster->SetTarget(actor);
-                monster->SetTargetPos(fovList[i]);
-                currMonsterState = MonsterState::HUNT;
+                target = actor;
+                //monster->SetTarget(target);
+                //monster->SetTargetPos(fovList[i]);
                 return true;
             }
             else if (actor->GetType() == EntityType::MONSTER)
@@ -146,9 +186,10 @@ bool MonsterAI::UpdateFovInfo(Level* level, Monster* monster)
             }
         }
 
-        currMonsterState = MonsterState::IDLE;
+      
     }
 
+   // currMonsterState = MonsterState::IDLE;
     return false;
 }
 
@@ -162,7 +203,7 @@ FPOINT MonsterAI::SetRandomTargetPos(Level* level, Monster* monster)
 
     // 범위 설정
     uniform_int_distribution<int> dist(0, 3);
-    FPOINT dir[] = { {-TILE_SIZE, 0}, {TILE_SIZE, 0}, {0, TILE_SIZE}, {0, -TILE_SIZE} };
+    FPOINT dir[] = { {-TILE_SIZE, 0}, {TILE_SIZE, 0}, {0, TILE_SIZE}, {0, -TILE_SIZE}};
 
     monster->SetTargetPos(monster->GetPosition() + dir[dist(eng)]);
 

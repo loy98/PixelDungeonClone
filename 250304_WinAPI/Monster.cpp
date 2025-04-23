@@ -28,6 +28,10 @@ Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
     actionCost = 6.f;
     energyPerTurn = 10.0f;
 
+    //길찾기-갈 곳을 받아온다?-HUNTING에서 FOLLOW에서 사용
+    finder = new PathFinder();
+    destPos = position;
+
     // AI
     monsterAi = new MonsterAI;
 }
@@ -38,24 +42,35 @@ Monster::~Monster()
 
 void Monster::Act(Level* level)
 {
-    // AI는 curState 상태와 도착지를 정한다
-    monsterAi->Act(curState, level, this);     
-
-    switch(curState)
+    switch (curState)
     {
     case EntityState::IDLE: // 뭐할까
         // 가만히
-        return;
+        break;
+    case EntityState::WAIT:
+        curState = EntityState::IDLE;
+        break;
+    case EntityState::SLEEP:
+        curState = EntityState::IDLE;
+        break;
     case EntityState::MOVE: // 움직일겨(Hunting, Wanering)-상태변환
         Move(level);
-        return;
+        break;
     case EntityState::ATTACK:   // 공격할겨
         Attack(level);
-        return;
+        break;
     case EntityState::DEAD:     // 죽을겨
         // 애니메이션 끝나면 actor 목록에서 지워야함
-        return;
+        break;
     }
+
+    // AI는 curState 상태와 도착지를 정한다
+    monsterAi->Act(level, this);     
+
+    // 새로운 destPos로 길찾기-move State에서는 targetPos가 여기서 결정됨.
+    finder->FindPath(position, destPos, level, OUT path);
+
+
 }
 
 void Monster::Attack(Level* level)
@@ -70,7 +85,7 @@ void Monster::Attack(Level* level)
 
 //void Monster::ActIdle(Level* level)
 //{
-//    // Idle일 때는 타겟 잡아서 타겟이 있으면 어택모드, 없으면 무브모드 될테야~~
+//    // Idle일 때는 타겟 잡아서 타겟이 있으면 어택모드
 //
 //
 //    target = level->GetActorAt(targetPos);  // target pos에 타겟이 있다면(actor가 있다면)-actor pos 얻어옴
@@ -85,10 +100,15 @@ void Monster::Attack(Level* level)
 //    curState = EntityState::MOVE;
 //}
 
-void Monster::Move(Level* level)
+void Monster::Move(Level* level)// 한 턴 이동
 {
     // 이동 순서 체크용
     // Sleep(100);
+
+    if(!path.empty())
+    {
+        targetPos = path[1];
+    }
 
     auto index = level->GetMapIndex(targetPos.x, targetPos.y);
     int a = 0;
