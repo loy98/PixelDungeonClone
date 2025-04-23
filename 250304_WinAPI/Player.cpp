@@ -189,7 +189,7 @@ void Player::SetState(EntityState state)
 }
 
 void Player::Move(Level* level)
-{
+{   
     //if (!level->GetMap(targetPos.x, targetPos.y)->CanGo())
     //{
     //    curState = EntityState::IDLE;
