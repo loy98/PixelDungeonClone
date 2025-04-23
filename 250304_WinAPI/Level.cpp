@@ -1,4 +1,4 @@
-#include "Level.h"
+﻿#include "Level.h"
 #include "DungeonGenerator.h"
 #include "config.h"
 #include <random>
@@ -131,9 +131,6 @@ void Level::Release()
         // delete player;
         player = nullptr;
     }
-
-    if (uiTestView)
-        uiTestView->Release();
 
     // Items
     for (auto item : items)
