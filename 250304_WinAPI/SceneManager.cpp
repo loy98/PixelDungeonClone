@@ -1,19 +1,21 @@
-#include "SceneManager.h"
+ï»¿#include "SceneManager.h"
 #include "GameObject.h"
+#include "resource4.h"
+
 
 GameObject* SceneManager::currentScene = nullptr;
 GameObject* SceneManager::loadingScene = nullptr;
 GameObject* SceneManager::nextScene = nullptr;
 
-// ¾²·¹µå ¸¸µé ¶§ ±âº» Æ²ÀÓ
-DWORD CALLBACK LoadingThread(LPVOID pvParam)	//LPVOID´Â voidÀÇ Æ÷ÀÎÅÍÇü. ¾î¶² Å¸ÀÔÀ» ³Ñ°ÜÁÖ´õ¶óµµ ¸Å°³º¯¼ö·Î Çüº¯È¯ÀÌ °¡´ÉÇÏµµ·Ï void Æ÷ÀÎÅÍ ³Ö¾îÁÜ
-{// Äİ¹éÀ¸·Î ³»°¡ Á¾·áµÆ´Ù ¾Ë·ÁÁÜ.
+// ì“°ë ˆë“œ ë§Œë“¤ ë•Œ ê¸°ë³¸ í‹€ì„
+DWORD CALLBACK LoadingThread(LPVOID pvParam)	//LPVOIDëŠ” voidì˜ í¬ì¸í„°í˜•. ì–´ë–¤ íƒ€ì…ì„ ë„˜ê²¨ì£¼ë”ë¼ë„ ë§¤ê°œë³€ìˆ˜ë¡œ í˜•ë³€í™˜ì´ ê°€ëŠ¥í•˜ë„ë¡ void í¬ì¸í„° ë„£ì–´ì¤Œ
+{// ì½œë°±ìœ¼ë¡œ ë‚´ê°€ ì¢…ë£Œëë‹¤ ì•Œë ¤ì¤Œ.
 	if (SUCCEEDED(SceneManager::nextScene->Init()))
 	{
 		SceneManager::currentScene = SceneManager::nextScene;
 		SceneManager::loadingScene->Release();
 		SceneManager::loadingScene = nullptr;
-		SceneManager::nextScene = nullptr;		// ¸±¸®Áî´Â ÇÏÁö ¾Ê´Â´Ù.
+		SceneManager::nextScene = nullptr;		// ë¦´ë¦¬ì¦ˆëŠ” í•˜ì§€ ì•ŠëŠ”ë‹¤.
 	}
 
 	return 0;
@@ -75,6 +77,21 @@ HRESULT SceneManager::ChangeScene(string key)
 			currentScene->Release();
 		}
 		currentScene = iter->second;
+
+		
+		if (key == "íƒ€ì¼ë§µíˆ´") {
+			HMENU hMenu = LoadMenu(g_hInstance, MAKEINTRESOURCE(IDR_TILEMAPTOOLMENU));
+			SetMenu(g_hWnd, hMenu);
+		}
+		else if (key == "í…ŒìŠ¤íŠ¸ë§µ") {
+			HMENU hMenu = LoadMenu(g_hInstance, MAKEINTRESOURCE(IDR_TESTMAPMENU));
+			SetMenu(g_hWnd, hMenu);
+		}
+		else {
+			SetMenu(g_hWnd, NULL);  // ë©”ë‰´ ì œê±°
+		}
+		DrawMenuBar(g_hWnd); // ë©”ë‰´ ê°±ì‹  í•„ìˆ˜!
+
 		return S_OK;
 	}
 	return E_FAIL;
@@ -110,10 +127,10 @@ HRESULT SceneManager::ChangeScene(string key, string loadingKey)
 		nextScene = iter->second;
 		loadingScene = iterLoading->second;
 
-		// ´ÙÀ½ ¾ÀÀ» ÃÊ±âÈ­ÇÒ ¾²·¹µå¸¦ »ı¼º
+		// ë‹¤ìŒ ì”¬ì„ ì´ˆê¸°í™”í•  ì“°ë ˆë“œë¥¼ ìƒì„±
 		DWORD loadingThreadId;
 		HANDLE hThread;
-		hThread = CreateThread(NULL, 0, LoadingThread, NULL, 0, &loadingThreadId);		// ¾²·¹µå¸¦ ÇÏ³ª ´õ ¸¸µé¾î¼­ ´ÙÀ½ ¾À ÁØºñ. ·Îµù¾À ³ª¿À´Â µ¿¾È.....
+		hThread = CreateThread(NULL, 0, LoadingThread, NULL, 0, &loadingThreadId);		// ì“°ë ˆë“œë¥¼ í•˜ë‚˜ ë” ë§Œë“¤ì–´ì„œ ë‹¤ìŒ ì”¬ ì¤€ë¹„. ë¡œë”©ì”¬ ë‚˜ì˜¤ëŠ” ë™ì•ˆ.....
 
 		if(hThread)
 		{

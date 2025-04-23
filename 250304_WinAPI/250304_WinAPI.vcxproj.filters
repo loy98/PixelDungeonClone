@@ -105,6 +105,15 @@
     <ClCompile Include="Sword.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="Observer\EntityObserverHub.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UI\UIEffectManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -300,6 +309,27 @@
     </ClInclude>
     <ClInclude Include="Sword.h">
       <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer\IEntityObserver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer\EntityObserverHub.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Observer\ObserverEventData.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Panel\UIItemPanel.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIEffectManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Button\UIImageTextButton.h">
+      <Filter>2D Framework\UI\Button</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

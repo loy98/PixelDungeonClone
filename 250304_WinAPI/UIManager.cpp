@@ -8,6 +8,7 @@
 #include "UI/Panel/UIQuickSlotToolbar.h"
 #include "UI/Panel/UIStatusTollbar.h"
 #include "UI/Panel/UITopRightUI.h"
+#include "Inventory.h"
 
 void UIManager::RegisterPlayer(Player* player)
 {
@@ -22,6 +23,7 @@ void UIManager::RegisterPlayer(Player* player)
     player->GetEntityObserverHub().AddObserver(uiStatusToolbar);
     player->GetEntityObserverHub().AddObserver(uiStatusPanel);
     player->GetEntityObserverHub().AddObserver(uiQuickSlotToolbar);
+    player->GetEntityObserverHub().AddObserver(uiInventoryPanel);
 }
 
 void UIManager::RegisterEntity(Entity* entity)
@@ -34,6 +36,7 @@ void UIManager::UnregisterPlayer(Player* player)
     player->GetEntityObserverHub().RemoveObserver(uiStatusToolbar);
     player->GetEntityObserverHub().RemoveObserver(uiStatusPanel);
     player->GetEntityObserverHub().RemoveObserver(uiQuickSlotToolbar);
+    player->GetEntityObserverHub().RemoveObserver(uiInventoryPanel);
 }
 
 void UIManager::UnregisterEntity(Entity* entity)
@@ -67,7 +70,12 @@ void UIManager::SetWorldUISCale(float scale)
 
 void UIManager::UseUIItem(int idx)
 {
-    SendLog(L"Item 사용", D2D1::ColorF(D2D1::ColorF::Blue));
+    auto inven = currentPlayer->GetInven();
+    if (inven)
+    {
+        inven->UseItem(idx);
+        currentPlayer->GetEntityObserverHub().NotifyChangePlayerInven(currentPlayer);
+    }
 }
 
 UIManager::~UIManager()

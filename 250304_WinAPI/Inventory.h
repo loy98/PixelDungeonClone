@@ -21,7 +21,10 @@ public:
 	~Inventory();
 
 	void AddItem(Item* item);
+	void UseItem(int idx);
 	void UseItem(string name);
+
+	slot GetSlot(int idx);
 
 	// 필요 없을 것 같으면 삭제 ㄱㄱ
 	Item* GetItem(string name);

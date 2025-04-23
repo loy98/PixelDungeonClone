@@ -27,6 +27,7 @@ public:
 
     void SetNextPos(FPOINT pos) { destPos = pos; }
     void GetItem(Item* item);
+    inline Inventory* GetInven() { return inven; }
 private:
     Inventory* inven;
 };

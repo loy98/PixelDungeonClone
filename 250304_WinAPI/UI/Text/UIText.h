@@ -12,7 +12,7 @@ private:
     ID2D1SolidColorBrush* brush = nullptr;
     IDWriteTextLayout* layout = nullptr;
 
-
+    bool isAutoLayout = false;
 public:
     ~UIText() override
     {
@@ -22,7 +22,9 @@ public:
 
     }
 
-    void Init(const TextStyle& s, const std::wstring& txt, const D2D1_RECT_F& rect) {
+    void Init(const TextStyle& s, const std::wstring& txt, const D2D1_RECT_F& rect, bool isAutoLayout = false) {
+        this->isAutoLayout = isAutoLayout;
+
         SetRect(rect);
 
         text = txt;
@@ -37,22 +39,31 @@ public:
             style.verticalAlign
         );
 
-        DWriteFactory::GetInstance()->CreateTextLayout(
-            text, format, GetWidth(), GetHeight(), &layout
-        );
+        if (isAutoLayout)
+        {
+            DWriteFactory::GetInstance()->CreateTextLayout(
+                text, format, GetWidth(), GetHeight(), &layout
+            );
+        }
     }
 
-    void SetText(const std::wstring& txt) {
+    void SetText(const std::wstring& txt, bool isAutoLayout = false) {
+        this->isAutoLayout = isAutoLayout;
+        
         text = txt;
 
-        DWriteFactory::GetInstance()->CreateTextLayout(
-            text, format, GetWidth(), GetHeight(), &layout
-        );
+        if (isAutoLayout)
+        {
+            DWriteFactory::GetInstance()->CreateTextLayout(
+                text, format, GetWidth(), GetHeight(), &layout
+            );
 
-        ApplyTextMetricsToRect();
+            ApplyTextMetricsToRect();
+        }
     }
 
-    void SetStyle(const TextStyle& s) {
+    void SetStyle(const TextStyle& s, bool isAutoLayout = false) {
+        this->isAutoLayout = isAutoLayout;
         style = s;
         if (format) { format->Release(); format = nullptr; }
 
@@ -65,17 +76,24 @@ public:
             style.verticalAlign
         );
 
-        DWriteFactory::GetInstance()->CreateTextLayout(
-            text, format, GetWidth(), GetHeight(), &layout
-        );
+        if (isAutoLayout)
+        {
+            DWriteFactory::GetInstance()->CreateTextLayout(
+                text, format, GetWidth(), GetHeight(), &layout
+            );
 
-        ApplyTextMetricsToRect();
+            ApplyTextMetricsToRect();
+        }
 
         if (brush) { brush->Release(); brush = nullptr; }
     }
 
     TextStyle& GetStyle() {
         return style;
+    }
+    void SetIsAutoLayout(bool isFlag)
+    {
+        this->isAutoLayout = isFlag;
     }
 
     void Render(ID2D1HwndRenderTarget* rt) override {
@@ -90,14 +108,20 @@ public:
         if (format && brush)
         {
             D2D1_RECT_F rect = GetScaledDrawRect();
-            rt->DrawTextLayout
-            (
-                D2D1::Point2F(rect.left, rect.top),
-                layout,
-                brush
-            );
-            
-            // rt->DrawTextW(text.c_str(), static_cast<UINT32>(text.length()), format, &rect, brush);
+
+            if (isAutoLayout)
+            {
+                rt->DrawTextLayout
+                (
+                    D2D1::Point2F(rect.left, rect.top),
+                    layout,
+                    brush
+                );
+            }
+            else
+            {
+                rt->DrawTextW(text.c_str(), static_cast<UINT32>(text.length()), format, &rect, brush);
+            }
             
             // 🔸 출력 영역 확인용 사각형 (얇은 외곽선)
             ID2D1SolidColorBrush* debugBrush = nullptr;

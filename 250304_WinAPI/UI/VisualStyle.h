@@ -11,6 +11,8 @@ struct ImageStyle {
     float alpha = 1.0f;
     D2D1_COLOR_F tint = D2D1::ColorF(1, 1, 1, 1); // 색상 효과
     bool grayscale = false; // 비활성화 상태 표현
+    int frameIdx;
+    int frameIdy;
 };
 
 struct BarStyle {

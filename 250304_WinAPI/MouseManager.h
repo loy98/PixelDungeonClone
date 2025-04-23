@@ -25,10 +25,10 @@ private:
     POINT mousePos;
     Layer currLayer;
 
-    POINT dragStartP;
-    POINT dragEndP;
-    POINT prevP;
-    POINT clickedP;
+    POINT dragStartP[3];
+    POINT dragEndP[3];
+    POINT prevP[3];
+    POINT clickedP[3];
 
     float dragElapsedTime;
 
@@ -37,8 +37,8 @@ private:
 
     bool isDragging[3]{ false, false, false };
 
-    bool dragEndPUsed;
-    bool clickedPUsed;
+    bool dragEndPUsed[3];
+    bool clickedPUsed[3];
 
     short wheelDelta;
 
@@ -65,19 +65,36 @@ public:
     inline short GetWheelDelta() const { return wheelDelta; }
 
     inline bool GetIsDragging(int button) {
-        int idx = (button == MOUSE_LEFT) ? 0 : (button == MOUSE_RIGHT ? 1 : 2);
-        return isDragging[idx];
+        return isDragging[BtoInt(button)];
     }
 
-    inline POINT GetDragEndP() { return dragEndP; }
-    inline POINT GetClickP() { return clickedP; }
+    inline POINT GetDragStartP(int button = MOUSE_LEFT) {
+        return dragStartP[BtoInt(button)];
+    }
+    inline POINT GetDragEndP(int button = MOUSE_LEFT) {
+        return dragEndP[BtoInt(button)];
+    }
+    inline POINT GetClickP(int button = MOUSE_LEFT) {
+        return clickedP[BtoInt(button)];
+    }
+    inline POINT GetPrevP(int button = MOUSE_LEFT) {
+        return prevP[BtoInt(button)];
+    }
 
-    inline bool GetDragValueUsed() { return dragEndPUsed; }
-    inline void AlreadyDragUsed() { dragEndPUsed = true; }
+    inline bool GetDragValueUsed(int button = MOUSE_LEFT) {
+        return dragEndPUsed[BtoInt(button)];
+    }
+    inline void AlreadyDragUsed(int button = MOUSE_LEFT) {
+        dragEndPUsed[BtoInt(button)] = true; }
 
-    inline bool GetClickValueUsed() { return clickedPUsed; }
-    inline void AlreadyClickUsed() { clickedPUsed = true; }
+    inline bool GetClickValueUsed(int button = MOUSE_LEFT) {
+        return clickedPUsed[BtoInt(button)];
+    }
+    inline void AlreadyClickUsed(int button = MOUSE_LEFT) {
+        clickedPUsed[BtoInt(button)] = true; }
 
     inline long GetDeltaX() { return deltaX; }
     inline long GetDeltaY() { return deltaY; }
+
+    inline int BtoInt(int button){ return button == MOUSE_LEFT ? 0 : (button == MOUSE_RIGHT ? 1 : 2);}
 };

@@ -118,22 +118,21 @@ void Level::Init()
 
 void Level::Release()
 {
-    for (auto actor : actors)
-    {
-        if (actor)
-        {
-            delete actor;
-            actor = nullptr;
-        }
-    }
+    
+	for (auto actor : actors)
+	{
+		if (actor)
+		{
+			delete actor;
+			actor = nullptr;
+		}
+	}
+    
     if (player)
     {
         // delete player;
         player = nullptr;
     }
-
-    if (uiTestView)
-        uiTestView->Release();
 
     // Items
     for (auto item : items)
@@ -145,6 +144,11 @@ void Level::Release()
         }
     }
     uiManager = nullptr;
+
+    if (camera) {
+        camera = nullptr;
+    }
+
 }
 
 void Level::Update()
