@@ -137,6 +137,7 @@
     <ClCompile Include="DungeonGenerator.cpp" />
     <ClCompile Include="DWriteFactory.cpp" />
     <ClCompile Include="Entity.cpp" />
+    <ClCompile Include="Equipment.cpp" />
     <ClCompile Include="FieldOfView.cpp" />
     <ClCompile Include="EnvironmentalEffectsManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
@@ -159,6 +160,7 @@
     <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Sword.cpp" />
     <ClCompile Include="TilemapTool.cpp" />
     <ClCompile Include="Tiles.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -186,6 +188,7 @@
     <ClInclude Include="DungeonGenerator.h" />
     <ClInclude Include="DWriteFactory.h" />
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="Equipment.h" />
     <ClInclude Include="FieldOfView.h" />
     <ClInclude Include="EnvironmentalEffectsManager.h" />
     <ClInclude Include="GameObject.h" />
@@ -210,6 +213,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="Sword.h" />
     <ClInclude Include="TilemapTool.h" />
     <ClInclude Include="Tiles.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
