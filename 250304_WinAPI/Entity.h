@@ -8,6 +8,8 @@ class PathFinder;
 enum class EntityState
 {
     IDLE,
+    WAIT,
+    SLEEP,
     MOVE,
     ATTACK,
     DEAD
@@ -90,4 +92,8 @@ public:
     // TODO UI HP 관련임시
     inline int GetHP() const { return hp; };
     inline int GetMaxHP() const { return maxHp; };
+
+    // AI
+    FPOINT GetTargetPos() { return targetPos; }
+
 };

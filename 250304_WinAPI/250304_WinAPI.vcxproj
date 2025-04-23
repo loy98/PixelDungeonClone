@@ -153,6 +153,7 @@
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
+    <ClCompile Include="MonsterAI.cpp" />
     <ClCompile Include="MonsterGenerator.cpp" />
     <ClCompile Include="MouseManager.cpp" />
     <ClCompile Include="Monster.cpp" />
@@ -202,6 +203,7 @@
     </ClInclude>
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="MainGame.h" />
+    <ClInclude Include="MonsterAI.h" />
     <ClInclude Include="MonsterGenerator.h" />
     <ClInclude Include="MouseManager.h" />
     <ClInclude Include="Monster.h" />
