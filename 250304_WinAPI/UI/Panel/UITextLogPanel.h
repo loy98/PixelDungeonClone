@@ -32,9 +32,9 @@ public:
     void AddLog(const std::wstring& content, const TextStyle& style) {
         // 🔁 기존 텍스트 재활용
         UIText* text = pool.Get();
-        text->SetText(content, true);
-        text->SetLocalRect(lineRect);
         text->SetStyle(style);
+        text->SetLocalRect(lineRect);
+        text->SetText(content, true);
         
         // auto curStyle = text->GetStyle();
         // if (style.fontSize != curStyle.fontSize ||

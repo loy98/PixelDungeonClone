@@ -30,7 +30,17 @@ public:
         SetRect(rect);
     }
     
-    virtual bool HandleClick(int x, int y) { return false; }
+    virtual bool HandleClick(int x, int y)
+    {
+        auto r = GetScaledDrawRect();
+
+        if (x >= r.left && x <= r.right &&
+            y >= r.top && y <= r.bottom)
+        {
+            return true;
+        }
+        return false;
+    }
 
     virtual void SetScale(FPOINT s) {
         this->scale = s;
