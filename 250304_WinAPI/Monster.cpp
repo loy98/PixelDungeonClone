@@ -111,7 +111,7 @@ void Monster::Move(Level* level)// 한 턴 이동
     
     if ((map && !map->CanGo()) || level->GetActorAt(targetPos))
     {
-        SetRandomTargetPos();
+       // SetRandomTargetPos();
         curState = EntityState::IDLE;
         return;
     }
@@ -134,14 +134,14 @@ void Monster::Move(Level* level)// 한 턴 이동
             position = targetPos;
             // 테스트용이라 도착지 정하는건 수정해야함
             //isMoving = false;
-            SetRandomTargetPos();
+            //SetRandomTargetPos();
             curState = EntityState::IDLE;
         }
     }
     else
     {
         position = targetPos;
-        SetRandomTargetPos();
+       // SetRandomTargetPos();
         curState = EntityState::IDLE;
     }
 

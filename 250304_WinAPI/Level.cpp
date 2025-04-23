@@ -266,7 +266,7 @@ void Level::Render(HDC hdc)
     // Render actors
     for (auto actor : actors)
     {
-        if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
+       // if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
         {
             if (actor->GetImage()) {
                 actor->GetImage()->

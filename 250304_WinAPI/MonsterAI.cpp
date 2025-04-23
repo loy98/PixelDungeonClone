@@ -5,14 +5,14 @@
 
 MonsterAI::MonsterAI()
 {
-    currMonsterState = MonsterState::SLEEP;
+    currMonsterState = MonsterState::WAKE;
     target = nullptr;
 }
 
 void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
 {
 
-    prevMonsterState = currMonsterState;
+
 	// 시야에 보이는지-시야 범위 있어야 함.
 
     // 몬스터 destPos(hunting시) 바꿔줌
@@ -47,6 +47,7 @@ void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
     case MonsterState::SLEEP:
         if (prevMonsterState == MonsterState::SLEEP)
         {
+            currMonsterState = MonsterState::WAKE;
             monster->SetEntityState(EntityState::WAIT);
         }
         else
@@ -64,6 +65,8 @@ void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
         monster->SetEntityState(EntityState::MOVE);
         break;
     }
+
+    prevMonsterState = currMonsterState;
 }
 
 void MonsterAI::Hunting(Level* level, Monster* monster)
@@ -98,24 +101,14 @@ bool MonsterAI::CanAttack(Level* level, Monster* monster)
 
 void MonsterAI::Wandering(Level* level, Monster* monster)
 {
-    SetRandomTargetPos(level, monster);
-
-    if (monster->GetTargetPos() == monster->GetPosition())
+    if (SetRandomTargetPos(level, monster))     // destPos 받아오기 성공
     {
-        currMonsterState = MonsterState::SLEEP;
-        return;
+        currMonsterState = MonsterState::WANDER;
     }
-
-    // move;
-    auto map = level->GetMap(monster->GetTargetPos().x, monster->GetTargetPos().y);
-    Entity* actor = level->GetActorAt(monster->GetTargetPos());
-    
-    if ((map && !map->CanGo()) || actor)
+    else
     {
         currMonsterState = MonsterState::SLEEP;
     }
-
-    currMonsterState = MonsterState::WANDER;
 }
 
 bool MonsterAI::InFov(Level* level, Monster* monster)
@@ -156,6 +149,7 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
     {
         for (int i = 0; i< 20 && curX != endPosX; ++i)
         {
+            int check = level->GetTileType(curX, curY);
             if (level->IsSolid(curX, curY))
                 return false;
 
@@ -168,6 +162,7 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
             curX += dx;
             f += t;
         }
+
         if (curX == endPosX)
         {
             target = level->GetActorAt(level->GetPlayerPos());
@@ -180,6 +175,7 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
     {
         for (int i = 0; i < 20 && curY != endPosY; ++i)
         {
+            int check = level->GetTileType(curX, curY);
             if (level->IsSolid(curX, curY))
                 return false;
 
@@ -192,6 +188,7 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
             curY += dy;
             f += t;
         }
+
         if (curY == endPosY)
         {
             target = level->GetActorAt(level->GetPlayerPos());
@@ -203,7 +200,7 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
     return false;
 }
 
-FPOINT MonsterAI::SetRandomTargetPos(Level* level, Monster* monster)
+bool MonsterAI::SetRandomTargetPos(Level* level, Monster* monster)
 {
     // 랜덤으로 시드 생성
     random_device rd;
@@ -213,9 +210,29 @@ FPOINT MonsterAI::SetRandomTargetPos(Level* level, Monster* monster)
 
     // 범위 설정
     uniform_int_distribution<int> dist(0, 3);
-    FPOINT dir[] = { {-TILE_SIZE, 0}, {TILE_SIZE, 0}, {0, TILE_SIZE}, {0, -TILE_SIZE}};
+    FPOINT dir[] = { {-TILE_SIZE, 0}, {TILE_SIZE, 0}, {0, TILE_SIZE}, {0, -TILE_SIZE} };
 
-    monster->SetTargetPos(monster->GetPosition() + dir[dist(eng)]);
+    FPOINT destPos = monster->GetPosition() + dir[dist(eng)];
 
-    return monster->GetPosition() + dir[dist(eng)];
+    // 갈 수 없는 곳이면 다시 세팅
+    for (int i = 0; i < 10; ++i)
+    {
+        auto map = level->GetMap(destPos.x, destPos.y);
+        Entity* actor = level->GetActorAt(destPos);
+        int idX = (int)destPos.x % TILE_X;
+        int idY = (int)destPos.y / TILE_X;
+
+        int check = level->GetTileType(idX, idY);
+       // if (level->IsSolid(idX, idY));
+
+        if (((map && !map->CanGo()) || !actor))
+        {
+            monster->SetDestPos(destPos);
+            return true;
+        }
+        destPos = monster->GetPosition() + dir[dist(eng)];
+    }
+
+    destPos = monster->GetPosition();
+    return false;
 }

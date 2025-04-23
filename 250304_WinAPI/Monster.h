@@ -35,6 +35,7 @@ public:
     void SetTarget(Entity* actor) { this->target = actor; }
     void SetTargetPos(FPOINT targetPos) { this->targetPos = targetPos; }
     void SetDestPos(FPOINT destPos) { this->destPos = destPos; }
+    FPOINT GetDestPos() { return destPos; }
     //FPOINT GetTargetPos() { return targetPos; }
     Entity* GetTarget() { return target; }
 
