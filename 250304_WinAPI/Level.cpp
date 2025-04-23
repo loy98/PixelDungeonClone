@@ -22,8 +22,8 @@ void Level::Init()
 {
     turnManager = new TurnManager();
 
-    camera = new Camera();
-    camera->Init();
+   /* camera = new Camera();
+    camera->Init();*/
 
     sampleTile = D2DImageManager::GetInstance()->AddImage(
         "배틀시티_샘플타일", L"Image/tiles_sewers.png",
@@ -89,7 +89,10 @@ void Level::Init()
     AddActor(player);
     // AddActor(monster1);
     // AddActor(monster2);
-
+    
+    camera = new Camera();
+    camera->Init(player->GetPosition());
+    
     for (auto actor : actors)
     {
         if (actor)
@@ -125,13 +128,27 @@ void Level::Release()
 
 void Level::Update()
 {
-    // UI
+    if (player->GetState() == EntityState::MOVE) {
+        camera->UpdateCenter(player->GetPosition());
+    }
+    else {
+        camera->Update();
+    }
+  
+	for (int i = 0; i < TILE_Y; ++i)
+	{
+		for (int j = 0; j < TILE_X; ++j)
+		{
+			if (RectInRect(tempTile[TILE_X * i + j], camera->GetScreen())) {
+                shouldBeRender[TILE_X * i + j] = true;
+			}
+			else {
+                shouldBeRender[TILE_X * i + j] = false;
+			}
 
-        uiManager->Update();
+		}
+	}
 
-
-    
-    camera->Update();
 
     POINT ConvertedDragEndP = {
         camera->ConvertToWorldX(MouseManager::GetInstance()->GetClickP().x),
@@ -164,7 +181,7 @@ void Level::Update()
 
     SetVisibleTile();
 
-    if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT))
+    /*if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT)) //카메라 도입 이후부턴 이거 넣으면 안됩니다!
     {
         long tempDeltaX = MouseManager::GetInstance()->GetDeltaX();
         long tempDeltaY = MouseManager::GetInstance()->GetDeltaY();
@@ -181,7 +198,7 @@ void Level::Update()
         mapRc.right += tempDeltaX;
         mapRc.top += tempDeltaY;
         mapRc.bottom += tempDeltaY;
-    }
+    }*/
 
     turnManager->ProcessTurns(this);
     for (auto actor : actors)
@@ -203,6 +220,8 @@ void Level::Render(HDC hdc)
     {
         for (int j = 0; j < TILE_X; ++j)
         {
+            if (!shouldBeRender[TILE_X * i + j]) continue;
+
             bool isVisible = map[TILE_X * i + j].visible;
             int tileType = map[TILE_X * i + j].type;
             int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
@@ -212,9 +231,10 @@ void Level::Render(HDC hdc)
             POINT frame = GetCurrentFrame(tileType);
 
             // Render the tile using the frame coordinates
-            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * (isVisible ? 2.f : 1.f),
-                                                camera->GetZoomScale() * (isVisible ? 2.f : 1.f), frame.x, frame.y);
-
+            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f,
+                                                camera->GetZoomScale() * 2.f, frame.x, frame.y);
+            sampleTile->RenderFrameScale(tileX, tileY, camera->GetZoomScale() * 2.f,
+                                    camera->GetZoomScale() * 2.f, 0, 9, 0, false, false, isVisible ? 0.f : 0.5f);
             // switch (map[TILE_X * i + j].type) {
             // 	case TT::WALL :
             // 		sampleTile->RenderFrameScale(
@@ -277,12 +297,15 @@ void Level::Render(HDC hdc)
     // Render actors
     for (auto actor : actors)
     {
-        if (actor->GetImage()) {
-            actor->GetImage()->
-                Middle_RenderFrameScale(
-                    camera->ConvertToRendererX(actor->GetPosition().x), 
-                    camera->ConvertToRendererY(actor->GetPosition().y),
-                    camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, 0, 0);
+        if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
+        {
+            if (actor->GetImage()) {
+                actor->GetImage()->
+                    Middle_RenderFrameScale(
+                        camera->ConvertToRendererX(actor->GetPosition().x), 
+                        camera->ConvertToRendererY(actor->GetPosition().y),
+                        camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, 0, 0);
+            }
         }
     }
 
