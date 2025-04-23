@@ -1,4 +1,5 @@
-#include "GameObject.h"
+﻿#include "GameObject.h"
+WCHAR GameObject::nowFilePath[MAX_PATH] = L"";
 
 HRESULT GameObject::Init()
 {

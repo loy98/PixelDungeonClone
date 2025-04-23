@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "Singleton.h"
 #include "config.h"
 
@@ -24,5 +24,6 @@ public:
 
 	GameObject* AddScene(string key, GameObject* scene);
 	GameObject* AddLoadingScene(string key, GameObject* scene);
+	inline GameObject* GetCurrentScene() { return currentScene; }
 };
 

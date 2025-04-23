@@ -12,10 +12,15 @@ HRESULT MouseManager::Init()
 {
     wheelDelta = 0;
 
-    dragStartP = { 0, 0 };
-    dragEndP = { 0, 0 };
-    prevP = { 0, 0 };
-    clickedP = { 0, 0 };
+    for (int i = 0; i < 3; ++i) {
+        dragStartP[i] = { 0,0 };
+        dragEndP[i] = { 0,0 };
+        clickedP[i] = { 0,0 };
+        prevP[i] = {0, 0};
+
+        dragEndPUsed[i] = true;
+        clickedPUsed[i] = true;
+    }
 
     dragElapsedTime = 0.0f;
 
@@ -28,8 +33,7 @@ HRESULT MouseManager::Init()
         currMouseDown[i] = false;
     }
 
-    dragEndPUsed = true;
-    clickedPUsed = true;
+    
 
     return S_OK;
 }
@@ -40,8 +44,7 @@ void MouseManager::Update()
     GetCursorPos(&mousePos);
     ScreenToClient(g_hWnd, &mousePos);
 
-    dragEndPUsed = true;
-    clickedPUsed = true;
+    
 
     // 레이어 갱신
     SetLayer();
@@ -54,6 +57,8 @@ void MouseManager::Update()
     // 드래그 및 클릭 로직 처리
     for (int i = 0; i < 3; ++i)
     {
+        dragEndPUsed[i] = true;
+        clickedPUsed[i] = true;
 
         prevMouseDown[i] = currMouseDown[i];
         currMouseDown[i] = (GetAsyncKeyState(mouseVK[i]) & 0x8000) != 0;
@@ -61,15 +66,15 @@ void MouseManager::Update()
 
         if (IsOnceMouseDown(mouseVK[i])) {
             isDragging[i] = true;
-            dragStartP = mousePos;
-            prevP = mousePos;
+            dragStartP[i] = mousePos;
+            prevP[i] = mousePos;
                     }
 
         if (isDragging[i] && IsStayMouseDown(mouseVK[i])) {
             const int MAX_DELTA = 30; // 프레임당 이동 제한
 
-            int rawDeltaX = mousePos.x - prevP.x;
-            int rawDeltaY = mousePos.y - prevP.y;
+            int rawDeltaX = mousePos.x - prevP[i].x;
+            int rawDeltaY = mousePos.y - prevP[i].y;
 
             deltaX = Clamp(rawDeltaX, -MAX_DELTA, MAX_DELTA); //
             deltaY = Clamp(rawDeltaY, -MAX_DELTA, MAX_DELTA); //걸어놓은 제한 밖의 값이 들어올 시 제한 값으로 변환
@@ -77,26 +82,26 @@ void MouseManager::Update()
             std::string msg = "[Camera] deltaX: " + std::to_string(deltaX) + ", deltaY: " + std::to_string(deltaY) + "\n";
             OutputDebugStringA(msg.c_str());
 
-            prevP = mousePos;
+            prevP[i] = mousePos;
 
             dragElapsedTime += TimerManager::GetInstance()->GetDeltaTime();
 
         }
 
         if (IsOnceMouseUp(mouseVK[i])) {
-            dragEndP = mousePos;
-            clickedP = mousePos;     
+            dragEndP[i] = mousePos;
+            clickedP[i] = mousePos;
             isDragging[i] = false;
 
-            float dragDistance = GetDistance(dragStartP, dragEndP);
+            float dragDistance = GetDistance(dragStartP[i], dragEndP[i]);
             if (dragDistance <= 20.0f && dragElapsedTime <= 0.3f)
             {
                 //클릭으로 간주
-                clickedPUsed = false;
+                clickedPUsed[i] = false;
             }
             else //드래그로 간주
             {
-                dragEndPUsed = false;
+                dragEndPUsed[i] = false;
             }
 
             dragElapsedTime = 0.0f;
@@ -148,10 +153,15 @@ void MouseManager::SetLayer()
 
 void MouseManager::InitPoints()
 {
-    dragStartP = { 0, 0 };
-    dragEndP = { 0, 0 };
-    prevP = { 0, 0 };
-    clickedP = { 0, 0 };
+    for (int i = 0; i < 3; ++i) {
+        dragStartP[i] = { 0,0 };
+        dragEndP[i] = { 0,0 };
+        clickedP[i] = { 0,0 };
+        prevP[i] = { 0, 0 };
+
+        dragEndPUsed[i] = true;
+        clickedPUsed[i] = true;
+    }
 }
 
 void MouseManager::Release()

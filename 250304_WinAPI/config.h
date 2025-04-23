@@ -46,7 +46,7 @@ using namespace std;
 #define WINSIZE_X	1080
 #define WINSIZE_Y	720
 #define TILEMAPTOOL_X	1420
-#define TILEMAPTOOL_Y	720
+#define TILEMAPTOOL_Y	800
 
 #define DEG_TO_RAD(degree) ((3.14 / 180.0) * degree)
 #define RAD_TO_DEG(radian) ((180.0 / 3.14) * radian)
@@ -207,7 +207,7 @@ typedef enum class TileType {
 
 
 struct Map {
-	int type;    // 타일 종류 (0: 벽, 1: 바닥, 2: 문, 3: 입구, 4: 출구)
+	int type;    // 타일 종류 (0: 벽, 1: 바닥, 2: 문, 3: 입구, 4: 출구, 99: NONE)
 	bool explored;   // 탐험 여부
 	bool visible;    // 현재 시야 내 여부
 
