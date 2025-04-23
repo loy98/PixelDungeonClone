@@ -7,17 +7,22 @@ class Button;
 class TilemapTool : public GameObject
 {
 private:
+	ID2D1HwndRenderTarget* rtd;
 	D2DImage* sampleTile;
-	D2DImage* selectedTile;
+	//D2DImage* selectedTile;
 	D2DImage* grid;
-	const float zoomScales[5] = { 1.0f, 1.5f, 2.0f, 2.5f, 3.0f };
-	int nowZoomScale;
+
+	//const float zoomScales[5] = { 1.0f, 1.5f, 2.0f, 2.5f, 3.0f };
+	//int nowZoomScale;
 
 	Map tileInfo[TILE_X * TILE_Y];
 
 	const int gridSize{ 16 };
-	HPEN hPen_forGrid;
-	HPEN hPen_forSample;
+	D2D1_COLOR_F gridColor;
+	D2D1_COLOR_F selectedTileColor;
+	D2D1_COLOR_F dragRcColor;
+
+	ID2D1SolidColorBrush* rectBrush{ nullptr };
 	
 	//POINT selectedTile;
 

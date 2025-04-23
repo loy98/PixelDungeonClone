@@ -8,9 +8,9 @@
 
 HRESULT TilemapTool::Init()
 {
-	SetClientRect(g_hWnd, TILEMAPTOOL_X, TILEMAPTOOL_Y);
-
-	nowZoomScale = 0;
+	//SetClientRect(g_hWnd, TILEMAPTOOL_X, TILEMAPTOOL_Y);
+	rtd = D2DImage::GetRenderTarget();
+	//nowZoomScale = 0;
 
 	sampleTile = D2DImageManager::GetInstance()->AddImage(
 		"배틀시티_샘플타일", L"Image/tiles_sewers.png",
@@ -62,14 +62,15 @@ HRESULT TilemapTool::Init()
 	// UI - 버튼
 	saveButton = new Button();
 	saveButton->Init(800,500);
-	//saveButton->SetFunction(&TilemapTool::Save, this);
-	//saveButton->SetFunction(std::bind(&TilemapTool::Save, this));
 	saveButton->SetFunction([this]() {
 		this->Save();
 		});
 
-	hPen_forGrid = CreatePen(PS_SOLID, 1, RGB(0, 168, 107));
-	hPen_forSample = CreatePen(PS_SOLID, 3, RGB(255, 0, 0));
+	gridColor = D2D1::ColorF(D2D1::ColorF::ForestGreen);
+	selectedTileColor = D2D1::ColorF(D2D1::ColorF::Red);
+	dragRcColor = D2D1::ColorF(D2D1::ColorF::Blue);
+
+	rtd->CreateSolidColorBrush(gridColor, &rectBrush);
 
 	dragRc = { 0, 0, 1, 1 };
 
@@ -86,8 +87,7 @@ void TilemapTool::Release()
 		saveButton = nullptr;
 	}
 
-	DeleteObject(hPen_forGrid);
-	DeleteObject(hPen_forSample);
+	rectBrush->Release();
 }
 
 void TilemapTool::Update()
@@ -170,6 +170,14 @@ void TilemapTool::Update()
 		}
 
 		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT)==true) {
+			int posX = mouseP.x;
+			int posY = mouseP.y;
+			int tileX = (posX - mainOffset.x) / gridSize;
+			int tileY = (posY - mainOffset.y) / gridSize;
+			tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
+		}
+
+		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_RIGHT) == true) {
 			POINT dragStartP = MouseManager::GetInstance()->GetDragStartP();
 			POINT prevP = MouseManager::GetInstance()->GetPrevP();
 
@@ -230,19 +238,25 @@ void TilemapTool::Render(HDC hdc)
 	}
 
 	if (gridLineOn) {
-		HPEN hOldPen = (HPEN)SelectObject(hdc, hPen_forGrid);
 
-		HBRUSH hNullBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
-		HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hNullBrush);
-		for (auto& g : mainGrid) {
-			RenderRect(hdc, g);
+		if (rectBrush) {
+			for (const auto& g : mainGrid) {
+				// RECT → D2D1_RECT_F로 변환
+				D2D1_RECT_F rect = D2D1::RectF(
+					static_cast<float>(g.left),
+					static_cast<float>(g.top),
+					static_cast<float>(g.right),
+					static_cast<float>(g.bottom)
+				);
+
+				// 선만 그리기 (채우기 없음)
+				rectBrush->SetColor(gridColor);
+				rtd->DrawRectangle(rect, rectBrush, 1.0f);
+			}
+
 		}
-		SelectObject(hdc, hOldPen);
-		SelectObject(hdc, hOldBrush);
 	}
 	
-	
-
 	// 샘플 타일 영역
 	sampleTile->RenderFrameScale(sample_none.left, sample_none.top, 2.f,
 		2.f, GetCurrentFrame(6).x, GetCurrentFrame(6).y);
@@ -262,48 +276,38 @@ void TilemapTool::Render(HDC hdc)
 	sampleTile->RenderFrameScale(sample_destination.left, sample_destination.top, 2.f,
 		2.f, GetCurrentFrame(4).x, GetCurrentFrame(4).y);
 
+	if (rectBrush) {
+		rectBrush->SetColor(selectedTileColor);
+		D2D1_RECT_F rectToDraw = {};
+		switch (selectedTileType) {
+		case 6:
+			rectToDraw = { (float)sample_none.left, (float)sample_none.top, (float)sample_none.right, (float)sample_none.bottom };
+			break;
+		case 0:
+			rectToDraw = { (float)sample_wall.left, (float)sample_wall.top, (float)sample_wall.right, (float)sample_wall.bottom };
+			break;
+		case 1:
+			rectToDraw = { (float)sample_floor.left, (float)sample_floor.top, (float)sample_floor.right, (float)sample_floor.bottom };
+			break;
+		case 2:
+			rectToDraw = { (float)sample_door.left, (float)sample_door.top, (float)sample_door.right, (float)sample_door.bottom };
+			break;
+		case 3:
+			rectToDraw = { (float)sample_entrance.left, (float)sample_entrance.top, (float)sample_entrance.right, (float)sample_entrance.bottom };
+			break;
+		case 4:
+			rectToDraw = { (float)sample_destination.left, (float)sample_destination.top, (float)sample_destination.right, (float)sample_destination.bottom };
+			break;
+		}
+		rtd->DrawRectangle(rectToDraw, rectBrush, 1.0f);
 
-	HPEN hOldPen = (HPEN)SelectObject(hdc, hPen_forSample);
+		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_RIGHT) == true) {
+			D2D1_RECT_F dragRect = { dragRc.left, dragRc.top, dragRc.right, dragRc.bottom };
+			rectBrush->SetColor(dragRcColor);
+			rtd->DrawRectangle(dragRect, rectBrush, 1.0f);
+		}
 
-	HBRUSH hNullBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
-	HBRUSH hOldBrush = (HBRUSH)SelectObject(hdc, hNullBrush);
-	switch (selectedTileType) {
-	case 6:
-		selectedTile->DrawRect(
-			{ static_cast<float>(sample_none.left), static_cast<float>(sample_none.top) }, 
-			{ static_cast<float>(sample_none.right), static_cast<float>(sample_none.bottom) },
-			RGB(255, 0, 0), 1.0f);
-		break;
-	case 0:
-		RenderRect(hdc, sample_wall);
-		break;
-	case 1:
-		RenderRect(hdc, sample_floor);
-		break;
-	case 2:
-		RenderRect(hdc, sample_door);
-		break;
-	case 3:
-		RenderRect(hdc, sample_entrance);
-		break;
-	case 4:
-		RenderRect(hdc, sample_destination);
-		break;
 	}
-
-	if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT) == true) {
-		RenderRect(hdc, dragRc);
-	}
-
-	SelectObject(hdc, hOldPen);
-	SelectObject(hdc, hOldBrush);
-
-	// 선택된 타일
-	/*zoomedSampleTile[4]->FrameRender(hdc,
-		975, 300,
-		(int)FrameAdapter(selectedTileCode).x,
-		(int)FrameAdapter(selectedTileCode).y,
-		false, false);*/
 
 	if (saveButton) saveButton->Render(hdc);
 }
@@ -467,12 +471,11 @@ void TilemapTool::Erase()
 	{
 		for (int j = 0; j < TILE_X; ++j)
 		{
-			tileInfo[i * TILE_X + j].type = 99;
+			tileInfo[i * TILE_X + j].type = 6;
 			/*tileInfo[i * TILE_X + j].indX = j;
 			tileInfo[i * TILE_X + j].indY = i;*/
 		}
 	}
-	specialTiles.clear();
 }
 
 void TilemapTool::Paint()
@@ -493,7 +496,7 @@ void TilemapTool::MakeARoom()
 	POINT dir[8] = { {-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1,1} };
 	for (auto& ind : specialTiles) {
 		for (int i = 0; i < 8; ++i) {
-			if (tileInfo[(ind.y + dir[i].y) * TILE_X + (ind.x + dir[i].x)].type == 99) {
+			if (tileInfo[(ind.y + dir[i].y) * TILE_X + (ind.x + dir[i].x)].type == 6) {
 				tileInfo[(ind.y + dir[i].y) * TILE_X + (ind.x + dir[i].x)].type = 0;
 			}
 		}
@@ -504,7 +507,7 @@ void TilemapTool::MakeARoom()
 
 void TilemapTool::Test()
 {
-	SceneManager::GetInstance()->ChangeScene("전투씬_1");
+	//SceneManager::GetInstance()->ChangeScene("전투씬_1");
 }
 
 POINT TilemapTool::GetCurrentFrame(int tileType)

@@ -106,14 +106,16 @@ void Level::Init()
 
 void Level::Release()
 {
-    for (auto actor : actors)
-    {
-        if (actor)
-        {
-            delete actor;
-            actor = nullptr;
-        }
-    }
+    
+	for (auto actor : actors)
+	{
+		if (actor)
+		{
+			delete actor;
+			actor = nullptr;
+		}
+	}
+    
     if (player)
     {
         // delete player;
