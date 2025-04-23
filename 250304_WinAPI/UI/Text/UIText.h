@@ -10,15 +10,20 @@ private:
 
     IDWriteTextFormat* format = nullptr;
     ID2D1SolidColorBrush* brush = nullptr;
+    IDWriteTextLayout* layout = nullptr;
+
 
 public:
-    ~UIText() override {
-        if (format) format->Release();
-        if (brush) brush->Release();
+    ~UIText() override
+    {
+        if (format) { format->Release();format = nullptr; }
+        if (brush) { brush->Release(); brush = nullptr; }
+        if (layout) { layout->Release(); layout = nullptr; }
+
     }
 
-    void Init(const TextStyle& s, const std::wstring& txt, const D2D1_RECT_F& layout) {
-        SetRect(layout);
+    void Init(const TextStyle& s, const std::wstring& txt, const D2D1_RECT_F& rect) {
+        SetRect(rect);
 
         text = txt;
         style = s;
@@ -31,10 +36,20 @@ public:
             style.horizontalAlign,
             style.verticalAlign
         );
+
+        DWriteFactory::GetInstance()->CreateTextLayout(
+            text, format, GetWidth(), GetHeight(), &layout
+        );
     }
 
     void SetText(const std::wstring& txt) {
         text = txt;
+
+        DWriteFactory::GetInstance()->CreateTextLayout(
+            text, format, GetWidth(), GetHeight(), &layout
+        );
+
+        ApplyTextMetricsToRect();
     }
 
     void SetStyle(const TextStyle& s) {
@@ -49,6 +64,12 @@ public:
             style.horizontalAlign,
             style.verticalAlign
         );
+
+        DWriteFactory::GetInstance()->CreateTextLayout(
+            text, format, GetWidth(), GetHeight(), &layout
+        );
+
+        ApplyTextMetricsToRect();
 
         if (brush) { brush->Release(); brush = nullptr; }
     }
@@ -65,10 +86,18 @@ public:
         {
             rt->CreateSolidColorBrush(style.color, &brush);
         }
+
         if (format && brush)
         {
             D2D1_RECT_F rect = GetScaledDrawRect();
-            rt->DrawTextW(text.c_str(), static_cast<UINT32>(text.length()), format, &rect, brush);
+            rt->DrawTextLayout
+            (
+                D2D1::Point2F(rect.left, rect.top),
+                layout,
+                brush
+            );
+            
+            // rt->DrawTextW(text.c_str(), static_cast<UINT32>(text.length()), format, &rect, brush);
             
             // 🔸 출력 영역 확인용 사각형 (얇은 외곽선)
             ID2D1SolidColorBrush* debugBrush = nullptr;
@@ -80,6 +109,20 @@ public:
         }
 
 
+    }
+    
+    void ApplyTextMetricsToRect() {
+        if (!layout) return;
+
+        DWRITE_TEXT_METRICS metrics;
+        if (SUCCEEDED(layout->GetMetrics(&metrics))) {
+            // metrics.width / metrics.height 를 기준으로 컴포넌트 사이즈 갱신
+            // 원래의 좌표값을 기준으로 size만 갱신
+            auto rect = GetSizeRect(); // 원래 위치 유지
+            rect.right = rect.left + metrics.width;
+            rect.bottom = rect.top + metrics.height;
+            SetRect(rect); // 이 함수가 내부적으로 localRect / worldRect 갱신하게 되어 있어야 함
+        }
     }
 
 };
