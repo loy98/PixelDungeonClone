@@ -26,6 +26,8 @@ void Level::Init()
     sampleTile = D2DImageManager::GetInstance()->AddImage(
         "배틀시티_샘플타일", L"Image/tiles_sewers.png",
         16, 16);
+
+    wallTile = D2DImageManager::GetInstance()->AddImage("wallTile", L"Image/tiles_sewers.png", 32, 32);
     
     for (int i = 0; i < TILE_Y; ++i)
     {
@@ -177,8 +179,38 @@ void Level::Update()
 void Level::Render(HDC hdc)
 {
     // 8x8 타일 렌더링 사용
-    Render8x8Tiles(hdc);
-    
+    for (int i = 0; i < TILE_Y; ++i) {
+        for (int j = 0; j < TILE_X; ++j) {
+            if (!shouldBeRender[TILE_X * i + j]) continue;
+
+            bool isVisible = map[TILE_X * i + j].visible;
+            int tileType = rendermap[TILE_X * i + j];
+            int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
+            int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
+
+            // 벽 타일인 경우 세부 렌더링 사용
+            if (tileType == 0 || 
+                (tileType >= 10 && tileType <= 31)) {
+                // 벽 타일 렌더링
+                dungeonSystem.GetDungeonGenerator()->RenderWallTile(
+                    wallTile, j, i, tileX, tileY, 
+                    camera->GetZoomScale() * 2.f, mapData
+                );
+                } else {
+                    // 기존 방식으로 다른 타일 렌더링
+                    POINT frame = GetCurrentFrame(tileType);
+                    sampleTile->RenderFrameScale(tileX, tileY, 
+                        camera->GetZoomScale() * 2.f,
+                        camera->GetZoomScale() * 2.f, frame.x, frame.y);
+                }
+            
+            // 시야 효과 적용
+            sampleTile->RenderFrameScale(tileX, tileY, 
+                camera->GetZoomScale() * 2.f,
+                camera->GetZoomScale() * 2.f, 0, 9, 0, false, false, 
+                isVisible ? 0.f : 0.5f);
+        }
+    }
     // for (int i = 0; i < TILE_Y; ++i)
     // {
     //     for (int j = 0; j < TILE_X; ++j)
@@ -356,7 +388,7 @@ FPOINT Level::GetRandomFloorTile() const
             int tileType = mapData[y][x];
             // Check for any floor tile type (including variations)
             if (tileType == 1 || // TILE_FLOOR
-                (tileType >= 20 && tileType <= 23)) // TILE_FLOOR_NORMAL to TILE_FLOOR_MOSSY
+                (tileType >= 20 && tileType <= 31)) // TILE_FLOOR_NORMAL to TILE_FLOOR_MOSSY
             {
                 FPOINT pos;
                 pos.x = static_cast<float>(GRID_POS_OFFSET.x + x * TILE_SIZE + TILE_SIZE / 2);
@@ -460,7 +492,7 @@ POINT Level::GetCurrentFrame(int tileType) const
         
     // 기본값 (알 수 없는 타일 타입)
     default:
-        return {0, 4}; // 기본 타일 (알 수 없는 타일 타입)
+        return {1, 4}; // 기본 타일 (알 수 없는 타일 타입)
     }
 }
 
@@ -663,30 +695,30 @@ void Level::Render8x8Tiles(HDC hdc)
     }
 }
 
-unsigned char CalculateBitmask(const std::vector<std::vector<int>>& map, int x, int y) {
-    // 8방향 오프셋 (시계 방향으로 좌상, 상, 우상, 우, 우하, 하, 좌하, 좌)
-    const int dx[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
-    const int dy[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
-    
-    unsigned char bitmask = 0;
-    
-    for (int i = 0; i < 8; i++) {
-        int nx = x + dx[i];
-        int ny = y + dy[i];
-        
-        // 맵 범위 확인
-        if (nx < 0 || nx >= map[0].size() || ny < 0 || ny >= map.size()) {
-            // 맵 밖은 벽으로 처리
-            bitmask |= (1 << i);
-            continue;
-        }
-        
-        // 벽 타일 확인
-        if (IsWall(map[ny][nx])) {
-            bitmask |= (1 << i);
-        }
-    }
-    
-    return bitmask;
-}
+// unsigned char CalculateBitmask(const std::vector<std::vector<int>>& map, int x, int y) {
+//     // 8방향 오프셋 (시계 방향으로 좌상, 상, 우상, 우, 우하, 하, 좌하, 좌)
+//     const int dx[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
+//     const int dy[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
+//     
+//     unsigned char bitmask = 0;
+//     
+//     for (int i = 0; i < 8; i++) {
+//         int nx = x + dx[i];
+//         int ny = y + dy[i];
+//         
+//         // 맵 범위 확인
+//         if (nx < 0 || nx >= map[0].size() || ny < 0 || ny >= map.size()) {
+//             // 맵 밖은 벽으로 처리
+//             bitmask |= (1 << i);
+//             continue;
+//         }
+//         
+//         // 벽 타일 확인
+//         if (IsWall(map[ny][nx])) {
+//             bitmask |= (1 << i);
+//         }
+//     }
+//     
+//     return bitmask;
+// }
 

@@ -1,7 +1,14 @@
 #pragma once
 #include <vector>
 
+#include "WallTileRenderer.h"
+
+class D2DImage;
+
 class IDungeonGenerator {
+protected:
+    // 벽 타일 렌더러
+    WallTileRenderer wallTileRenderer;
 public:
     virtual ~IDungeonGenerator() = default;
 
@@ -10,7 +17,9 @@ public:
 
     // 타일 변형 적용 메서드
     virtual std::vector<std::vector<int>> GetTileVariations(std::vector<std::vector<int>>& map) = 0;
-
+    
+    virtual void RenderWallTile(D2DImage* image, int x, int y, int tileX, int tileY, float scale, const std::vector<std::vector<int>>& map) = 0;
+    
     // 타일 상수
     static constexpr int TILE_NONE = 6;
     static constexpr int TILE_WALL = 0;
@@ -41,10 +50,14 @@ public:
     static constexpr int TILE_WALL_SIDE_BOTTOM = 25;// 측면 하단
     static constexpr int TILE_WALL_SIDE_LEFT = 26;  // 측면 좌측
     static constexpr int TILE_WALL_SIDE_RIGHT = 27; // 측면 우측
+    static constexpr int TILE_WALL_INNER_CORNER_TL = 28; // 내부 코너 상단 좌측
+    static constexpr int TILE_WALL_INNER_CORNER_TR = 29; // 내부 코너 상단 우측
+    static constexpr int TILE_WALL_INNER_CORNER_BL = 30; // 내부 코너 하단 좌측
+    static constexpr int TILE_WALL_INNER_CORNER_BR = 31; // 내부 코너 하단 우측
     
     // 바닥 변형 타일
-    static constexpr int TILE_FLOOR_NORMAL = 30;
-    static constexpr int TILE_FLOOR_FANCY = 31;
-    static constexpr int TILE_FLOOR_CRACKED = 32;
-    static constexpr int TILE_FLOOR_MOSSY = 33;
+    static constexpr int TILE_FLOOR_NORMAL = 40;
+    static constexpr int TILE_FLOOR_FANCY = 41;
+    static constexpr int TILE_FLOOR_CRACKED = 42;
+    static constexpr int TILE_FLOOR_MOSSY = 43;
 }; 

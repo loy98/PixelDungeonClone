@@ -41,6 +41,7 @@ private:
 	vector<Entity*> monsters;
 
 	D2DImage* sampleTile;
+	D2DImage* wallTile;
 
 	std::vector<std::vector<int>> mapData;
     

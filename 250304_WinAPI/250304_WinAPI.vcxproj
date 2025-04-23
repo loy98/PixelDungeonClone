@@ -175,6 +175,7 @@
     <ClCompile Include="UI\Util\UIHelper.cpp" />
     <ClCompile Include="UI\Util\UIResourceSubManager.cpp" />
     <ClCompile Include="UI_Test.cpp" />
+    <ClCompile Include="WallTileRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
@@ -255,6 +256,7 @@
     <ClInclude Include="UI\Util\UITextPool.h" />
     <ClInclude Include="UI\VisualStyle.h" />
     <ClInclude Include="UI_Test.h" />
+    <ClInclude Include="WallTileRenderer.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
