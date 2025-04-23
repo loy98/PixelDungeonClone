@@ -8,6 +8,8 @@ class PathFinder;
 enum class EntityState
 {
     IDLE,
+    WAITING,
+    SLEEPING,
     MOVE,
     ATTACK,
     DEAD
