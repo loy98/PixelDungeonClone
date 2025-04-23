@@ -44,7 +44,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int viewRange, int tileId
 
 			if (!RectInRect(viewRc, tileRc))
 			{
-				continue;
+				break;
 			}
 
 			// 3) 비차단 타일 표시
