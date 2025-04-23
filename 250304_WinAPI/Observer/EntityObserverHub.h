@@ -1,0 +1,22 @@
+﻿#pragma  once
+#include <vector>
+
+#include "ObserverEventData.h"
+
+class Entity;
+struct EffectStyle;
+struct TextStyle;
+class IEntityObserver;
+
+
+// 공통 Entity 옵저버 허브
+class EntityObserverHub {
+private:
+    std::vector<IEntityObserver*> observers;
+
+public:
+    void AddObserver(IEntityObserver* obs);
+    void RemoveObserver(IEntityObserver* obs);
+    void NotifyDamageTaken(Entity* e, int dmg, D2D1::ColorF color);
+    void NotifyDeath(Entity* e);
+};

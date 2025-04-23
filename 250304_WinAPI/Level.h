@@ -14,7 +14,7 @@ class Item;
 class Biome;
 class Image;
 class Camera;
-class UITestView;
+class UIManager;
 class Level
 {
 private:
@@ -89,7 +89,7 @@ private:
 	};
 
 	// UI Sample
-	UITestView* uiTestView;
+	UIManager* uiManager;;
 	
 public:
 	void Init();

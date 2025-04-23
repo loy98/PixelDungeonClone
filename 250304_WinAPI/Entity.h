@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "config.h"
+#include "Observer/EntityObserverHub.h"
 
 class Level;
 class D2DImage;
@@ -53,6 +54,9 @@ protected:
     vector<FPOINT> path;
     PathFinder* finder;
     FPOINT destPos;
+
+    //Observer
+    EntityObserverHub entityObserver;
 public:
     int graphicID;
     bool isActive;
@@ -86,6 +90,9 @@ public:
     inline int GetExp() { return exp; }
     inline D2DImage* GetImage() { return image; }
     inline int GetCurAnimIdx() { return curAnimFrame; }
+    inline int GetHP() const { return hp; };
+    inline int GetMaxHP() const { return maxHp; };
+
 
     //에너지 관련 함수
     inline bool CanAct() const { return energy >= actionCost; }
@@ -98,7 +105,7 @@ public:
     void Stop() { destPos = position; }
     virtual void SetState(EntityState state) {};
 
-    // TODO UI HP 관련임시
-    inline int GetHP() const { return hp; };
-    inline int GetMaxHP() const { return maxHp; };
+
+    // 옵저버
+    inline EntityObserverHub& GetEntityObserverHub() { return entityObserver; }
 };

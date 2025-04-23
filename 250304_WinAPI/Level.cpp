@@ -1,4 +1,4 @@
-﻿#include "Level.h"
+#include "Level.h"
 #include "DungeonGenerator.h"
 #include "config.h"
 #include <random>
@@ -14,6 +14,7 @@
 #include "TurnManager.h"
 #include "Camera.h"
 #include "FieldOfView.h"
+#include "UIManager.h"
 #include "UI/Test/UITestView.h"
 #include "Item.h"
 #include "HealPotion.h"
@@ -101,15 +102,18 @@ void Level::Init()
     }
     turnManager->Init();
 
-    // UI
-    uiTestView = new UITestView();
-    uiTestView->Init();
+
 
     // Item
     Item* potion1 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , TILE_SIZE });
     Item* potion2 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , 0 });
     AddItem(potion1);
     AddItem(potion2);
+    // UI
+    uiManager = UIManager::GetInstance();
+    uiManager->Init();
+    uiManager->RegisterPlayer(player);
+    uiManager->RegisterEntity(player);
 }
 
 void Level::Release()
@@ -140,10 +144,13 @@ void Level::Release()
             item = nullptr;
         }
     }
+    uiManager = nullptr;
 }
 
 void Level::Update()
 {
+    uiManager->Update();
+    
     if (player->GetState() == EntityState::MOVE) {
         camera->UpdateCenter(player->GetPosition());
     }
@@ -232,13 +239,7 @@ void Level::Update()
     for (auto actor : actors)
     {
         if (actor) actor->Update();
-        //UIManager가 여기서 HP 연동
-
     }
-
-    // UI
-    uiTestView->Update(TimerManager::GetInstance()->GetDeltaTime());
-    uiTestView->statusToolBar.SetHP(player->GetHP(), player->GetMaxHP());
 }
 
 void Level::Render(HDC hdc)
@@ -359,8 +360,7 @@ void Level::Render(HDC hdc)
     }
 
     // UI
-    // UIManager Zoom 전달 하는게 있어야 함
-    uiTestView->Render(D2DImage::GetRenderTarget());
+    uiManager->Render();
 }
 
 void Level::FileLoad()

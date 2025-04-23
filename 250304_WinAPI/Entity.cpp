@@ -3,6 +3,7 @@
 #include "D2DImage.h"
 #include "D2DImageManager.h"
 #include "TimerManager.h"
+#include "UIManager.h"
 
 Entity::Entity()
 {
@@ -58,11 +59,13 @@ void Entity::TakeDamage(int dmg)
 {
 	hp -= dmg;
 	Stop();
+	entityObserver.NotifyDamageTaken(this, dmg, D2D1::ColorF(D2D1::ColorF::White));
 	if (hp <= 0)
 	{
 		hp = 0;
 		isActive = false;
 		curState = EntityState::DEAD;
+		entityObserver.NotifyDeath(this);
 	}
 }
 
