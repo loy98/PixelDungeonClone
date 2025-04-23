@@ -12,6 +12,7 @@
 
 void UIManager::RegisterPlayer(Player* player)
 {
+    if (!player) return;
     if (currentPlayer == player) return;
     
     if (currentPlayer)
@@ -28,6 +29,8 @@ void UIManager::RegisterPlayer(Player* player)
 
 void UIManager::RegisterEntity(Entity* entity)
 {
+    if (!entity) return;
+    
     entity->GetEntityObserverHub().AddObserver(uiEffectManager);
 }
 

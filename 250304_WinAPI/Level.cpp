@@ -94,14 +94,22 @@ void Level::Init()
     
     camera = new Camera();
     camera->Init(player->GetPosition());
+
+    // UI
+    uiManager = UIManager::GetInstance();
+    uiManager->Init();
+    uiManager->RegisterPlayer(player);
+    //
     
     for (auto actor : actors)
     {
         if (actor)
+        {
             turnManager->AddActor(actor);
+            uiManager->RegisterEntity(actor);
+        }
     }
     turnManager->Init();
-
 
 
     // Item
@@ -109,11 +117,7 @@ void Level::Init()
     Item* potion2 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , 0 });
     AddItem(potion1);
     AddItem(potion2);
-    // UI
-    uiManager = UIManager::GetInstance();
-    uiManager->Init();
-    uiManager->RegisterPlayer(player);
-    uiManager->RegisterEntity(player);
+
 }
 
 void Level::Release()

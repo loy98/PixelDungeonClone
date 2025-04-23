@@ -223,6 +223,7 @@
     <ClInclude Include="TimerManager.h" />
     <ClInclude Include="TurnManager.h" />
     <ClInclude Include="UIManager.h" />
+    <ClInclude Include="UI\Bar\UIPlayerBar.h" />
     <ClInclude Include="UI\Bar\UIValueBar.h" />
     <ClInclude Include="UI\Bar\ValueAnimator.h" />
     <ClInclude Include="UI\Button\UIImageTextButton.h" />
