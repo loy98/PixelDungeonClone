@@ -61,6 +61,15 @@ public:
         }
     }
 
+    void SetWorldRect(const D2D1_RECT_F& rect) override {
+        UIComponent::SetWorldRect(rect);
+
+        // ✅ 자식 위치 재계산
+        for (auto* c : children) {
+            c->UpdateWorldRect();  // localRect → worldRect 변환
+        }
+    }
+
     void Update(float dt) override {
         if (!isActive) return;
         for (auto* c : children)

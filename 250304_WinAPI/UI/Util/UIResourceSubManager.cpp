@@ -53,10 +53,20 @@ void UIResourceSubManager::Preload_NinePatch()
     mgr->RegisterFrame("chrome_br", "chrome", { 14, 14, 20, 20 });
 }
 
+void UIResourceSubManager::Preload_MopHPUI()
+{
+    auto mgr = D2DImageManager::GetInstance();
+    mgr->AddImage("mop_hpbar_bg", L"assets/interfaces/mop_hpbar_bg.png", 1, 1);
+    mgr->AddImage("mop_hpbar_fill", L"assets/interfaces/mop_hpbar_fill.png", 1, 1);
+}
+
 // ✅ 전체 리소스 초기화
 void UIResourceSubManager::PreloadAll() {
     InitFontResources();                 // ⬅ 폰트 먼저
     Preload_StatusToolbar();
     Preload_QuickSlotToolbar();
     Preload_TopRightUI();
+    Preload_InventoryUI();
+    Preload_NinePatch();
+    Preload_MopHPUI();
 }

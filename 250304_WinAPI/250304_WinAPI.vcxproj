@@ -223,6 +223,7 @@
     <ClInclude Include="TimerManager.h" />
     <ClInclude Include="TurnManager.h" />
     <ClInclude Include="UIManager.h" />
+    <ClInclude Include="UI\Bar\UIMopBar.h" />
     <ClInclude Include="UI\Bar\UIPlayerBar.h" />
     <ClInclude Include="UI\Bar\UIValueBar.h" />
     <ClInclude Include="UI\Bar\ValueAnimator.h" />
@@ -249,6 +250,7 @@
     <ClInclude Include="UI\Text\UITextEffect.h" />
     <ClInclude Include="UI\UIData.h" />
     <ClInclude Include="UI\UIEffectManager.h" />
+    <ClInclude Include="UI\UIMopHPManager.h" />
     <ClInclude Include="UI\Util\IUIInteractable.h" />
     <ClInclude Include="UI\Util\StyleUtil.h" />
     <ClInclude Include="UI\Util\UIHelper.h" />

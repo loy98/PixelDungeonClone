@@ -73,7 +73,7 @@ inline void UIPlayerBar::Update(float deltaTime) {
 }
 
 inline void UIPlayerBar::Render(ID2D1HwndRenderTarget* rt) {
-    D2D1_RECT_F rect = GetWorldRect();
+    D2D1_RECT_F rect = GetScaledDrawRect();
     FPOINT ws = GetWorldScale();
 
     // 🔹 배경

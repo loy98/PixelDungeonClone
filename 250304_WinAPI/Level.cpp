@@ -98,6 +98,7 @@ void Level::Init()
     // UI
     uiManager = UIManager::GetInstance();
     uiManager->Init();
+    uiManager->RegisterCamera(camera);
     uiManager->RegisterPlayer(player);
     //
     

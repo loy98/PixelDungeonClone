@@ -21,6 +21,7 @@ public:
     void SetAnimator(float max);
     inline float GetMaxValue() {return maxValue;}
     inline float GetValue() {return animator.GetValue();}
+    inline float GetFillPercent() {return fillPercent;}
 
     void Update(float deltaTime) override;
     void Render(ID2D1HwndRenderTarget* renderTarget) override;
@@ -42,6 +43,7 @@ inline void UIValueBar::SetStyle(const BarStyle& style)
 }
 
 inline void UIValueBar::SetValue(float value) {
+    value = max(0.0f, value);
     animator.SetGoal(value);
 }
 
@@ -61,7 +63,7 @@ inline void UIValueBar::Update(float deltaTime) {
 }
 
 inline void UIValueBar::Render(ID2D1HwndRenderTarget* rt) {
-    D2D1_RECT_F rect = GetWorldRect();
+    D2D1_RECT_F rect = GetScaledDrawRect();
     FPOINT ws = GetWorldScale();
 
     float width = rect.right - rect.left;
@@ -70,7 +72,7 @@ inline void UIValueBar::Render(ID2D1HwndRenderTarget* rt) {
     // 🔹 fill (퍼센트 만큼만 채움)
     if (style.fill.image) {
         float fillWidth = width * fillPercent;
-        style.fill.image->RenderPercent({ rect.left, rect.top }, 0, fillPercent * 100.f, style.fill.alpha);
+        style.fill.image->RenderPercent({ rect.left, rect.top }, 0, fillPercent * 100.f, ws.x, ws.y, style.fill.alpha);
     }
 
     // 🔹 handle (필요시)
@@ -82,4 +84,10 @@ inline void UIValueBar::Render(ID2D1HwndRenderTarget* rt) {
 
         style.handle.image->RenderRaw(handleX, handleY, handleWidth, handleHeight, ws.x, ws.y, 0.0f, false, false, style.fill.alpha);
     }
+
+    // 🔸 출력 디버그용 외곽선
+    ID2D1SolidColorBrush* debugBrush = nullptr;
+    rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &debugBrush);
+    rt->DrawRectangle(rect, debugBrush, 1.0f);
+    if (debugBrush) debugBrush->Release();
 }
