@@ -161,7 +161,11 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProceduralDungeonGenerator.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="TileMapping8x8.cpp" />
+    <ClCompile Include="TileMappingManager.cpp" />
+    <ClCompile Include="TileMappingTable.cpp" />
     <ClCompile Include="TilemapTool.cpp" />
+    <ClCompile Include="TileQuad.cpp" />
     <ClCompile Include="Tiles.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -172,6 +176,7 @@
     <ClCompile Include="UI\Util\UIHelper.cpp" />
     <ClCompile Include="UI\Util\UIResourceSubManager.cpp" />
     <ClCompile Include="UI_Test.cpp" />
+    <ClCompile Include="WallTileRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
@@ -213,7 +218,11 @@
     <ClInclude Include="ProceduralDungeonGenerator.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="TileMapping8x8.h" />
+    <ClInclude Include="TileMappingManager.h" />
+    <ClInclude Include="TileMappingTable.h" />
     <ClInclude Include="TilemapTool.h" />
+    <ClInclude Include="TileQuad.h" />
     <ClInclude Include="Tiles.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
@@ -250,6 +259,7 @@
     <ClInclude Include="UI\Util\UITextPool.h" />
     <ClInclude Include="UI\VisualStyle.h" />
     <ClInclude Include="UI_Test.h" />
+    <ClInclude Include="WallTileRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="250304_WinAPI.rc" />

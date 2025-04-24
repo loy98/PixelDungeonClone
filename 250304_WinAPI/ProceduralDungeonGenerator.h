@@ -11,7 +11,8 @@ public:
     // IDungeonGenerator 인터페이스 구현
     virtual std::vector<std::vector<int>> Generate(int width, int height) override;
     virtual std::vector<std::vector<int>> GetTileVariations(std::vector<std::vector<int>>& map) override;
-
+    virtual void RenderWallTile(D2DImage* image, int x, int y, int tileX, int tileY, float scale,
+                        const std::vector<std::vector<int>>& map) override;
 private:
     // 방 구조체
     struct Room {
@@ -39,7 +40,7 @@ private:
     static constexpr int MAX_STANDARD_ROOM_SIZE = 8;
     static constexpr int MAX_LARGE_ROOM_SIZE = 12;
     static constexpr int MAX_GIANT_ROOM_SIZE = 16;
-    static constexpr int ROOM_MARGIN = 1;
+    static constexpr int ROOM_MARGIN = 2;
     
     // 던전 생성 관련 메서드들
     std::vector<Room> GenerateRooms(int width, int height, int minRooms, int maxRooms);
@@ -53,7 +54,8 @@ private:
     // 타일 변형 결정 메서드들
     int DetermineWallVariation(const std::vector<std::vector<int>>& map, int x, int y);
     int DetermineFloorVariation(const std::vector<std::vector<int>>& map, int x, int y);
-    
+
+
     // 유틸리티 메서드들
     int GetRandomInt(int min, int max);
     bool GetRandomBool(float probability);

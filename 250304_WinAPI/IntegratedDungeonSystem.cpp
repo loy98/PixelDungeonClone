@@ -46,7 +46,9 @@
 void IntegratedDungeonSystem::GenerateDungeon(Level* level, int width, int height, int roomCount, int minRoomSize,
     int maxRoomSize)
 {
-    dungeonGenerator = new FileLoadDungeonGenerator("TileMapData.dat");
+    // dungeonGenerator = new FileLoadDungeonGenerator("TileMapData.dat");
+    dungeonGenerator = new ProceduralDungeonGenerator();
+    // dungeonGenerator = new DungeonGenerator();
     
     // Generate the dungeon layout
     auto map = dungeonGenerator->Generate(width, height);

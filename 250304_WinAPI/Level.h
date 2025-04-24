@@ -41,6 +41,7 @@ private:
 	vector<Entity*> monsters;
 
 	D2DImage* sampleTile;
+	D2DImage* wallTile;
 
 	std::vector<std::vector<int>> mapData;
     
@@ -103,6 +104,7 @@ public:
 	FPOINT GetEntranceSpawnPosition() const;
 	void ResetVisibleTile();
 	void SetVisibleTile();
+	void Render8x8Tiles(HDC hdc);
 
 	Level();
 	~Level();

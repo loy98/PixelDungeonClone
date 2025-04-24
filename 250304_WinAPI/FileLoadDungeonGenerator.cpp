@@ -33,7 +33,7 @@ std::vector<std::vector<int>> FileLoadDungeonGenerator::Generate(int width, int 
     PlaceSpecialRooms(map);
     
     // 문 배치
-    PlaceDoorsAtRoomBorders(map);
+    // PlaceDoorsAtRoomBorders(map);
     
     return map;
 }
@@ -89,15 +89,26 @@ bool FileLoadDungeonGenerator::LoadDungeonData() {
     // Map 배열을 2차원 벡터로 변환
     dungeonData.clear();
     dungeonData.resize(TILE_Y, std::vector<int>(TILE_X, TILE_WALL));
-    
-    for (int y = 0; y < TILE_Y; y++) {
-        for (int x = 0; x < TILE_X; x++) {
-            int index = y * TILE_X + x;
-            if (index < tileData.size()) {
-                dungeonData[y][x] = tileData[index].type;
-            }
+
+    for (int i=0; i<TILE_X * TILE_Y; ++i)
+    {
+        if (i < tileData.size())
+        {
+            int y = i / TILE_Y;
+            int x = i % TILE_X;
+            dungeonData[y][x] = tileData[i].type == 0 ? tileData[i].type == 1 ? 2 : 6 : 1;
         }
+        
     }
+    
+    // for (int y = 0; y < TILE_Y; y++) {
+    //     for (int x = 0; x < TILE_X; x++) {
+    //         int index = y * TILE_X + x;
+    //         if (index < tileData.size()) {
+    //             dungeonData[y][x] = tileData[index].type;
+    //         }
+    //     }
+    // }
     
     return !dungeonData.empty();
 }
