@@ -9,9 +9,11 @@
 #include "UI/Panel/UIStatusTollbar.h"
 #include "UI/Panel/UITopRightUI.h"
 #include "Inventory.h"
+#include "UI/UIMopHPManager.h"
 
 void UIManager::RegisterPlayer(Player* player)
 {
+    if (!player) return;
     if (currentPlayer == player) return;
     
     if (currentPlayer)
@@ -28,6 +30,10 @@ void UIManager::RegisterPlayer(Player* player)
 
 void UIManager::RegisterEntity(Entity* entity)
 {
+    if (!entity) return;
+
+    auto mopHPBar = uiMopHPManager->CreateMopHPBar(entity, camera);
+    entity->GetEntityObserverHub().AddObserver(mopHPBar);
     entity->GetEntityObserverHub().AddObserver(uiEffectManager);
 }
 
@@ -42,6 +48,15 @@ void UIManager::UnregisterPlayer(Player* player)
 void UIManager::UnregisterEntity(Entity* entity)
 {
     entity->GetEntityObserverHub().RemoveObserver(uiEffectManager);
+}
+
+void UIManager::RegisterCamera(Camera* cam)
+{
+    if (!cam) return;
+
+    this->camera = cam;
+
+    uiEffectManager->SetCamera(camera);
 }
 
 
@@ -65,7 +80,10 @@ void UIManager::SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect
 
 void UIManager::SetWorldUISCale(float scale)
 {
-    
+    if (uiMopHPManager)
+    {
+        uiMopHPManager->ChangeZoomScale(scale);
+    }
 }
 
 void UIManager::UseUIItem(int idx)
@@ -87,6 +105,12 @@ void UIManager::Init()
     tmMgr = TimerManager::GetInstance();
     rdt = D2DImage::GetRenderTarget();
     mouseManager = MouseManager::GetInstance();
+
+    /* 생성기 Load */
+    uiResourceManager = new UIResourceSubManager();
+    uiResourceManager->PreloadAll();
+    uiMopHPManager = new UIMopHPManager();
+    uiMopHPManager->Init();
 
     /* 기본 Load */
     uiStatusToolbar = new UIStatusToolbar();
@@ -142,6 +166,12 @@ void UIManager::Init()
 
 void UIManager::Update()
 {
+    /* Check Camera Zoom */
+    if (CheckZoomChange())
+    {
+        SetWorldUISCale(zoomScale);
+    }
+    
     /* Mouse Click Check */
     if (MouseManager::GetInstance()->GetClickValueUsed() == false)
     {
@@ -162,6 +192,8 @@ void UIManager::Update()
 
     /* Update */
     float dt = tmMgr->GetDeltaTime();
+    
+    uiMopHPManager->Update(dt);
     for (auto uiContainer_it = uiContainers.begin(); uiContainer_it != uiContainers.end(); ++uiContainer_it)
     {
         (*uiContainer_it)->Update(dt);
@@ -218,6 +250,7 @@ void UIManager::Update()
 void UIManager::Render()
 {
     /* Render 순서 주의 */
+    uiMopHPManager->Render(rdt);
     for (auto uiContainer_it = uiContainers.begin(); uiContainer_it != uiContainers.end(); ++uiContainer_it)
     {
         (*uiContainer_it)->Render(rdt);
@@ -236,6 +269,19 @@ void UIManager::Release()
     /* 절대 삭제 금지 */
     tmMgr = nullptr;
     rdt = nullptr;
+}
+
+bool UIManager::CheckZoomChange()
+{
+    if (camera == nullptr) return false;
+
+    if (camera->GetZoomScale() != zoomScale)
+    {
+        zoomScale = camera->GetZoomScale();
+        return true;
+    }
+
+    return false;
 }
 
 // void UIManager::RegisterPlayer(Player* player) {

@@ -7,7 +7,10 @@
 class UIEffectManager : public IEntityObserver
 {
 private:
+    Camera* camera{nullptr};
+    
     std::vector<UITextEffect*> effects;
+    D2D1_SIZE_F offset = {-15.f, -30.f};
 
     TextStyle defaultTextStyle = {
         L"pixel", 16.0f, D2D1::ColorF(D2D1::ColorF::White), true,
@@ -65,10 +68,24 @@ public:
         effects.clear();
     }
 
+    void SetCamera(Camera* camera)
+    {
+        if (camera)
+        {
+            this->camera = camera;
+        }
+    }
+
     
     /* Observer */
     void OnEntityDamageTaken(DamageTakenData data) override
     {
+        if (!camera)
+        {
+            OutputDebugStringA("카메라없어요~~~, by 이펙트매니저");
+            return;
+        }
+        
         if (data.sendText == L"") return;
 
         if (!data.textStyle)
@@ -80,14 +97,13 @@ public:
             data.effectStyle = &defaultEffectStyle;
         }
 
-        float halfWidth = 100.0f;
-        float halfHight = 30.0f;
-        // D2D1_RECT_F rect = {data.pos.x - halfWidth, data.pos.y - halfHight,
-        //     data.pos.x + halfWidth, data.pos.y + halfHight};
-        D2D1_RECT_F rect = {WINSIZE_X/2 - halfWidth, WINSIZE_Y/2 - halfHight,
-            WINSIZE_X/2 + halfWidth, WINSIZE_Y/2 + halfHight};
+        float width = 30.0f;
+        float height = 30.0f;
+        FPOINT scrPos = {camera->ConvertToRendererX(data.pos.x), camera->ConvertToRendererY(data.pos.y)};
+        D2D1_RECT_F setRect = {scrPos.x + offset.width, scrPos.y + offset.height,
+            scrPos.x + width + offset.width, scrPos.y + height + offset.height};
         
-        AddEffect(data.sendText, *data.textStyle, rect, *data.effectStyle);
+        AddEffect(data.sendText, *data.textStyle, setRect, *data.effectStyle);
     }
 };
 
