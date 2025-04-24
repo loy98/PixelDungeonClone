@@ -19,7 +19,7 @@
 #include "UI/Test/UITestView.h"
 #include "Item.h"
 #include "HealPotion.h"
-
+#include "TileMapping8x8.h"
 
 
 void Level::Init()
