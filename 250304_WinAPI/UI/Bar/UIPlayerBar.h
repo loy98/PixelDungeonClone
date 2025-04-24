@@ -55,7 +55,6 @@ inline void UIPlayerBar::SetValue(float value) {
 
 inline void UIPlayerBar::SetMaxValue(float max) {
     bar->SetMaxValue(max);
-    bar->SetAnimator(max);
     UpdateSetTextValue();
 }
 

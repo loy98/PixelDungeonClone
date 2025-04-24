@@ -34,6 +34,7 @@ inline void UIValueBar::Init(const D2D1_RECT_F& layout, const BarStyle& s, float
     style = s;
     maxValue = max;
     animator.SetInstant(max);
+    animator.SetGoal(max);
 }
 
 inline void UIValueBar::SetStyle(const BarStyle& style)
@@ -48,13 +49,16 @@ inline void UIValueBar::SetValue(float value) {
 }
 
 inline void UIValueBar::SetMaxValue(float max) {
+    if (max == maxValue) return;
+    
     maxValue = max;
-    animator.SetGoal(max);
+    animator.SetInstant(max);
 }
 
 inline void UIValueBar::SetAnimator(float max)
 {
     animator.SetInstant(max);
+    animator.SetGoal(max);
 }
 
 inline void UIValueBar::Update(float deltaTime) {

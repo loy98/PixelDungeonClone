@@ -11,6 +11,7 @@ protected:
     BarStyle barStyle;
     
     UIValueBar* bar{nullptr};
+    UIText* text;
 
     Camera* camera{nullptr};
     Entity* target{nullptr};
@@ -66,6 +67,7 @@ void UIMopBar::Init(const D2D1_RECT_F& layout, const ImageStyle& bgs,
     bar = UIHelper::ApplyBarStyle(this, GetSizeRect(), barStyle);
     SetStyle(bgs, s);
     SetMaxValue(max);
+    text = UIHelper::ApplyTextStyle(this, GetSizeRect(), TextStyle());
     // SetActive(false);
 }
 
@@ -83,7 +85,6 @@ void UIMopBar::SetValue(float value)
 
 void UIMopBar::SetMaxValue(float max) {
     bar->SetMaxValue(max);
-    bar->SetAnimator(max);
 }
 
 inline void UIMopBar::SetTarget(Entity* target, Camera* cam)
