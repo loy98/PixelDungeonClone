@@ -85,7 +85,8 @@ public:
 	void SetWorldUISCale(float scale);
 	void UseUIItem(int idx);
 	
-	void SetCurrentPlayer(Player* player) { currentPlayer = player; }
+	void SetCurrentPlayer(Player* player);
+	Player* GetCurrentPlayer();
 
 	virtual ~UIManager();
 

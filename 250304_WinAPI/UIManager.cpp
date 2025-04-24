@@ -22,7 +22,8 @@ void UIManager::RegisterPlayer(Player* player)
         UnregisterPlayer(currentPlayer);
     }
 
-    currentPlayer = player;
+    SetCurrentPlayer(player);
+    
     player->GetEntityObserverHub().AddObserver(uiStatusToolbar);
     player->GetEntityObserverHub().AddObserver(uiStatusPanel);
     player->GetEntityObserverHub().AddObserver(uiQuickSlotToolbar);
@@ -116,6 +117,22 @@ void UIManager::ClearUiContainers()
     uiContainers.clear();
 }
 
+void UIManager::SetCurrentPlayer(Player* player)
+{
+    if (!player) return; 
+    currentPlayer = player;
+
+    if (uiStatusToolbar)
+    {
+        uiStatusToolbar->UpdateStat(player);
+    }
+}
+
+Player* UIManager::GetCurrentPlayer()
+{
+    return currentPlayer;
+}
+
 void UIManager::Init()
 {
     tmMgr = TimerManager::GetInstance();
@@ -156,24 +173,19 @@ void UIManager::Init()
     uiQuickSlotToolbar->SetActionOnClick(1, [this](){});
     uiQuickSlotToolbar->SetActionOnClick(2, [this]()
     {
-        uiInventoryPanel->SetActive(true);
-    
-        float mx = mouseManager->GetMousePos().x;
-        float my = mouseManager->GetMousePos().y;
-    
-        D2D1_RECT_F effectRect = D2D1::RectF(mx - 10, my - 10, mx + 10, my + 10);
-
-        TextStyle style;
-        style.fontName = L"pixel";
-        style.fontSize = 14.0f;
-        style.color = D2D1::ColorF(D2D1::ColorF::White);
-        style.bold = true;
-        style.horizontalAlign = DWRITE_TEXT_ALIGNMENT_CENTER;
-        style.verticalAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
-        EffectStyle effectStyle;
-
-        SendTextEffect(L"Click", effectRect,&style, &effectStyle);
-        SendLog(L"Inventory Quick Click", D2D1::ColorF(D2D1::ColorF::Yellow));
+        uiInventoryPanel->SetActive(!uiInventoryPanel->IsActive());
+    });
+    uiStatusToolbar->SetStatusButtonEvent([this]()
+    {
+        if (!uiStatusPanel->IsActive())
+        {
+            uiStatusPanel->UpdatePlayerStat(GetCurrentPlayer());
+            uiStatusPanel->SetActive(true);
+        }
+        else
+        {
+            uiStatusPanel->SetActive(false);
+        }
     });
 
     /* Add UIContainers */
