@@ -1,8 +1,9 @@
 ﻿#pragma once
 #include <array>
 #include <string>
-#include "../../D2DImage.h"
+#include "../D2DImage.h"
 
+struct TextStyle;
 struct D2DFrameImage;
 
 struct ImageStyle {
@@ -11,43 +12,26 @@ struct ImageStyle {
     float alpha = 1.0f;
     D2D1_COLOR_F tint = D2D1::ColorF(1, 1, 1, 1); // 색상 효과
     bool grayscale = false; // 비활성화 상태 표현
-};
-
-struct BarStyle {
-    ImageStyle background;
-    ImageStyle fill;
-    ImageStyle handle;
+    int frameIdx;
+    int frameIdy;
 };
 
 struct TextStyle {
     std::wstring fontName = L"맑은 고딕";
     float fontSize = 16.0f;
-    D2D1_COLOR_F color = D2D1::ColorF(0, 0, 0, 1); // 기본 검정
+    D2D1_COLOR_F color = D2D1::ColorF(1, 1, 1, 1); // 기본 하양
     bool bold = false;
     DWRITE_TEXT_ALIGNMENT horizontalAlign = DWRITE_TEXT_ALIGNMENT_LEADING;
     DWRITE_PARAGRAPH_ALIGNMENT verticalAlign = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+
+    TextStyle() = default;
 };
 
 struct EffectStyle {
-    float lifetime = 1.0f;
-    float moveSpeed = -3.0f;
-};
+    float lifetime = 2.0f;
+    float moveSpeed = -20.0f;
 
-struct UIIconStyle {
-    ImageStyle bgStyle{nullptr};
-    ImageStyle iconStyle{nullptr};
-};
-
-struct UIInventorySlotStyle {
-    ImageStyle background;         // 슬롯 배경
-    ImageStyle itemIcon;          // 아이템 아이콘 이미지
-    TextStyle quantityTextStyle;  // 좌상단 수량 텍스트
-    TextStyle enhancementTextStyle; // 우하단 강화 수치 텍스트
-};
-
-struct UIButtonStyle {
-    ImageStyle background;
-    TextStyle textStyle;
+    EffectStyle() = default;
 };
 
 // UI9PatchPanel 전용 구조는 분리
@@ -74,4 +58,32 @@ struct NinePatchStyle {
     NinePatchRegion& BottomLeft()  { return regions[6]; }
     NinePatchRegion& Bottom()      { return regions[7]; }
     NinePatchRegion& BottomRight() { return regions[8]; }
+};
+
+struct BarStyle {
+    ImageStyle fill;
+    ImageStyle handle;
+};
+
+struct PlayerBarStyle {
+    ImageStyle background;
+    BarStyle bar;
+    TextStyle text;
+};
+
+struct UIIconStyle {
+    ImageStyle bgStyle;
+    ImageStyle iconStyle;
+};
+
+struct UIInventorySlotStyle {
+    ImageStyle background;         // 슬롯 배경
+    ImageStyle itemIcon;          // 아이템 아이콘 이미지
+    TextStyle quantityTextStyle;  // 좌상단 수량 텍스트
+    TextStyle enhancementTextStyle; // 우하단 강화 수치 텍스트
+};
+
+struct UIButtonStyle {
+    ImageStyle background;
+    TextStyle textStyle;
 };

@@ -1,21 +1,37 @@
 ﻿#pragma once
 #include "../Core/UIContainer.h"
-#include "../Bar/UIValueBar.h"
 #include "../Button/UIImageTextButton.h"
 #include "../Text/UITextBox.h"
 #include "../Util/UIResourceSubManager.h"
+#include "../../Observer/IEntityObserver.h"
+#include "../Bar/UIPlayerBar.h"
+#include "../VisualStyle.h"
 
-class UIStatusToolbar : public UIContainer {
+class UIStatusToolbar : public UIContainer, public IEntityObserver {
 private:
-    UIValueBar* hpBar = nullptr;
-    UIValueBar* expBar = nullptr;
+    UIPlayerBar* hpBar = nullptr;
+    UIPlayerBar* expBar = nullptr;
     UITextBox* levelText = nullptr;
 
+    ImageStyle hpBarBgStyle;
+    BarStyle hpBarStyle;
+    ImageStyle expBarBgStyle;
+    BarStyle expBarStyle;
+    TextStyle textStyle;
+    
+
 public:
-    void Init(const D2D1_RECT_F& rect = { 0.0f, 610.0f, 398.0f, 711.0f }) {
+    void OnEntityDamageTaken(DamageTakenData data) override
+    {
+        SetHP(data.entity->GetHP(), data.entity->GetMaxHP());
+    }
+    
+    void Init(const D2D1_RECT_F& rect = { 0.0f, 610.0f, 398.0f, 711.0f }) override
+    {
         SetRect(rect);
         UIResourceSubManager::Preload_StatusToolbar();
-
+        SetStyle();
+        
         AddHPBar();
         AddEXPBar();
         AddCharacterIcon();
@@ -44,20 +60,20 @@ public:
 
 private:
     void AddHPBar() {
-        hpBar = new UIValueBar();
-        hpBar->Init({ 75, 37, 398.5f, 105.13f }, BarStyle {
-            { D2DImageManager::GetInstance()->FindImage("status_hp_bg"), 1.0f },
-            { D2DImageManager::GetInstance()->FindImage("status_hp_bar"), 1.0f }
-            }, 100);
+        hpBar = new UIPlayerBar();
+        hpBar->Init({ 75, 37, 398.5f, 69.0f });
+        hpBar->SetStyle(hpBarBgStyle, hpBarStyle, textStyle);
+        hpBar->SetMaxValue(20);
+        hpBar->SetValue(20);
         AddChild(hpBar);
     }
 
     void AddEXPBar() {
-        expBar = new UIValueBar();
-        expBar->Init({ 73, 69, 396.5f, 101.13f }, BarStyle{
-            { D2DImageManager::GetInstance()->FindImage("status_exp_bg"), 1.0f },
-            { D2DImageManager::GetInstance()->FindImage("status_exp_bar"), 1.0f }
-            }, 30);
+        expBar = new UIPlayerBar();
+        expBar->Init({ 73, 69, 396.5f, 101.13f });
+        expBar->SetStyle(expBarBgStyle, expBarStyle, textStyle);
+        expBar->SetMaxValue(10);
+        expBar->SetValue(10);
         AddChild(expBar);
     }
 
@@ -76,6 +92,7 @@ private:
     }
 
     void AddLevelText() {
+
         UIButtonStyle style = {
             { D2DImageManager::GetInstance()->FindImage("status_level") },
             { L"pixel", 16.0f, D2D1::ColorF(D2D1::ColorF::White), true,
@@ -84,5 +101,37 @@ private:
         levelText = new UITextBox();
         levelText->Init(style, L"Lv. 1", { 0, 74, 74.25f, 98.75f });
         AddChild(levelText);
+    }
+
+private:
+    void SetStyle()
+    {
+        hpBarBgStyle = ImageStyle
+            {
+                D2DImageManager::GetInstance()->FindImage("status_hp_bg"), 1.0f
+            };
+        hpBarStyle = BarStyle
+            {
+                ImageStyle
+                {D2DImageManager::GetInstance()->FindImage("status_hp_bar"), 1.0f},
+                ImageStyle
+                {nullptr}
+            };
+        expBarBgStyle = ImageStyle
+            {
+                D2DImageManager::GetInstance()->FindImage("status_exp_bg"), 1.0f
+            };
+        expBarStyle = BarStyle
+            {
+                ImageStyle
+                {D2DImageManager::GetInstance()->FindImage("status_exp_bar"), 1.0f},
+                ImageStyle
+                {nullptr}
+            };
+        textStyle = TextStyle
+            {
+                L"pixel", 14.0f, D2D1::ColorF(D2D1::ColorF::White),
+                true, DWRITE_TEXT_ALIGNMENT_CENTER, DWRITE_PARAGRAPH_ALIGNMENT_CENTER,
+            };
     }
 };

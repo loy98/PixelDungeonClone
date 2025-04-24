@@ -14,7 +14,7 @@ class Item;
 class Biome;
 class Image;
 class Camera;
-class UITestView;
+class UIManager;
 class Level
 {
 private:
@@ -78,7 +78,7 @@ private:
 	};
 
 	// UI Sample
-	UITestView* uiTestView;
+	UIManager* uiManager;;
 	
 public:
 	void Init();
@@ -87,9 +87,13 @@ public:
 	void Render(HDC hdc);
 
 	void AddActor(Entity* actor);
-	int GetMapIndex(int x, int y) const {return (y - GRID_POS_OFFSET.y - TILE_SIZE / 2) / TILE_SIZE * TILE_X + (x - GRID_POS_OFFSET.x - TILE_SIZE / 2) / TILE_SIZE;}
+	void AddItem(Item* item);
+	int GetMapIndex(int x, int y) {return (y - GRID_POS_OFFSET.y - TILE_SIZE / 2) / TILE_SIZE * TILE_X + (x - GRID_POS_OFFSET.x - TILE_SIZE / 2) / TILE_SIZE;}
+
 	Map* GetMap(int x, int y) { return &map[(y - GRID_POS_OFFSET.y - TILE_SIZE / 2) / TILE_SIZE * TILE_X + (x - GRID_POS_OFFSET.x - TILE_SIZE / 2) / TILE_SIZE]; }
 	Entity* GetActorAt(FPOINT pos);
+	Item* GetItemAt(FPOINT pos);
+	void MoveItemToInven(Item* item);
 
 	FPOINT GetPosByGridIndex(int idx, int idy) const { return {GRID_POS_OFFSET.x + (idx * 2 + 1) / 2.f * TILE_SIZE, GRID_POS_OFFSET.y + (idy * 2 + 1) / 2.f * TILE_SIZE }; }
 	

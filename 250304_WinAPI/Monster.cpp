@@ -58,8 +58,9 @@ void Monster::Act(Level* level)
         break;
     case EntityState::ATTACK:   // 공격할겨
         Attack(level);
-        break;
-    case EntityState::DEAD:     // 죽을겨
+        return;
+    case EntityState::DEAD:
+        isActive = false;
         // 애니메이션 끝나면 actor 목록에서 지워야함
         break;
     }

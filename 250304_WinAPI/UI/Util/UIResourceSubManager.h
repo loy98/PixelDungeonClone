@@ -10,6 +10,7 @@ public:
     static void Preload_TopRightUI();
     static void Preload_InventoryUI();
     static void Preload_NinePatch();
+    static void Preload_MopHPUI();
     static void PreloadAll();            // 💡 전체 리소스 한 번에 불러오기
 };
 

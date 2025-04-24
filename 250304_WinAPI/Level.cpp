@@ -15,8 +15,11 @@
 #include "Camera.h"
 #include "FieldOfView.h"
 #include "IDungeonGenerator.h"
-#include "TileMapping8x8.h"
+#include "UIManager.h"
 #include "UI/Test/UITestView.h"
+#include "Item.h"
+#include "HealPotion.h"
+
 
 
 void Level::Init()
@@ -24,7 +27,7 @@ void Level::Init()
     turnManager = new TurnManager();
 
     sampleTile = D2DImageManager::GetInstance()->AddImage(
-        "배틀시티_샘플타일", L"Image/tiles_sewers.png",
+        "배틀시티_샘플타일", L"Image/tiles_sewers.png", 
         16, 16);
 
     wallTile = D2DImageManager::GetInstance()->AddImage("wallTile", L"Image/tiles_sewers.png", 32, 32);
@@ -64,34 +67,48 @@ void Level::Init()
     mapWidth = TILE_X;
     mapHeight = TILE_Y;
 
+
     // Generate dungeon
     dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
 
     // Place player near entrance
     FPOINT playerPos = GetEntranceSpawnPosition();
-    player = new Player(playerPos, 300.f, 20, 5, 2);
-
+    player = new Player(playerPos, 1000.f, 20, 50, 2);
     AddActor(player);
     
     camera = new Camera();
     camera->Init(player->GetPosition());
+
+    // UI
+    uiManager = UIManager::GetInstance();
+    uiManager->Init();
+    uiManager->RegisterCamera(camera);
+    uiManager->RegisterPlayer(player);
+    //
     
     for (auto actor : actors)
     {
         if (actor)
+        {
             turnManager->AddActor(actor);
+            uiManager->RegisterEntity(actor);
+        }
     }
     turnManager->Init();
 
-    // UI
-    uiTestView = new UITestView();
-    uiTestView->Init();
+
+    // Item
+    Item* potion1 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , TILE_SIZE });
+    Item* potion2 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , 0 });
+    AddItem(potion1);
+    AddItem(potion2);
+
 }
 
 void Level::Release()
 {
     
-	for (auto actor : actors)
+	for (auto& actor : actors)
 	{
 		if (actor)
 		{
@@ -102,11 +119,22 @@ void Level::Release()
     
     if (player)
     {
+        //delete player;
         player = nullptr;
+        uiManager->SetCurrentPlayer(nullptr);
     }
 
-    if (uiTestView)
-        uiTestView->Release();
+    // Items
+    for (auto& item : items)
+    {
+        if (item)
+        {
+            delete item;
+            item = nullptr;
+        }
+    }
+    
+    uiManager = nullptr;
 
     if (camera) {
         camera = nullptr;
@@ -116,6 +144,12 @@ void Level::Release()
 
 void Level::Update()
 {
+    uiManager->Update();
+
+    if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE)) {
+        player->TakeDamage(30);
+    }
+    
     if (player->GetState() == EntityState::MOVE) {
         camera->UpdateCenter(player->GetPosition());
     }
@@ -156,6 +190,20 @@ void Level::Update()
             if (indX >= 0 && indX < TILE_X && indY >= 0 && indY < TILE_Y) ///
             {
                 /// 구현 하고 싶은 로직 넣는 부분
+                //map[indY * TILE_X + indX].type = TT::COUNT;
+                
+                // 현재 플레이어 위치 재클릭 했을 때, 아이템 줍기
+                if (GetPosByGridIndex(indX, indY) == player->GetPosition())
+                {
+                    Item* item = GetItemAt(GetPosByGridIndex(indX, indY));
+                    if (item)
+                    {
+                        player->GetItem(item);
+                        MoveItemToInven(item);
+                    }
+                }
+                // 플레이어 도착지 설정
+
                 if (map[indY * TILE_X + indX].CanGo())
                     player->SetNextPos(GetPosByGridIndex(indX, indY));
             } ///
@@ -169,17 +217,11 @@ void Level::Update()
     SetVisibleTile();
     
 
-    turnManager->ProcessTurns(this);
     for (auto actor : actors)
     {
         if (actor) actor->Update();
-        //UIManager가 여기서 HP 연동
-
     }
-
-    // UI
-    uiTestView->Update(TimerManager::GetInstance()->GetDeltaTime());
-    uiTestView->statusToolBar.SetHP(player->GetHP(), player->GetMaxHP());
+    turnManager->ProcessTurns(this);
 }
 
 void Level::Render(HDC hdc)
@@ -238,26 +280,41 @@ void Level::Render(HDC hdc)
     //                                 camera->GetZoomScale() * 2.f, 0, 9, 0, false, false, isVisible ? 0.f : 0.5f);
     //     }
     // }
+    
+    //Render Items
+    for (auto item : items)
+    {
+        if (map[GetMapIndex(item->GetPosition().x, item->GetPosition().y)].visible)
+        {
+            D2DImage* image = item->GetImage();
+            if (image) {
+                image->
+                    Middle_RenderFrameScale(
+                        camera->ConvertToRendererX(item->GetPosition().x),
+                        camera->ConvertToRendererY(item->GetPosition().y),
+                        camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f,
+                        item->GetImgIdX(), item->GetImgIdY());
+            }
+        }
+    }
 
 
     // Render actors
     for (auto actor : actors)
     {
-       // if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
-        {
-            if (actor->GetImage()) {
-                actor->GetImage()->
-                    Middle_RenderFrameScale(
-                        camera->ConvertToRendererX(actor->GetPosition().x), 
-                        camera->ConvertToRendererY(actor->GetPosition().y),
-                        camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, 0, 0);
-            }
-        }
-    }
-
+		if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
+		{
+			if (actor->GetImage()) {
+				actor->GetImage()->
+					Middle_RenderFrameScale(
+						camera->ConvertToRendererX(actor->GetPosition().x), 
+						camera->ConvertToRendererY(actor->GetPosition().y),
+						camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, actor->GetCurAnimIdx(), 0);
+			}
+		}
+	}
     // UI
-    // UIManager Zoom 전달 하는게 있어야 함
-    uiTestView->Render(D2DImage::GetRenderTarget());
+    uiManager->Render();
 }
 
 void Level::FileLoad()
@@ -305,6 +362,25 @@ Entity* Level::GetActorAt(FPOINT pos)
     return nullptr;
 }
 
+Item* Level::GetItemAt(FPOINT pos)
+{
+    if (items.empty()) return nullptr;
+
+    for (auto item : items)
+    {
+        if (item && item->GetPosition() == pos)
+            return item;
+    }
+    return nullptr;
+}
+
+void Level::MoveItemToInven(Item* item)
+{
+    auto it = find(items.begin(), items.end(), item);
+    if (it != items.end())
+        items.erase(it);
+}
+
 void Level::AddActor(Entity* actor)
 {
     // 추가하려는 Entity가 이미 container에 있다면 return
@@ -313,6 +389,15 @@ void Level::AddActor(Entity* actor)
         return;
 
     actors.push_back(actor);
+}
+
+void Level::AddItem(Item* item)
+{
+    auto it = find(items.begin(), items.end(), item);
+    if (it != items.end())
+        return;
+
+    items.push_back(item);
 }
 
 void Level::GenerateMap(int width, int height)

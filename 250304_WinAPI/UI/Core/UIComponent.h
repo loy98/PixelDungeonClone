@@ -30,7 +30,17 @@ public:
         SetRect(rect);
     }
     
-    virtual bool HandleClick(int x, int y) { return false; }
+    virtual bool HandleClick(int x, int y)
+    {
+        auto r = GetScaledDrawRect();
+
+        if (x >= r.left && x <= r.right &&
+            y >= r.top && y <= r.bottom)
+        {
+            return true;
+        }
+        return false;
+    }
 
     virtual void SetScale(FPOINT s) {
         this->scale = s;
@@ -50,10 +60,10 @@ public:
         float centerY = (r.top + r.bottom) * 0.5f;
 
         return D2D1::RectF(
-            centerX - width * 0.5f,
-            centerY - height * 0.5f,
-            centerX + width * 0.5f,
-            centerY + height * 0.5f
+            r.left,
+            r.top,
+            r.left + width,
+            r.top + height
         );
     }
 

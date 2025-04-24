@@ -4,8 +4,10 @@
 #include "../Util/UIHelper.h"
 #include "../UIData.h"
 #include "../VisualStyle.h"
+#include "D2DImageManager.h"
+#include "../../Observer/IEntityObserver.h"
 
-class UIStatusPanel : public UIContainerBase {
+class UIStatusPanel : public UIContainerBase, public IEntityObserver {
 private:
     UIText* titleText = nullptr;
     UIImageTextButton* characterIcon = nullptr;
@@ -14,12 +16,13 @@ private:
     UIImageTextButton* infoButton = nullptr;
 
 public:
-    void Init();
+    void Init(const D2D1_RECT_F& rect);
     void SetStatData(const PlayerStatData& data);
 };
 
-inline void UIStatusPanel::Init() {
-    SetRect({ 0, 0, 250, 180 });
+inline void UIStatusPanel::Init(const D2D1_RECT_F& rect = { 400, 0, 650, 180 }) {
+    SetRect(rect);
+
 
     NinePatchStyle bgNineStyle;
     bgNineStyle = UIHelper::CreateNinePatchFromSheet("chrome", "chrome", D2D1_SIZE_F {6.0f, 6.0f});
