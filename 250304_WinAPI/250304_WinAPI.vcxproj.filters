@@ -25,9 +25,6 @@
       <Filter>MainGame</Filter>
     </ClCompile>
     <ClCompile Include="MouseManager.cpp" />
-    <ClCompile Include="Monster.cpp">
-      <Filter>MainGame\GamePlay\Entity</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>MainGame\GamePlay\Entity</Filter>
     </ClCompile>
@@ -117,6 +114,49 @@
     <ClCompile Include="Weapon.cpp">
       <Filter>Item\Equipment</Filter>
     </ClCompile>
+    <ClCompile Include="FileLoadDungeonGenerator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterAI.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ProceduralDungeonGenerator.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMapping8x8.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMappingManager.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TileMappingTable.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TileQuad.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_Test.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="WallTileRenderer.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="TestGameScene.cpp">
+    <ClCompile Include="Gnoll.cpp">
+      <Filter>MainGame\GamePlay\Entity\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Crab.cpp">
+      <Filter>MainGame\GamePlay\Entity\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster.cpp">
+      <Filter>MainGame\GamePlay\Entity\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Rat.cpp">
+      <Filter>MainGame\GamePlay\Entity\Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="TeleportScroll.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">
@@ -146,9 +186,6 @@
       <Filter>MainGame</Filter>
     </ClInclude>
     <ClInclude Include="MouseManager.h" />
-    <ClInclude Include="Monster.h">
-      <Filter>MainGame\GamePlay\Entity</Filter>
-    </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>MainGame\GamePlay\Entity</Filter>
     </ClInclude>
@@ -340,6 +377,64 @@
     <ClInclude Include="Weapon.h">
       <Filter>Item\Equipment</Filter>
     </ClInclude>
+    <ClInclude Include="FileLoadDungeonGenerator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameOver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="IDungeonGenerator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterAI.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="ProceduralDungeonGenerator.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMapping8x8.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMappingManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TileMappingTable.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TileQuad.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Bar\UIMopBar.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\Bar\UIPlayerBar.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI\UIMopHPManager.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="UI_Test.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="WallTileRenderer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="TestGameScene.h">
+    <ClInclude Include="Gnoll.h">
+      <Filter>MainGame\GamePlay\Entity\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Crab.h">
+      <Filter>MainGame\GamePlay\Entity\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>MainGame\GamePlay\Entity\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="Rat.h">
+      <Filter>MainGame\GamePlay\Entity\Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="TeleportScroll.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="2D Framework">
@@ -412,6 +507,9 @@
     </Filter>
     <Filter Include="Item\Equipment">
       <UniqueIdentifier>{ce0e6fd1-2af8-42ca-9acf-26f3cc12e9b0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainGame\GamePlay\Entity\Monster">
+      <UniqueIdentifier>{5d534600-69fd-4d43-b2b8-0739defdcf57}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

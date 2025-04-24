@@ -17,7 +17,8 @@ class Camera;
 class UIManager;
 class Level
 {
-private:
+protected:
+	//filePath
 
 	//map
 	Map map[TILE_Y * TILE_X];
@@ -42,7 +43,9 @@ private:
 
 	D2DImage* sampleTile;
 	D2DImage* wallTile;
-
+	// D2DImage* blurImage;
+	// D2DImage* shadowImage;
+	
 	std::vector<std::vector<int>> mapData;
     
 	// 던전 생성기
@@ -81,7 +84,7 @@ private:
 	UIManager* uiManager;;
 	
 public:
-	void Init();
+	virtual void Init();
 	void Release();
 	void Update();
 	void Render(HDC hdc);
@@ -159,5 +162,14 @@ public:
 
 	// AI
 	FPOINT GetPlayerPos();
+};
+
+class TestLevel : public Level {
+private:
+	WCHAR* filePath;
+public:
+	virtual void Init() override;
+
+	TestLevel(WCHAR* filepath) : filePath(filepath) {}
 };
 
