@@ -60,6 +60,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int viewRange, int tileId
 				tile.visible = true;
 				if (tile.explored == false) tile.explored = true;
 				blocked = true;
+				tile.visible = true;
 				Calculate(map, viewRange, tileIdX, tileIdY,
 					depth + 1, exploreStartSlope, leftSlope, direction);
 				nextStart = rightSlope;

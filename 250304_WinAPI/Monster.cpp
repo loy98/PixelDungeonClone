@@ -12,6 +12,7 @@ Monster::Monster()
 {
     isMoving = false;
     isActive = true;
+    name = "포텐업";
 
     type = EntityType::MONSTER;
     curState = EntityState::IDLE;
