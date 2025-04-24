@@ -28,6 +28,13 @@ public:
     void SetNextPos(FPOINT pos) { destPos = pos; }
     void GetItem(Item* item);
     inline Inventory* GetInven() { return inven; }
+
+    // AI, Item
+    void SetIsFov(bool isFov) { this->isFov = isFov; }
+    bool GetisFov() { return isFov; }
 private:
     Inventory* inven;
+    
+    // AI, Item
+    bool isFov = true;
 };

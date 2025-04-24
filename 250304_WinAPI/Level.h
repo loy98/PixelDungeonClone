@@ -159,5 +159,8 @@ public:
 
 	// AI
 	FPOINT GetPlayerPos();
+	bool GetPlayerIsFov();
+	bool GetPlayerIsAlert();
+	bool GetActorIsAlert(Entity * actor);
 };
 
