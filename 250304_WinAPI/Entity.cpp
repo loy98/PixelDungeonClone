@@ -106,7 +106,42 @@ void Entity::TakeExp(int exp)
 void Entity::LevelUp()
 {
 	level++;
-	attackDmg *= 1.5;
-	maxHp += 10;
-	hp += 10;
+	attackDmg.min += 1;
+	attackDmg.min += 1;
+	maxHp += 5;
+	hp += 5;
+}
+
+void Entity::SetState(EntityState state)
+{
+	switch (state)
+	{
+	case EntityState::IDLE:
+		// SetAimData(0, 1, 2.0);
+		curState = EntityState::IDLE;
+		animator->Play("Idle");
+		break;
+	case EntityState::MOVE:
+		// SetAimData(2, 8, 0.1);
+		curState = EntityState::MOVE;
+		animator->Play("Move");
+		break;
+	case EntityState::ATTACK:
+		// SetAimData(13, 15, 0.1);
+		curState = EntityState::ATTACK;
+		animator->Play("Attack");
+		break;
+	case EntityState::DEAD:
+		// SetAimData(8, 12, 0.3);
+		curState = EntityState::DEAD;
+		animator->Play("Dead");
+		break;
+	case EntityState::WAIT:
+		curState = EntityState::WAIT;
+		break;
+	case EntityState::SLEEP:
+		curState = EntityState::SLEEP;
+		break;
+	}
+
 }

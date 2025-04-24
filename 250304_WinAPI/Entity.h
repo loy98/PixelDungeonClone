@@ -15,7 +15,6 @@ enum class EntityState
     MOVE,
     ATTACK,
     DEAD,
-    DUMMY
 };
 enum class EntityType
 {
@@ -23,6 +22,11 @@ enum class EntityType
     MONSTER,
     NPC,
     OBJECT
+};
+struct Damage
+{
+    int min;
+    int max;
 };
 
 class Entity
@@ -47,7 +51,8 @@ protected:
 
     // 전투 속성
     int hp, maxHp;
-    int attackDmg, defense;
+    Damage attackDmg;
+    int defense;
     int exp, maxExp, level;
     Entity* target;
 
@@ -89,7 +94,7 @@ public:
     inline void SetPosition(const float x, const float y) { this->position.x = x; this->position.y = y; }
     inline void SetPosition(FPOINT postion) { this->position.x = postion.x; this->position.y = postion.y; }
     inline FPOINT GetPosition() const { return position; }
-    inline int GetAttDmg() const { return attackDmg; }
+    inline Damage GetAttDmg() const { return attackDmg; }
     inline int GetDefense() const { return defense; }
     inline EntityState GetState() const { return curState; }
     inline float GetSpeed() const { return speed; }
@@ -110,7 +115,7 @@ public:
     virtual void Heal(int healAmount) {};   // HealthPotion
 
     void Stop() { destPos = position; }
-    virtual void SetState(EntityState state) {};
+    virtual void SetState(EntityState state);
 
 
     // 옵저버

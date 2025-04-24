@@ -133,6 +133,7 @@
     <ClCompile Include="CombatSyetem.cpp" />
     <ClCompile Include="Consumable.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Crab.cpp" />
     <ClCompile Include="D2DImage.cpp" />
     <ClCompile Include="D2DImageManager.cpp" />
     <ClCompile Include="DungeonGenerator.cpp" />
@@ -144,6 +145,7 @@
     <ClCompile Include="FileLoadDungeonGenerator.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="Gnoll.cpp" />
     <ClCompile Include="HealPotion.cpp" />
     <ClCompile Include="Inventory.cpp" />
     <ClCompile Include="Item.cpp" />
@@ -163,6 +165,7 @@
     <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProceduralDungeonGenerator.cpp" />
+    <ClCompile Include="Rat.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TileMapping8x8.cpp" />
     <ClCompile Include="TileMappingManager.cpp" />
@@ -192,6 +195,7 @@
     <ClInclude Include="CommonFunction.h" />
     <ClInclude Include="config.h" />
     <ClInclude Include="Consumable.h" />
+    <ClInclude Include="Crab.h" />
     <ClInclude Include="D2DBrush.h" />
     <ClInclude Include="D2DImage.h" />
     <ClInclude Include="D2DImageManager.h" />
@@ -206,6 +210,7 @@
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameOver.h" />
     <ClInclude Include="GameScene.h" />
+    <ClInclude Include="Gnoll.h" />
     <ClInclude Include="HealPotion.h" />
     <ClInclude Include="IDungeonGenerator.h" />
     <ClInclude Include="Inventory.h" />
@@ -226,6 +231,7 @@
     <ClInclude Include="Observer\ObserverEventData.h" />
     <ClInclude Include="PathFinder.h" />
     <ClInclude Include="Player.h" />
+    <ClInclude Include="Rat.h" />
     <ClInclude Include="resource4.h" />
     <ClInclude Include="ProceduralDungeonGenerator.h" />
     <ClInclude Include="SceneManager.h" />
