@@ -42,7 +42,9 @@ private:
 
 	D2DImage* sampleTile;
 	D2DImage* wallTile;
-
+	// D2DImage* blurImage;
+	// D2DImage* shadowImage;
+	
 	std::vector<std::vector<int>> mapData;
     
 	// 던전 생성기

@@ -31,6 +31,10 @@ void Level::Init()
         16, 16);
 
     wallTile = D2DImageManager::GetInstance()->AddImage("wallTile", L"Image/tiles_sewers.png", 32, 32);
+
+    // blurImage = D2DImageManager::GetInstance()->AddImage("blur", L"Image/blur.png");
+    // shadowImage = D2DImageManager::GetInstance()->AddImage("shadow", L"Image/shadow.png");
+    //
     
     for (int i = 0; i < TILE_Y; ++i)
     {
@@ -204,7 +208,7 @@ void Level::Update()
                 }
                 // 플레이어 도착지 설정
 
-                if (map[indY * TILE_X + indX].CanGo())
+                if (map[indY * TILE_X + indX].CanGo() && map[indY * TILE_X + indX].explored)
                     player->SetNextPos(GetPosByGridIndex(indX, indY));
             } ///
 
@@ -231,19 +235,22 @@ void Level::Render(HDC hdc)
         for (int j = 0; j < TILE_X; ++j) {
             if (!shouldBeRender[TILE_X * i + j]) continue;
 
+            bool isExplored = map[TILE_X * i + j].explored;
             bool isVisible = map[TILE_X * i + j].visible;
             int rawType = map[TILE_X * i + j].type;
             int tileType = rendermap[TILE_X * i + j];
             int tileX = camera->ConvertToRendererX(tempTile[TILE_X * i + j].left);
             int tileY = camera->ConvertToRendererY(tempTile[TILE_X * i + j].top);
 
-            // 벽 타일인 경우 세부 렌더링 사용
-            if (rawType == 0) {
-                // 벽 타일 렌더링
-                dungeonSystem.GetDungeonGenerator()->RenderWallTile(
-                    wallTile, j, i, tileX, tileY, 
-                    camera->GetZoomScale() * 2.f, mapData
-                );
+            if (isExplored)
+            {
+                // 벽 타일인 경우 세부 렌더링 사용
+                if (rawType == 0) {
+                    // 벽 타일 렌더링
+                    dungeonSystem.GetDungeonGenerator()->RenderWallTile(
+                        wallTile, j, i, tileX, tileY, 
+                        camera->GetZoomScale() * 2.f, mapData
+                    );
                 } else {
                     // 기존 방식으로 다른 타일 렌더링
                     POINT frame = GetCurrentFrame(tileType);
@@ -251,12 +258,38 @@ void Level::Render(HDC hdc)
                         camera->GetZoomScale() * 2.f,
                         camera->GetZoomScale() * 2.f, frame.x, frame.y);
                 }
-            
-            // 시야 효과 적용
-            sampleTile->RenderFrameScale(tileX, tileY, 
-                camera->GetZoomScale() * 2.f,
-                camera->GetZoomScale() * 2.f, 0, 9, 0, false, false, 
-                isVisible ? 0.f : 0.5f);
+
+                if (isVisible == false)
+                {
+                    // if (blurImage)
+                    // {                    // 시야 효과 적용
+                    //     blurImage->RenderFrameScale(tileX, tileY, 
+                    //         camera->GetZoomScale() * 2.f,
+                    //         camera->GetZoomScale() * 2.f, 0, 0);
+                    // }
+                    if (sampleTile)
+                    {
+                        // 시야 효과 적용
+                        sampleTile->RenderFrameScale(tileX, tileY, 
+                            camera->GetZoomScale() * 2.f,
+                            camera->GetZoomScale() * 2.f, 0, 9, 0, false, false, 0.5f);
+                    }
+
+                }
+            }
+            else
+            {
+
+                
+                if (sampleTile)
+                {
+                    // 시야 효과 적용
+                    sampleTile->RenderFrameScale(tileX, tileY, 
+                        camera->GetZoomScale() * 2.f,
+                        camera->GetZoomScale() * 2.f, 0, 9);
+                }
+
+            }
         }
     }
     // for (int i = 0; i < TILE_Y; ++i)
@@ -286,6 +319,15 @@ void Level::Render(HDC hdc)
     {
         if (map[GetMapIndex(item->GetPosition().x, item->GetPosition().y)].visible)
         {
+            // if (shadowImage)
+            // {
+            //     shadowImage->Middle_RenderFrameScale(
+            //         camera->ConvertToRendererX(item->GetPosition().x),
+            //             camera->ConvertToRendererY(item->GetPosition().y),
+            //             camera->GetZoomScale() * 4.f, camera->GetZoomScale() * 4.f,
+            //             0, 0);
+            // }
+            
             D2DImage* image = item->GetImage();
             if (image) {
                 image->
@@ -304,6 +346,15 @@ void Level::Render(HDC hdc)
     {
 		if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
 		{
+		    // if (shadowImage)
+		    // {
+		    //     shadowImage->Middle_RenderFrameScale(
+      //               camera->ConvertToRendererX(actor->GetPosition().x),
+      //                   camera->ConvertToRendererY(actor->GetPosition().y),
+      //                   camera->GetZoomScale() * 4.f, camera->GetZoomScale() * 4.f,
+      //                   0, 0);
+		    // }
+		    
 			if (actor->GetImage()) {
 				actor->GetImage()->
 					Middle_RenderFrameScale(
@@ -483,8 +534,7 @@ FPOINT Level::GetRandomFloorTile() const
         {
             int tileType = mapData[y][x];
             // Check for any floor tile type (including variations)
-            if (tileType == 1 || // TILE_FLOOR
-                (tileType >= 20 && tileType <= 31)) // TILE_FLOOR_NORMAL to TILE_FLOOR_MOSSY
+            if (tileType == 1 ) // TILE_FLOOR_NORMAL to TILE_FLOOR_MOSSY
             {
                 FPOINT pos;
                 pos.x = static_cast<float>(GRID_POS_OFFSET.x + x * TILE_SIZE + TILE_SIZE / 2);
@@ -702,12 +752,13 @@ void Level::ResetVisibleTile()
         {
             if (map[i * TILE_X + j].visible == true)
             {
-                if (map[i * TILE_X + j].type == 0/* ||
-                    map[i][j].GetType() == AstarTileType::Start ||
-                    map[i][j].GetType() == AstarTileType::End*/)
-                {
-                    // map[i * TILE_X + j].visible = false;
-                }
+                map[i * TILE_X + j].visible = false;
+                // if (map[i * TILE_X + j].type == 0/* ||
+                //     map[i][j].GetType() == AstarTileType::Start ||
+                //     map[i][j].GetType() == AstarTileType::End*/)
+                // {
+                //     map[i * TILE_X + j].visible = false;
+                // }
             }
         }
     }
@@ -723,7 +774,8 @@ void Level::SetVisibleTile()
     int pTileXIndex = index % TILE_Y;
     int pTileYIndex = index / TILE_Y;
     map[index].visible = true;
-
+    if (map[index].explored == false) map[index].explored = true;
+    
     for (auto scanDirection : scanDirections)
     {
         fov->Calculate(reinterpret_cast<Map(&)[TILE_Y][TILE_X]>(map), viewRange, pTileXIndex, pTileYIndex, 0,
