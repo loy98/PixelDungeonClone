@@ -26,6 +26,7 @@ HRESULT LobbyScene::Init()
 
 	mainMapButton = new MapButton;
 	toolMapButton = new MapButton;
+	exitButton = new ExitButton;
 	mainMapTXT = D2DImageManager::GetInstance()->AddImage("메인맵텍스트", L"Image/maintxt.png");
 	toolMapTXT = D2DImageManager::GetInstance()->AddImage("툴맵텍스트", L"Image/tooltxt.png");
 
@@ -46,6 +47,15 @@ HRESULT LobbyScene::Init()
 		{
 			FModSoundPlayer::GetInstance()->Stop("theme");
 			SceneManager::GetInstance()->ChangeScene("테스트게임씬");
+		});
+
+	exitButton->Init(WINSIZE_X - 30, 10);
+	exitButton->SetFunction([]()
+		{
+			// 끝내기
+			FModSoundPlayer::GetInstance()->Stop("theme");
+			SceneManager::GetInstance()->ChangeScene("테스트게임씬");
+
 		});
 
 	// 메인
@@ -70,6 +80,7 @@ void LobbyScene::Update()
 {
 	mainMapButton->Update();
 	toolMapButton->Update();
+	exitButton->Update();
 
 	background->Update();
 
@@ -98,6 +109,7 @@ void LobbyScene::Render(HDC hdc)
 
 	mainMapButton->Render(hdc);
 	toolMapButton->Render(hdc);
+	exitButton->Render(hdc);
 
 	//RenderRect(hdc, dashboardRc);
 	//RenderRect(hdc, mainRc);

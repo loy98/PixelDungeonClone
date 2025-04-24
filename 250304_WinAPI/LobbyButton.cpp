@@ -82,7 +82,29 @@ void MapButton::Render(HDC hdc)
 
 HRESULT ExitButton::Init(int posX, int posY)
 {
-	return E_NOTIMPL;
+	state = ButtonState::None;
+	image = D2DImageManager::GetInstance()->AddImage("나가기", L"Image/exit.png");
+	if (image == nullptr)
+	{
+		return E_FAIL;
+	}
+
+	pos.x = posX;
+	pos.y = posY;
+
+	rc.left = pos.x;
+	rc.top = pos.y;
+	rc.right = rc.left + 26;
+	rc.bottom = rc.top + 18;
+
+	//mainRc.left = dashboardRc.left;
+	//mainRc.top = dashboardRc.top;
+	//mainRc.right = mainRc.left + (32 * 3);
+	//mainRc.bottom = mainRc.top + (32 * 3);
+
+	buttonFunc = nullptr;
+
+	return S_OK;
 }
 
 void ExitButton::Release()
@@ -91,8 +113,43 @@ void ExitButton::Release()
 
 void ExitButton::Update()
 {
+	if (PtInRect(&rc, g_ptMouse))
+	{
+		if (KeyManager::GetInstance()->IsOnceKeyDown(VK_LBUTTON))
+		{
+			state = ButtonState::Down;
+		}
+		else if (state == ButtonState::Down &&
+			KeyManager::GetInstance()->IsOnceKeyUp(VK_LBUTTON))
+		{
+			state = ButtonState::Up;
+			FModSoundPlayer::GetInstance()->Play("click", 0.3f);
+			// 기능 수행
+			// TilemapTool::Save()
+			//if (buttonFunc && obj)	obj->buttonFunc();
+			if (buttonFunc) buttonFunc();
+		}
+	}
+	else
+	{
+		state = ButtonState::None;
+	}
 }
 
 void ExitButton::Render(HDC hdc)
 {
+	//RenderRect(hdc, rc);
+
+	switch (state)
+	{
+	case ButtonState::None:
+
+	case ButtonState::Up:
+		image->RenderFrameScale(pos.x, pos.y, 2, 2, 0, 0);
+
+		break;
+	case ButtonState::Down:
+		image->RenderFrameScale(pos.x, pos.y, 2, 2, 0, 0, 0, 0, 0., 0.8f);
+		break;
+	}
 }

@@ -2,6 +2,7 @@
 #include "GameObject.h"
 
 class LobbyBackground;
+class ExitButton;
 class MapButton;
 class D2DImage;
 class LobbyScene: public GameObject
@@ -20,6 +21,7 @@ private:
 
 	MapButton* mainMapButton;
 	MapButton* toolMapButton;
+	ExitButton* exitButton;
 
 	RECT dashboardRc;
 	RECT mainRc;
