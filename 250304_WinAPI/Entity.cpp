@@ -65,8 +65,8 @@ void Entity::TakeDamage(int dmg)
 	{
 		entityObserver.NotifyDamageTaken(this, dmg, D2D1::ColorF(D2D1::ColorF::White));
 		// monster?- 맞으면 주변에 알린다.
-		if (!isAlert)
-			isAlert = true;
+		//if (!isAlert)
+		//	isAlert = true;
 	}
 	if (hp <= 0)
 	{
