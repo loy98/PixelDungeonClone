@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include "Item.h"
-enum class EquipType
+enum EquipType
 {
 	WEAPON,
 	ARMOR,
@@ -8,7 +8,7 @@ enum class EquipType
 };
 class Equipment : public Item
 {
-private:
+protected:
 	int bonusValue;
 	EquipType eqType;
 public:
@@ -17,5 +17,7 @@ public:
 
 	virtual void Equip(Entity* player);
 	virtual void UnEquip(Entity* player);
+	EquipType GetEqType() { return eqType; }
+	int GetBonusValue() { return bonusValue; }
 };
 

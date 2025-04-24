@@ -132,6 +132,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />
+    <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Button.cpp" />
     <ClCompile Include="CombatSyetem.cpp" />
     <ClCompile Include="Consumable.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="ProceduralDungeonGenerator.cpp" />
     <ClCompile Include="Rat.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="Shield.cpp" />
     <ClCompile Include="TestGameScene.cpp" />
     <ClCompile Include="TeleportScroll.cpp" />
     <ClCompile Include="TileMapping8x8.cpp" />
@@ -195,6 +197,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animator.h" />
+    <ClInclude Include="Armor.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="CombatSyetem.h" />
     <ClInclude Include="Camera.h" />
@@ -242,6 +245,7 @@
     <ClInclude Include="resource4.h" />
     <ClInclude Include="ProceduralDungeonGenerator.h" />
     <ClInclude Include="SceneManager.h" />
+    <ClInclude Include="Shield.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="TestGameScene.h" />
     <ClInclude Include="TeleportScroll.h" />

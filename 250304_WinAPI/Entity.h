@@ -15,6 +15,7 @@ enum class EntityState
     MOVE,
     ATTACK,
     DEAD,
+    GET_ITEM,
     USING_ITEM
 };
 enum class EntityType
@@ -28,6 +29,26 @@ struct Damage
 {
     int min;
     int max;
+
+    Damage operator+(Damage& other) {
+        return { min + other.min, max + other.max };
+    }
+    Damage operator-(Damage& other) {
+        return { min - other.min, max - other.max };
+    }
+};
+struct EqStat
+{
+    Damage bonusDmg;
+    int bonusHp;
+    int bonusDf;
+
+    void operator=(EqStat other)
+    {
+        bonusDmg = other.bonusDmg;
+        bonusHp = other.bonusHp;
+        bonusDf = other.bonusDf;
+    }
 };
 
 class Entity
@@ -36,6 +57,7 @@ protected:
     //test
     D2DImage* image;
     int curAnimFrame;
+    int frameY = 0;
 
     // animation
     Animator* animator;
@@ -49,11 +71,12 @@ protected:
     bool isMoving;
 
     // 전투 속성
-    int hp, maxHp;
-    Damage attackDmg;
-    int defense;
+    int baseHp, baseMaxHp, hp, maxHp;
+    Damage baseDmg, attackDmg;
+    int baseDf, defense;
     int exp, maxExp, level;
     Entity* target;
+    EqStat eqStat;
 
     //에너지 턴 test
     float energy = 10.f;
@@ -87,6 +110,7 @@ public:
     void TakeDamage(int dmg);
     void TakeExp(int exp);
     void LevelUp();
+    void UpdateStat();
 
     inline void SetPosition(const float x, const float y) { this->position.x = x; this->position.y = y; }
     inline void SetPosition(FPOINT postion) { this->position.x = postion.x; this->position.y = postion.y; }
@@ -102,6 +126,9 @@ public:
     inline int GetCurAnimIdx() { return curAnimFrame; }
     inline int GetHP() const { return hp; };
     inline int GetMaxHP() const { return maxHp; };
+    void SetBonusStats(EqStat stat) { return eqStat = stat; }
+    inline int GetFrameY() { return frameY; }
+    inline void SetFrameY(int y) { frameY = y; }
 
 
     //에너지 관련 함수
@@ -113,7 +140,7 @@ public:
     virtual void Heal(int healAmount) {};   // HealthPotion
 
     void Stop() { destPos = position; }
-    virtual void SetState(EntityState state);
+    void SetState(EntityState state);
 
 
     // 옵저버

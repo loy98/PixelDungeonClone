@@ -20,6 +20,7 @@ protected:
 
 	D2DImage* image;
 	int imageIdX, imageIdY; // items.png에서의 해당 아이템 인덱스 좌표
+	int level;
 public:
 	Item();
 	virtual ~Item();
@@ -33,5 +34,6 @@ public:
 	int GetImgIdX() { return imageIdX; }
 	int GetImgIdY() { return imageIdY; }
 	ItemType GetItemType() { return itemType; }
+	int GetLevel() { return level; }
 };
 

@@ -12,6 +12,9 @@ void FModSoundPlayer::Init()
     {
         LoadSound("step", "Sounds/Sfx/step.mp3", false);
         LoadSound("descend", "Sounds/Sfx/descend.mp3", false);
+        LoadSound("get_item", "Sounds/Sfx/get_item.mp3", false);
+        LoadSound("drink", "Sounds/Sfx/drink.mp3", false);
+        LoadSound("hit", "Sounds/Sfx/hit.mp3", false);
     }
     //bmg
     {
