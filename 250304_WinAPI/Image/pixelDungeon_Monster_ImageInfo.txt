@@ -1,0 +1,26 @@
+rat.png - 세 마리 한꺼번에 있음
+가로 240
+세로 45
+총 프레임 15
+0~1: IDLE
+2~5: ATTACK
+6~10: MOVE
+11~14: DEAD
+
+
+crab.png
+가로 256
+세로 16
+총 프레임 14
+0~3: IDLE
+4~9: ATTACK
+1-~13: DEAD
+
+gnoll.png
+가로 256
+세로 16
+총 프레임 11
+0~1: IDLE
+2~3: ATTACK
+4~7: MOVE
+8~11: DEAD

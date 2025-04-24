@@ -139,6 +139,7 @@
     <ClCompile Include="Entity.cpp" />
     <ClCompile Include="FieldOfView.cpp" />
     <ClCompile Include="EnvironmentalEffectsManager.cpp" />
+    <ClCompile Include="FileLoadDungeonGenerator.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="HealPotion.cpp" />
@@ -152,11 +153,13 @@
     <ClCompile Include="LoadingScene.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainGame.cpp" />
+    <ClCompile Include="MonsterAI.cpp" />
     <ClCompile Include="MonsterGenerator.cpp" />
     <ClCompile Include="MouseManager.cpp" />
     <ClCompile Include="Monster.cpp" />
     <ClCompile Include="PathFinder.cpp" />
     <ClCompile Include="Player.cpp" />
+    <ClCompile Include="ProceduralDungeonGenerator.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TilemapTool.cpp" />
     <ClCompile Include="Tiles.cpp">
@@ -168,6 +171,7 @@
     <ClCompile Include="TurnManager.cpp" />
     <ClCompile Include="UI\Util\UIHelper.cpp" />
     <ClCompile Include="UI\Util\UIResourceSubManager.cpp" />
+    <ClCompile Include="UI_Test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
@@ -185,9 +189,11 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="FieldOfView.h" />
     <ClInclude Include="EnvironmentalEffectsManager.h" />
+    <ClInclude Include="FileLoadDungeonGenerator.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="HealPotion.h" />
+    <ClInclude Include="IDungeonGenerator.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="IntegratedDungeonSystem.h" />
@@ -197,12 +203,14 @@
     </ClInclude>
     <ClInclude Include="LoadingScene.h" />
     <ClInclude Include="MainGame.h" />
+    <ClInclude Include="MonsterAI.h" />
     <ClInclude Include="MonsterGenerator.h" />
     <ClInclude Include="MouseManager.h" />
     <ClInclude Include="Monster.h" />
     <ClInclude Include="PathFinder.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="resource4.h" />
+    <ClInclude Include="ProceduralDungeonGenerator.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
     <ClInclude Include="TilemapTool.h" />
@@ -241,6 +249,7 @@
     <ClInclude Include="UI\Util\UIResourceSubManager.h" />
     <ClInclude Include="UI\Util\UITextPool.h" />
     <ClInclude Include="UI\VisualStyle.h" />
+    <ClInclude Include="UI_Test.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="250304_WinAPI.rc" />

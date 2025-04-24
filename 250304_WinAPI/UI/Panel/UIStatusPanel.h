@@ -18,7 +18,7 @@ public:
     void SetStatData(const PlayerStatData& data);
 };
 
-void UIStatusPanel::Init() {
+inline void UIStatusPanel::Init() {
     SetRect({ 0, 0, 250, 180 });
 
     NinePatchStyle bgNineStyle;
@@ -65,7 +65,7 @@ void UIStatusPanel::Init() {
     }
 }
 
-void UIStatusPanel::SetStatData(const PlayerStatData& data) {
+inline void UIStatusPanel::SetStatData(const PlayerStatData& data) {
     if (titleText) titleText->SetText(data.title);
 
     if (infoTexts[0]) infoTexts[0]->SetText(L"힘 " + std::to_wstring(data.strength));

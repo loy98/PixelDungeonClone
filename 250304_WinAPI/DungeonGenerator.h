@@ -2,7 +2,6 @@
 #pragma once
 #include "config.h"
 #include <vector>
-#include <memory>
 
 class DungeonGenerator {
 public:
@@ -11,7 +10,8 @@ public:
 
     // 주요 던전 생성 메서드
     std::vector<std::vector<int>> Generate(int width, int height);
-    
+    std::vector<std::vector<int>> GetTileVariations(std::vector<std::vector<int>>& map);
+
 private:
     // 방 정보를 저장하는 구조체
     struct Room {
@@ -31,8 +31,8 @@ private:
         STANDARD,   // 표준 방
         ENTRANCE,   // 입구 방
         EXIT,       // 출구 방
-        SPECIAL,    // 특수 방
-        HIDDEN      // 숨겨진 방
+        //SPECIAL,    // 특수 방
+        //HIDDEN      // 숨겨진 방
     };
 
     // 확장된 방 클래스
@@ -79,7 +79,7 @@ private:
     void ConnectRooms(std::vector<std::vector<int>>& map, const std::vector<RoomNode>& roomNodes);
     void CreateCorridor(std::vector<std::vector<int>>& map, int x1, int y1, int x2, int y2);
     void PlaceSpecialRooms(std::vector<std::vector<int>>& map, std::vector<RoomNode>& roomNodes);
-    void PlaceHiddenRooms(std::vector<std::vector<int>>& map, std::vector<RoomNode>& roomNodes);
+    // void PlaceHiddenRooms(std::vector<std::vector<int>>& map, std::vector<RoomNode>& roomNodes);
     void CleanupWalls(std::vector<std::vector<int>>& map);
     void PlaceDoorsAtRoomBorders(std::vector<std::vector<int>>& map, const std::vector<RoomNode>& roomNodes);
     void ApplyTileVariations(std::vector<std::vector<int>>& map);

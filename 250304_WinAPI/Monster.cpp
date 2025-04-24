@@ -5,6 +5,7 @@
 #include "TurnManager.h"
 #include "PathFinder.h"
 #include "CombatSyetem.h"
+#include "MonsterAI.h"
 
 Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -24,8 +25,15 @@ Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
     // targetPos = pos
 
     // 에너지 test
-    actionCost = 6.f;
+    actionCost = 10.f;
     energyPerTurn = 10.0f;
+
+    //길찾기-갈 곳을 받아온다?-HUNTING에서 FOLLOW에서 사용
+    finder = new PathFinder();
+    destPos = position;
+
+    // AI
+    monsterAi = new MonsterAI;
 }
 
 Monster::~Monster()
@@ -36,19 +44,30 @@ void Monster::Act(Level* level)
 {
     switch (curState)
     {
-    case EntityState::IDLE:
-        ActIdle(level);
-        return;
-    case EntityState::MOVE:
+    case EntityState::IDLE: // 뭐할까
+        monsterAi->Act(level, this);
+        break;
+    case EntityState::WAIT:
+        curState = EntityState::IDLE;
+        break;
+    case EntityState::SLEEP:
+        curState = EntityState::IDLE;
+        break;
+    case EntityState::MOVE: // 움직일겨(Hunting, Wanering)-상태변환
         Move(level);
-        return;
-    case EntityState::ATTACK:
+        break;
+    case EntityState::ATTACK:   // 공격할겨
         Attack(level);
-        return;
-    case EntityState::DEAD:
+        break;
+    case EntityState::DEAD:     // 죽을겨
         // 애니메이션 끝나면 actor 목록에서 지워야함
-        return;
+        break;
     }
+
+    // 새로운 destPos로 길찾기-move State에서는 targetPos가 여기서 결정됨.
+    finder->FindPath(position, destPos, level, OUT path);
+
+
 }
 
 void Monster::Attack(Level* level)
@@ -56,39 +75,46 @@ void Monster::Attack(Level* level)
     if (target)
     {
         CombatSyetem::GetInstance()->ProcessAttack(this, target);
-        SetRandomTargetPos();
-        curState = EntityState::IDLE;
+       SetRandomTargetPos();
+       curState = EntityState::IDLE;
     }
 }
 
-void Monster::ActIdle(Level* level)
-{
-    target = level->GetActorAt(targetPos);
-    if (target)
-    {
-        if (target->GetType() == EntityType::PLAYER)
-        {
-            curState = EntityState::ATTACK;
-            return;
-        }
-    }
-    curState = EntityState::MOVE;
-}
+//void Monster::ActIdle(Level* level)
+//{
+//    // Idle일 때는 타겟 잡아서 타겟이 있으면 어택모드
+//
+//
+//    target = level->GetActorAt(targetPos);  // target pos에 타겟이 있다면(actor가 있다면)-actor pos 얻어옴
+//    if (target)
+//    {
+//        if (target->GetType() == EntityType::PLAYER)
+//        {
+//            curState = EntityState::ATTACK;
+//            return;
+//        }
+//    }
+//    curState = EntityState::MOVE;
+//}
 
-void Monster::Move(Level* level)
+void Monster::Move(Level* level)// 한 턴 이동
 {
     // 이동 순서 체크용
     // Sleep(100);
-    
+
+    if(!path.empty())
+    {
+        targetPos = path[1];
+    }
+
     auto map = level->GetMap(targetPos.x, targetPos.y);
     
     if ((map && !map->CanGo()) || level->GetActorAt(targetPos))
     {
-        SetRandomTargetPos();
+       // SetRandomTargetPos();
         curState = EntityState::IDLE;
         return;
     }
-    // if (!level->GetMap(targetPos.x, targetPos.x)->CanGo()) return;
 
     if (map->visible)
     {
@@ -108,14 +134,14 @@ void Monster::Move(Level* level)
             position = targetPos;
             // 테스트용이라 도착지 정하는건 수정해야함
             //isMoving = false;
-            SetRandomTargetPos();
+            //SetRandomTargetPos();
             curState = EntityState::IDLE;
         }
     }
     else
     {
         position = targetPos;
-        SetRandomTargetPos();
+       // SetRandomTargetPos();
         curState = EntityState::IDLE;
     }
 
