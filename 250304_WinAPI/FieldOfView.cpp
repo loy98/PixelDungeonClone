@@ -64,7 +64,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int viewRange, int tileId
 				exploreStartSlope = (leftSlope >= 1.0f ? 0.99999f : leftSlope);
 			}
 			// 5) 그림자 끝 지점 복귀
-			else if (blocked && tile.type == 0) {
+			else if (blocked && tile.type != 0) {
 				blocked = false;
 				startSlope = nextStart;
 				tile.visible = true;
