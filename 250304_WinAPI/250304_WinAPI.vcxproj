@@ -199,6 +199,7 @@
     <ClInclude Include="EnvironmentalEffectsManager.h" />
     <ClInclude Include="FileLoadDungeonGenerator.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="HealPotion.h" />
     <ClInclude Include="IDungeonGenerator.h" />

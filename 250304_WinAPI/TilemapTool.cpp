@@ -1,4 +1,4 @@
-﻿#include "TilemapTool.h"
+#include "TilemapTool.h"
 #include "D2DImage.h"
 #include "D2DImageManager.h"
 #include "CommonFunction.h"
@@ -87,7 +87,9 @@ void TilemapTool::Release()
 		saveButton = nullptr;
 	}
 
-	//rectBrush->Release();
+	if (rectBrush) {
+		rectBrush->Release();
+	}
 }
 
 void TilemapTool::Update()
