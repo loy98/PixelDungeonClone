@@ -12,6 +12,7 @@
 #include "../../Player.h"
 #include "../../Inventory.h"
 #include "../../Item.h"
+#include "UIManager.h"
 
 class UIInventory : public UIContainer, public IEntityObserver {
 private:

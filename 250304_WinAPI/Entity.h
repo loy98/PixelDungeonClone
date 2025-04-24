@@ -115,9 +115,6 @@ public:
 
     // 옵저버
     inline EntityObserverHub& GetEntityObserverHub() { return entityObserver; }
-    // TODO UI HP 관련임시
-    inline int GetHP() const { return hp; };
-    inline int GetMaxHP() const { return maxHp; };
 
     // AI
     FPOINT GetTargetPos() { return targetPos; }
