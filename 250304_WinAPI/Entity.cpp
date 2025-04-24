@@ -46,29 +46,11 @@ void Entity::Update()
 
 void Entity::Render(HDC hdc)
 {
-	// Rectangle(hdc, position.x - TILE_SIZE / 2, position.y - TILE_SIZE / 2,
-	// 	position.x + TILE_SIZE / 2, position.y + TILE_SIZE / 2);
 	image->Middle_RenderFrameScale(position.x, position.y, 2, 2, curAnimFrame, 1 );
-	//image->Middle_RenderFrame(position.x, position.y, 0, 0);
-	//wsprintf(szText, TEXT("hp:%d, att:%d, df:%d"), hp, attackDmg, defense);
-	//TextOut(hdc, position.x - TILE_SIZE, position.y, szText, wcslen(szText));
-  
-	//if (image)
-  //      image->Middle_RenderFrameScale(position.x, position.y, 2.f, 2.f, 0, 0);
 }
 
 void Entity::Act(Level* level)
 {
-}
-
-void Entity::SetAimData(int start, int end, float maxTime)
-{
-	startFrame = start;
-	endFrame = end;
-	maxAnimTime = maxTime;
-	curAnimFrame = startFrame;
-	stayEndFrame = false;
-	curTime = 0;
 }
 
 void Entity::TakeDamage(int dmg)

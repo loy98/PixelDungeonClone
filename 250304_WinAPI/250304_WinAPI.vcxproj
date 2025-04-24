@@ -167,6 +167,7 @@
     <ClCompile Include="ProceduralDungeonGenerator.cpp" />
     <ClCompile Include="Rat.cpp" />
     <ClCompile Include="SceneManager.cpp" />
+    <ClCompile Include="TeleportScroll.cpp" />
     <ClCompile Include="TileMapping8x8.cpp" />
     <ClCompile Include="TileMappingManager.cpp" />
     <ClCompile Include="TileMappingTable.cpp" />
@@ -236,6 +237,7 @@
     <ClInclude Include="ProceduralDungeonGenerator.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
+    <ClInclude Include="TeleportScroll.h" />
     <ClInclude Include="TileMapping8x8.h" />
     <ClInclude Include="TileMappingManager.h" />
     <ClInclude Include="TileMappingTable.h" />

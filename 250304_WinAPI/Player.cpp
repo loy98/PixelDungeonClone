@@ -27,11 +27,6 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     exp = 0;
     maxExp = 10;
 
-    startFrame = 0;
-    endFrame = 1;
-    stayEndFrame = false;
-    maxAnimTime = 0.5f;
-
     type = EntityType::PLAYER;
     curState = EntityState::IDLE;
 
@@ -59,6 +54,8 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
         }
     } });
     animator->AddClip("Dead", { 8, 12, 0.3f, false, nullptr });
+
+    animator->Play("Idle");
 }
 
 Player::~Player()
@@ -90,6 +87,10 @@ void Player::Act(Level* level)
     case EntityState::WAIT:
         SetState(EntityState::IDLE);
         return;
+        // 아이템때문에 고민중
+    //case EntityState::USING_ITEM:
+    //    UseItem()
+    //    return;
     }
 }
 
@@ -144,6 +145,11 @@ void Player::Heal(int healAmount)
     hp += healAmount;
     if (hp >= maxHp) hp = maxHp;
     entityObserver.NotifyDamageTaken(this, -healAmount, D2D1::ColorF(D2D1::ColorF::White));
+}
+
+void Player::UseItem(Level* level)
+{
+    /*inven->Use(this, level);*/
 }
 
 void Player::SetState(EntityState state)

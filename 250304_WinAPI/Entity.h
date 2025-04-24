@@ -15,6 +15,7 @@ enum class EntityState
     MOVE,
     ATTACK,
     DEAD,
+    USING_ITEM
 };
 enum class EntityType
 {
@@ -35,9 +36,7 @@ protected:
     //test
     D2DImage* image;
     int curAnimFrame;
-    float curTime, maxAnimTime;
-    int startFrame, endFrame;
-    bool stayEndFrame;
+
     // animation
     Animator* animator;
 
@@ -59,7 +58,7 @@ protected:
     //에너지 턴 test
     float energy = 10.f;
     float actionCost;
-    float energyPerTurn = 10.0f;
+    float energyPerTurn;
 
     //길찾기
     vector<FPOINT> path;
@@ -72,7 +71,6 @@ public:
     int graphicID;
     bool isActive;
 
-    wchar_t szText[128]; // 디버깅용
 public:
     Entity();
     virtual ~Entity();
@@ -81,7 +79,6 @@ public:
     virtual void Render(HDC hdc);
     virtual void Act(Level* level);
     virtual void Attack(Level* level) {};
-    void SetAimData(int start, int end, float maxTime);
 
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;
@@ -97,7 +94,6 @@ public:
     inline Damage GetAttDmg() const { return attackDmg; }
     inline int GetDefense() const { return defense; }
     inline EntityState GetState() const { return curState; }
-    inline float GetSpeed() const { return speed; }
     inline EntityType GetType() const { return type; }
     inline int GetExp() { return exp; }
     inline D2DImage* GetImage() { return image; }
