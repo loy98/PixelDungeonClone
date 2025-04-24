@@ -11,12 +11,11 @@ protected:
     BarStyle barStyle;
     
     UIValueBar* bar{nullptr};
-    UIText* text;
 
     Camera* camera{nullptr};
     Entity* target{nullptr};
 
-    D2D1_SIZE_F offset = {-15.f, -30.f};
+    D2D1_SIZE_F offset = {0.f, -30.f};
 
 public:
     void OnEntityDamageTaken(DamageTakenData data) override;
@@ -67,8 +66,7 @@ void UIMopBar::Init(const D2D1_RECT_F& layout, const ImageStyle& bgs,
     bar = UIHelper::ApplyBarStyle(this, GetSizeRect(), barStyle);
     SetStyle(bgs, s);
     SetMaxValue(max);
-    text = UIHelper::ApplyTextStyle(this, GetSizeRect(), TextStyle());
-    // SetActive(false);
+    SetActive(false);
 }
 
 void UIMopBar::SetStyle(const ImageStyle& bgs, const BarStyle& s)
@@ -96,15 +94,19 @@ inline void UIMopBar::SetTarget(Entity* target, Camera* cam)
 
 void UIMopBar::Update(float deltaTime)
 {
+    if (!isActive) return;
+    
     bar->Update(deltaTime);
     ChaseTargetPos();
 }
 
 void UIMopBar::Render(ID2D1HwndRenderTarget* rt)
 {
+    if (!isActive || !isVisible) return;
+    
     D2D1_RECT_F rect = GetScaledDrawRect();
     FPOINT ws = GetWorldScale();
-
+    
     // 🔹 배경
     if (bgStyle.image)
         bgStyle.image->RenderFrameScale(rect.left, rect.top, ws.x, ws.y,
@@ -114,7 +116,7 @@ void UIMopBar::Render(ID2D1HwndRenderTarget* rt)
 
     // 🔸 출력 디버그용 외곽선
     ID2D1SolidColorBrush* debugBrush = nullptr;
-    rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &debugBrush);
+    rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &debugBrush);
     rt->DrawRectangle(rect, debugBrush, 1.0f);
     if (debugBrush) debugBrush->Release();
 }
@@ -125,10 +127,15 @@ void UIMopBar::ChaseTargetPos()
 
     auto curPos = target->GetPosition();
     FPOINT scrPos = {camera->ConvertToRendererX(curPos.x), camera->ConvertToRendererY(curPos.y)};
-    auto width = GetWidth();
-    auto height = GetHeight();
-    D2D1_RECT_F setRect = {scrPos.x + offset.width, scrPos.y + offset.height,
-        scrPos.x + width + offset.width, scrPos.y + height + offset.height};
+    auto ws = GetWorldScale();
+    
+    float halfWidth = GetWidth() * 0.5f;
+    float halfHeight = GetHeight() * 0.5f;
+    FPOINT scaleOffset = {offset.width * ws.x, offset.height * ws.y};
+    FPOINT startPos = {scrPos.x - halfWidth * ws.x + scaleOffset.x, scrPos.y - halfHeight * ws.y + scaleOffset.y};
+
+    D2D1_RECT_F setRect = {startPos.x, startPos.y,
+    startPos.x + GetWidth(), startPos.y  + GetHeight()};
 
     // 배치 연산 줄이기
     // // 위치 변동 비교
@@ -138,6 +145,6 @@ void UIMopBar::ChaseTargetPos()
     {
         return;
     }
-    
     SetWorldRect(setRect);
+
 }
