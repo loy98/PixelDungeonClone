@@ -63,7 +63,7 @@ void GameScene::Restart()
 	}
 
 	UIManager::GetInstance()->GetUiGameOver()->SetRestartCallBack([this]() {
-		this->Restart(); });
+		this->Restart(); UIManager::GetInstance()->SendLog(L"Click", D2D1::ColorF(D2D1::ColorF::Blue)); });
 
 	UIManager::GetInstance()->GetUiGameOver()->SetExitCallBack([]() {
 		PostQuitMessage(0); });
