@@ -17,6 +17,7 @@ Monster::Monster(FPOINT pos, float speed, int hp, int attDmg, int defense)
     this->defense = defense;
     isMoving = false;
     isActive = true;
+    name = "포텐업";
 
     type = EntityType::MONSTER;
     curState = EntityState::IDLE;
