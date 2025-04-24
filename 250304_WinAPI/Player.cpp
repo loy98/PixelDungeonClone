@@ -11,6 +11,7 @@
 #include "Item.h"
 #include "Inventory.h"
 #include "Animator.h"
+#include "FModSoundPlayer.h"
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -203,7 +204,7 @@ void Player::Move(Level* level)
     //    curState = EntityState::IDLE;
     //    return;
     //}
-    
+    FModSoundPlayer::GetInstance()->Play("step", 0.3f);
     FPOINT delta = targetPos - position;
 
     float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
