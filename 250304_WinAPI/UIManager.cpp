@@ -22,7 +22,8 @@ void UIManager::RegisterPlayer(Player* player)
         UnregisterPlayer(currentPlayer);
     }
 
-    currentPlayer = player;
+    SetCurrentPlayer(player);
+    
     player->GetEntityObserverHub().AddObserver(uiStatusToolbar);
     player->GetEntityObserverHub().AddObserver(uiStatusPanel);
     player->GetEntityObserverHub().AddObserver(uiQuickSlotToolbar);
@@ -35,7 +36,9 @@ void UIManager::RegisterEntity(Entity* entity)
     if (!entity) return;
 
     auto mopHPBar = uiMopHPManager->CreateMopHPBar(entity, camera);
-    entity->GetEntityObserverHub().AddObserver(mopHPBar);
+    if (mopHPBar)
+        entity->GetEntityObserverHub().AddObserver(mopHPBar);
+    
     entity->GetEntityObserverHub().AddObserver(uiEffectManager);
 }
 
@@ -50,6 +53,7 @@ void UIManager::UnregisterPlayer(Player* player)
 
 void UIManager::UnregisterEntity(Entity* entity)
 {
+    uiMopHPManager->DetachMopBar(entity);
     entity->GetEntityObserverHub().RemoveObserver(uiEffectManager);
 }
 
@@ -72,8 +76,8 @@ void UIManager::SendLog(const wstring& msg, D2D1_COLOR_F color)
     }
 }
 
-void UIManager::SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect, TextStyle* textStyle,
-                               EffectStyle* effectStyle)
+void UIManager::SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect,
+    TextStyle* textStyle, EffectStyle* effectStyle)
 {
     if (uiEffectManager)
     {
@@ -111,6 +115,22 @@ void UIManager::SetRestartCallback(std::function<void()> cb)
 void UIManager::ClearUiContainers()
 {
     uiContainers.clear();
+}
+
+void UIManager::SetCurrentPlayer(Player* player)
+{
+    if (!player) return; 
+    currentPlayer = player;
+
+    if (uiStatusToolbar)
+    {
+        uiStatusToolbar->UpdateStat(player);
+    }
+}
+
+Player* UIManager::GetCurrentPlayer()
+{
+    return currentPlayer;
 }
 
 void UIManager::Init()
@@ -153,24 +173,19 @@ void UIManager::Init()
     uiQuickSlotToolbar->SetActionOnClick(1, [this](){});
     uiQuickSlotToolbar->SetActionOnClick(2, [this]()
     {
-        uiInventoryPanel->SetActive(true);
-    
-        float mx = mouseManager->GetMousePos().x;
-        float my = mouseManager->GetMousePos().y;
-    
-        D2D1_RECT_F effectRect = D2D1::RectF(mx - 10, my - 10, mx + 10, my + 10);
-
-        TextStyle style;
-        style.fontName = L"pixel";
-        style.fontSize = 14.0f;
-        style.color = D2D1::ColorF(D2D1::ColorF::White);
-        style.bold = true;
-        style.horizontalAlign = DWRITE_TEXT_ALIGNMENT_CENTER;
-        style.verticalAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
-        EffectStyle effectStyle;
-
-        SendTextEffect(L"Click", effectRect,&style, &effectStyle);
-        SendLog(L"Inventory Quick Click", D2D1::ColorF(D2D1::ColorF::Yellow));
+        uiInventoryPanel->SetActive(!uiInventoryPanel->IsActive());
+    });
+    uiStatusToolbar->SetStatusButtonEvent([this]()
+    {
+        if (!uiStatusPanel->IsActive())
+        {
+            uiStatusPanel->UpdatePlayerStat(GetCurrentPlayer());
+            uiStatusPanel->SetActive(true);
+        }
+        else
+        {
+            uiStatusPanel->SetActive(false);
+        }
     });
 
     /* Add UIContainers */
