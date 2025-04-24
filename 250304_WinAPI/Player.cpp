@@ -11,6 +11,8 @@
 #include "Item.h"
 #include "Inventory.h"
 #include "Animator.h"
+#include "UIManager.h"
+#include "CommonFunction.h"
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -59,6 +61,7 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
         }
     } });
     animator->AddClip("Dead", { 8, 12, 0.3f, false, nullptr });
+
 }
 
 Player::~Player()
@@ -155,6 +158,15 @@ void Player::GetItem(Item* item)
     {
         inven->AddItem(item);
         entityObserver.NotifyChangePlayerInven(this);
+
+        // 시스템 로그 출력-아이템 획득
+        wstring label = cp949_to_wstring(item->GetName());
+        // 영어
+        //wstring eng = L"You now have " + label + L".";
+        //UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::White));
+        // 한글
+        wstring kor = label + L"을(를) 얻었다.";
+        UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::White));
     }
 }
 
