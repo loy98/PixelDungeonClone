@@ -213,7 +213,7 @@ struct Map {
 
 	// 이동 가능 여부 확인
 	bool CanGo() const {
-		return type != 0; // 벽이 아니면 통과 가능
+		return type != 0 && type != 6; // 벽이 아니면 통과 가능
 	}
 
 	// 초기화

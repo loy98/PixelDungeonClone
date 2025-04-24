@@ -11,7 +11,8 @@ public:
     // IDungeonGenerator 인터페이스 구현
     virtual std::vector<std::vector<int>> Generate(int width, int height) override;
     virtual std::vector<std::vector<int>> GetTileVariations(std::vector<std::vector<int>>& map) override;
-
+    virtual void RenderWallTile(D2DImage* image, int x, int y, int tileX, int tileY, float scale,
+                        const std::vector<std::vector<int>>& map) override;
 private:
     std::string filePath;
     std::vector<std::vector<int>> dungeonData;
