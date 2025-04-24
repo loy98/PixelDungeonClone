@@ -3,6 +3,9 @@
 #include "Level.h"
 #include <random>
 #include <ctime>
+
+#include "FileLoadDungeonGenerator.h"
+#include "ProceduralDungeonGenerator.h"
 //
 // IntegratedDungeonSystem::IntegratedDungeonSystem() {
 //     // Initialize random seed
@@ -43,15 +46,19 @@
 void IntegratedDungeonSystem::GenerateDungeon(Level* level, int width, int height, int roomCount, int minRoomSize,
     int maxRoomSize)
 {
+    dungeonGenerator = new FileLoadDungeonGenerator("TileMapData.dat");
+    
     // Generate the dungeon layout
-    auto map = dungeonGenerator.Generate(width, height);
-        
+    auto map = dungeonGenerator->Generate(width, height);
+    auto renderMap = dungeonGenerator->GetTileVariations(map);
+    
     // Get the generated map data
     // std::vector<std::vector<int>> mapData = dungeonGenerator.GetMapData();
     //
     // Set the map data in the level
     level->SetMapData(map);
-        
+    level->SetRenderMap(renderMap);
+    
     // Generate monsters based on the dungeon layout
     std::vector<Monster*> monsters = monsterGenerator.GenerateMonsters(level, map, 2); // Generate 10 monsters
         

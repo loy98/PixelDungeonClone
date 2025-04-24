@@ -3,10 +3,11 @@
 #include "DungeonGenerator.h"
 #include "MonsterGenerator.h"
 
+class IDungeonGenerator;
 class Level;
 class IntegratedDungeonSystem {
 private:
-    DungeonGenerator dungeonGenerator;
+    IDungeonGenerator* dungeonGenerator;
     MonsterGenerator monsterGenerator;
 
 public:

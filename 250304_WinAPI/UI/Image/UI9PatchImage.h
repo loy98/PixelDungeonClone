@@ -34,7 +34,7 @@ public:
                 const auto& dst = regionsDest[y][x];
                 const FPOINT ws = GetWorldScale();
 
-                style.image->RenderRaw(rt, dst, region.srcRect, ws.x, ws.y, 0.0f, false, false, region.alpha);
+                style.image->RenderRaw(dst, region.srcRect, ws.x, ws.y, 0.0f, false, false, region.alpha);
             }
         }
 

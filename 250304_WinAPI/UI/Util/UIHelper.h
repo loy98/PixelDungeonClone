@@ -6,6 +6,8 @@
 #include "../Core/UIContainerBase.h"
 
 
+struct BarStyle;
+class UIValueBar;
 class UI9PatchImage;
 class UIImage;
 class UIText;
@@ -22,6 +24,7 @@ struct NinePatchStyle;
 
 namespace UIHelper {
     /* 생성 코드 */
+    UIValueBar* ApplyBarStyle(UIContainerBase* target, D2D1_RECT_F localRect, const BarStyle& style);
     UI9PatchImage* ApplyNinePathStyle(UIContainerBase* target, const D2D1_RECT_F& localRect, const NinePatchStyle& style);
     UIText* ApplyTextStyle(UIContainerBase* target, const D2D1_RECT_F& localRect, const TextStyle& style);
     UIImage* ApplyImageStyle(UIContainerBase* target, const D2D1_RECT_F& localRect, const ImageStyle& style);

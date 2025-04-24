@@ -50,7 +50,7 @@ std::vector<Monster*> MonsterGenerator::GenerateMonsters(Level* level, const std
     int mapSize = map.size() * map[0].size();
     
     // 몬스터 수 결정
-    int monsterCount = DetermineMonsterCount(floorLevel, mapSize);
+    int monsterCount = 1; // DetermineMonsterCount(floorLevel, mapSize);
     
     // 몬스터 유형 결정
     std::vector<MonsterType> monsterTypes = DetermineMonsterTypes(floorLevel, monsterCount);
@@ -72,7 +72,7 @@ std::vector<Monster*> MonsterGenerator::GenerateMonsters(Level* level, const std
 // 몬스터 생성 함수
 Monster* MonsterGenerator::CreateMonster(MonsterType type, FPOINT position, float speed) {
     // 몬스터 생성
-    Monster* monster = new Monster(position, 1000.f, 15, 4, 3);
+    Monster* monster = new Monster(position, 1000.f, 15, 50, 3);
     
     // 몬스터 유형에 따른 추가 설정 (향후 확장)
     // 현재는 기본 Monster 클래스만 사용

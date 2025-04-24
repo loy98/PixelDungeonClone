@@ -1,9 +1,12 @@
 ﻿#pragma once
+#include "Camera.h"
 #include "config.h"
 #include "Singleton.h"
+#include "Observer/IEntityObserver.h"
 #include "UI/VisualStyle.h"
 #include "UI/Core/UIContainer.h"
 
+class UIValueBar;
 class Entity;
 class UIStatusToolbar;
 class Player;
@@ -17,14 +20,20 @@ class UIResourceSubManager;
 class UIInventory;
 class UITopRightUI;
 class UIGameOver;
+class UIMopHPManager;
 
-class UIManager : public Singleton<UIManager>
+class Camera;
+
+class UIManager : public Singleton<UIManager>, public ISystemObserver
 {
 private:
 	TimerManager* tmMgr; // 절대 삭제 금지
 	ID2D1HwndRenderTarget* rdt; // 절대 삭제 금지
 	MouseManager* mouseManager;  // 절대 삭제 금지
+	Camera* camera; // 절대 삭제 금지
 	UIResourceSubManager* uiResourceManager;
+	UIMopHPManager* uiMopHPManager;
+
 
 	Player* currentPlayer;
 	// vector<IPlayerObserver>
@@ -55,14 +64,20 @@ private:
 		DWRITE_PARAGRAPH_ALIGNMENT_NEAR
 	};
 
+
 	function<void()> restartCallback;
 
 public:
+
+protected:
+	float zoomScale{1.0f};
+
 public:
 	void RegisterPlayer(Player* player);
 	void RegisterEntity(Entity* entity);
 	void UnregisterPlayer(Player* player);
 	void UnregisterEntity(Entity* entity);
+	void RegisterCamera(Camera* cam);
 
 	void SendLog(const wstring& msg, D2D1_COLOR_F color);
 	void SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect, TextStyle* textStyle = nullptr , EffectStyle* effectStyle = nullptr);
@@ -84,5 +99,8 @@ public:
 	void Update();
 	void Render();
 	void Release();
+
+protected:
+	bool CheckZoomChange();
 };
 

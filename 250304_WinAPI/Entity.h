@@ -5,13 +5,17 @@
 class Level;
 class D2DImage;
 class PathFinder;
+class Animator;
 
 enum class EntityState
 {
     IDLE,
+    WAIT,
+    SLEEP,
     MOVE,
     ATTACK,
-    DEAD
+    DEAD,
+    DUMMY
 };
 enum class EntityType
 {
@@ -30,6 +34,8 @@ protected:
     float curTime, maxAnimTime;
     int startFrame, endFrame;
     bool stayEndFrame;
+    // animation
+    Animator* animator;
 
     // 공통 속성
     EntityType type;
@@ -42,7 +48,7 @@ protected:
     // 전투 속성
     int hp, maxHp;
     int attackDmg, defense;
-    int exp, level;
+    int exp, maxExp, level;
     Entity* target;
 
     //에너지 턴 test
@@ -70,10 +76,11 @@ public:
     virtual void Render(HDC hdc);
     virtual void Act(Level* level);
     virtual void Attack(Level* level) {};
+    void SetAimData(int start, int end, float maxTime);
 
     virtual bool NeedsInput() = 0;
     virtual bool IsBusy() = 0;
-    bool IsAlive() { return curState != EntityState::DEAD; }
+    bool IsAlive() { return isActive; }
 
     void TakeDamage(int dmg);
     void TakeExp(int exp);
@@ -108,4 +115,11 @@ public:
 
     // 옵저버
     inline EntityObserverHub& GetEntityObserverHub() { return entityObserver; }
+    // TODO UI HP 관련임시
+    inline int GetHP() const { return hp; };
+    inline int GetMaxHP() const { return maxHp; };
+
+    // AI
+    FPOINT GetTargetPos() { return targetPos; }
+
 };

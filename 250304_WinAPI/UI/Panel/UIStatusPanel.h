@@ -23,6 +23,7 @@ public:
 inline void UIStatusPanel::Init(const D2D1_RECT_F& rect = { 400, 0, 650, 180 }) {
     SetRect(rect);
 
+
     NinePatchStyle bgNineStyle;
     bgNineStyle = UIHelper::CreateNinePatchFromSheet("chrome", "chrome", D2D1_SIZE_F {6.0f, 6.0f});
     auto bg = UIHelper::ApplyNinePathStyle(this, GetSizeRect(), bgNineStyle);
