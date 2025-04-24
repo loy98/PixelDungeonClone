@@ -33,6 +33,15 @@ public:
         return { 0, 0 };
     }
 
+    void SetAlignCenter()
+    {
+        if (!parent) return;
+
+        FPOINT parentCenter = { parent->GetWidth() * 0.5f, parent->GetHeight() * 0.5f };
+        FPOINT halfSize = { GetWidth() * 0.5f, GetHeight() * 0.5f };
+        SetRect({parentCenter.x - halfSize.x, parentCenter.y - halfSize.y, parentCenter.x + halfSize.x, parentCenter.y + halfSize.y});
+    }
+
     void Render(ID2D1HwndRenderTarget* rt) override {
         if (!isVisible || !isActive || !style.image || !rt) return;
 

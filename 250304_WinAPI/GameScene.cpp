@@ -8,10 +8,7 @@ HRESULT GameScene::Init()
 {
 	SetClientRect(g_hWnd, WINSIZE_X, WINSIZE_Y);
 	currLevel = testLevel;
-	levels[testLevel] = new Level;
-	if (levels[testLevel]) {
-		levels[testLevel]->Init();
-	}
+	LevelInit(currLevel);
 
 	UIManager::GetInstance()->GetUiGameOver()->SetRestartCallBack([this]() {
 		this->Restart();         // 함수 등록 (람다)
@@ -57,10 +54,7 @@ void GameScene::Restart()
 	}
 
 	currLevel = testLevel;
-	levels[testLevel] = new Level;
-	if (levels[testLevel]) {
-		levels[testLevel]->Init();
-	}
+	LevelInit(currLevel);
 
 	UIManager::GetInstance()->GetUiGameOver()->SetRestartCallBack([this]() {
 		this->Restart(); UIManager::GetInstance()->SendLog(L"Click", D2D1::ColorF(D2D1::ColorF::Blue)); });
@@ -74,5 +68,18 @@ GameScene::GameScene()
 {
 	for (auto& l : levels) {
 		l = nullptr;
+	}
+}
+
+void GameScene::LevelInit(int testLevel)
+{
+	levels[testLevel] = new Level;
+	if (levels[testLevel]) {
+		levels[testLevel]->Init();
+		UIManager::GetInstance()->SendLog(
+		L"Wellcom To " + to_wstring(testLevel + 1) + L" of Pixel Dungeon!",
+		D2D1::ColorF(D2D1::ColorF::White));
+		wstring kor = L"던전의 " + to_wstring(testLevel + 1) + L"층으로 내려왔다.";
+		UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::Yellow));
 	}
 }

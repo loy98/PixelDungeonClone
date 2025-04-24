@@ -1,11 +1,12 @@
 ﻿#pragma once
 #include "VisualStyle.h"
+#include "../Observer/IEntityObserver.h"
 
 class Entity;
 class UIMopBar;
 class Camera;
 
-class UIMopHPManager
+class UIMopHPManager : public IEntityObserver
 {
 protected:
     unordered_map<Entity*, UIMopBar*> uiMopHPBars;
@@ -27,4 +28,6 @@ public:
     void DetachMopBar(Entity* entity);
     void ChangeZoomScale(float zoomScale);
     void SetDefaultStyle();
+
+    void OnEntityDied(Entity* entity) override;
 };

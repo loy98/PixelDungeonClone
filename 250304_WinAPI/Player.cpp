@@ -11,7 +11,9 @@
 #include "Item.h"
 #include "Inventory.h"
 #include "Animator.h"
+#include "CommonFunction.h"
 #include "FModSoundPlayer.h"
+#include "UIManager.h"
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -138,6 +140,11 @@ void Player::GetItem(Item* item)
     {
         inven->AddItem(item);
         entityObserver.NotifyChangePlayerInven(this);
+
+        wstring eng = L"You Now Have " + cp949_to_wstring(item->GetName());
+        wstring kor = cp949_to_wstring(item->GetName()) + L"을(를) 얻었다.";
+        UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::Green));
+        UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::White));
     }
 }
 

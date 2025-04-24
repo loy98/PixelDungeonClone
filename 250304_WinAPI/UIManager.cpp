@@ -396,27 +396,3 @@ bool UIManager::CheckZoomChange()
 
     return false;
 }
-
-// void UIManager::RegisterPlayer(Player* player) {
-//     currentPlayer = player;
-//     for (auto* obs : playerObservers)
-//         player->AddObserver(obs);
-// }
-//
-// void UIManager::UnregisterPlayer(Player* player) {
-//     for (auto* obs : playerObservers)
-//         player->RemoveObserver(obs);
-//     currentPlayer = nullptr;
-// }
-//
-// void UIManager::AddPlayerObserver(IPlayerObserver* observer) {
-//     playerObservers.push_back(observer);
-//     if (currentPlayer)
-//         currentPlayer->AddObserver(observer);
-// }
-//
-// void UIManager::RemovePlayerObserver(IPlayerObserver* observer) {
-//     playerObservers.erase(std::remove(playerObservers.begin(), playerObservers.end(), observer), playerObservers.end());
-//     if (currentPlayer)
-//         currentPlayer->RemoveObserver(observer);
-// }

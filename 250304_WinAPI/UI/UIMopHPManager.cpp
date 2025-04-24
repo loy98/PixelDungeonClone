@@ -128,3 +128,8 @@ void UIMopHPManager::SetDefaultStyle()
         ImageStyle{ nullptr }
     };
 }
+
+void UIMopHPManager::OnEntityDied(Entity* entity)
+{
+    DetachMopBar(entity);
+}

@@ -14,7 +14,7 @@ private:
 public:
     ~UITextLogPanel() override
     {
-        Clear();
+        DeleteAll();
     }
 
     void Init(const D2D1_RECT_F& area = { 20, 400, 375, 400 + 200 }, int maxLine = 6, float lineHeight = 20.0f, float spacing = 2.0f) {
@@ -36,15 +36,6 @@ public:
         text->SetLocalRect(lineRect);
         text->SetText(content, true);
         
-        // auto curStyle = text->GetStyle();
-        // if (style.fontSize != curStyle.fontSize ||
-        //     style.color.r != curStyle.color.r || style.color.g != curStyle.color.g || style.color.b != curStyle.color.b || style.color.a != curStyle.color.a ||
-        //     style.horizontalAlign != curStyle.horizontalAlign || style.verticalAlign != curStyle.verticalAlign)
-        // {
-        //     TextStyle newStyle = style;
-        //     text->SetStyle(newStyle);
-        // }
-
         // UIContainer가 자식 자동 정렬
         AddChild(text);
 
@@ -59,10 +50,16 @@ public:
 
     }
 
-    void Clear() {
+    // void Clear() {
+    //     for (auto* c : GetChildren()) {
+    //         RemoveChild(c, false);
+    //         pool.Recycle(dynamic_cast<UIText*>(c));
+    //     }
+    // }
+
+    void DeleteAll() {
         for (auto* c : GetChildren()) {
             RemoveChild(c);
-            pool.Recycle(dynamic_cast<UIText*>(c));
         }
     }
 };

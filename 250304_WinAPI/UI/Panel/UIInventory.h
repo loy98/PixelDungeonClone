@@ -64,8 +64,6 @@ public:
 
                 if (slot.item)
                 {
-                    UIManager::GetInstance()->SendLog((L"Item IDX " + to_wstring(idx)), D2D1::ColorF(D2D1::ColorF::Blue));
-                    UIManager::GetInstance()->SendLog((L"Item 수량 " + to_wstring(slot.count)), D2D1::ColorF(D2D1::ColorF::Blue));
                     UpdateItemSlot(
                         idx,
                         UIInventorySlotData{ slot.item->GetName(), slot.item->GetImage(), slot.count, 0},
@@ -114,8 +112,7 @@ private:
 
         auto* exitBtn = UIHelper::ApplyIconStyle(this, dummyRect, defaultIconStyle);
         exitBtn->SetOnClick([this, exitBtn]() {
-            wstring debugString = (L"클릭 [닫기] 클릭\n");
-            UITestEffectManager::GetInstance()->AddEffect(debugString, exitBtn->GetWorldRect());
+
             this->SetActive(false);
             });
     }
@@ -141,6 +138,10 @@ private:
             {
                 UseItemSlot(i);
             });
+
+            // Magic Num (icon 기본 16px, slot 기본 64px이므로 x4 적용
+            slot->GetImages()[1]->SetRect({ 0,0,16,16 });
+            slot->GetImages()[1]->SetScale({4.f, 4.f});
 
             itemSlots.push_back(slot);
         }

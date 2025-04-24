@@ -1,4 +1,6 @@
 ﻿#include "Inventory.h"
+
+#include "CommonFunction.h"
 #include "Item.h"
 
 #include "UIManager.h"
@@ -57,17 +59,9 @@ Item* Inventory::GetItem(string name)
 
 void Inventory::UseItem(int idx)
 {
-    UIManager::GetInstance()->SendLog((L"Item 사용 " + to_wstring(idx)), D2D1::ColorF(D2D1::ColorF::Blue));
-
-    
     if (items[idx].item == nullptr) return;
     UseItem(items[idx].item->GetName());
-
-    //auto str = items[idx].item->GetName();
-    //int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
-    //std::wstring wstr(size_needed, 0);
-    //MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], size_needed);
-    //UIManager::GetInstance()->SendLog((L"Item 사용 " + wstr), D2D1::ColorF(D2D1::ColorF::Blue));
+    
 }
 void Inventory::UseItem(string name)
 {
@@ -91,5 +85,9 @@ void Inventory::UseItem(string name)
         indexMap[name] = -1;
     }
 
+    wstring eng = L"That food tasted delicious!";
+    wstring kor = L"이 음식은 매우 맛있었다!";
+    UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::Green));
+    UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::White));
 	return;
 }
