@@ -6,7 +6,7 @@
 class UIMopHPManager
 {
 protected:
-    vector<UIMopBar*> uiMopHPBars;
+    unordered_map<Entity*, UIMopBar*> uiMopHPBars;
 
     ImageStyle defulatMopHPBarBgStyle;
     BarStyle defaultMopHPBarStyle;
@@ -21,14 +21,16 @@ public:
     }
     void Update(float dt)
     {
-        for (auto* bar : uiMopHPBars) {
+        for (auto& [entity, bar] : uiMopHPBars)
+        {
             if (bar)
                 bar->Update(dt);
         }
     }
         
     void Render(ID2D1HwndRenderTarget* rt) {
-        for (auto* bar : uiMopHPBars) {
+        for (auto& [entity, bar] : uiMopHPBars)
+        {
             if (bar)
                 bar->Render(rt);
         }
@@ -36,7 +38,7 @@ public:
 
     void Release()
     {
-        for (auto* bar : uiMopHPBars)
+        for (auto& [entity, bar] : uiMopHPBars)
         {
             if (bar)
             {
@@ -48,6 +50,9 @@ public:
     
     UIMopBar* CreateMopHPBar(Entity* entity, Camera* camera)
     {
+        if (!entity || !camera ) return nullptr;
+        if (entity->GetType() != EntityType::MONSTER) return nullptr;
+        
         auto hpBar = new UIMopBar();
         auto entityPos = entity->GetPosition();
         auto entityRect = {entity};
@@ -56,16 +61,45 @@ public:
         hpBar->SetMaxValue(entity->GetMaxHP());
         hpBar->SetValue(entity->GetHP());
         hpBar->SetTarget(entity, camera);
-        uiMopHPBars.push_back(hpBar);
+        hpBar->SetActive(false);
+        uiMopHPBars.insert({entity, hpBar});
         return hpBar;
+    }
+
+    UIMopBar* FindMopBar(Entity* entity)
+    {
+        auto it = uiMopHPBars.find(entity);
+        if (it != uiMopHPBars.end())
+        {
+            return it->second;
+        }
+    }
+
+    bool RemoveMopBar(Entity* entity)
+    {
+        auto it = uiMopHPBars.find(entity);
+        if (it != uiMopHPBars.end())
+        {
+            delete it->second;
+            it = uiMopHPBars.erase(it);
+            return true;
+        }
+        return false;
+    }
+
+    void DetachMopBar(Entity* entity)
+    {
+        auto bar = FindMopBar(entity);
+        entity->GetEntityObserverHub().RemoveObserver(bar);
+        RemoveMopBar(entity);
     }
     
     void ChangeZoomScale(float zoomScale)
     {
-        for (auto bar : uiMopHPBars)
+        for (auto& [entity, bar] : uiMopHPBars)
         {
-            if (!bar) continue;
-            bar->SetScale({zoomScale, zoomScale});
+            if (bar)
+                bar->SetScale({zoomScale, zoomScale});
         }
     }
 

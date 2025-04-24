@@ -35,7 +35,9 @@ void UIManager::RegisterEntity(Entity* entity)
     if (!entity) return;
 
     auto mopHPBar = uiMopHPManager->CreateMopHPBar(entity, camera);
-    entity->GetEntityObserverHub().AddObserver(mopHPBar);
+    if (mopHPBar)
+        entity->GetEntityObserverHub().AddObserver(mopHPBar);
+    
     entity->GetEntityObserverHub().AddObserver(uiEffectManager);
 }
 
@@ -50,6 +52,7 @@ void UIManager::UnregisterPlayer(Player* player)
 
 void UIManager::UnregisterEntity(Entity* entity)
 {
+    uiMopHPManager->DetachMopBar(entity);
     entity->GetEntityObserverHub().RemoveObserver(uiEffectManager);
 }
 
@@ -72,8 +75,8 @@ void UIManager::SendLog(const wstring& msg, D2D1_COLOR_F color)
     }
 }
 
-void UIManager::SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect, TextStyle* textStyle,
-                               EffectStyle* effectStyle)
+void UIManager::SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect,
+    TextStyle* textStyle, EffectStyle* effectStyle)
 {
     if (uiEffectManager)
     {
