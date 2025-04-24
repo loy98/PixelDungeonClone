@@ -25,7 +25,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int viewRange, int tileId
 		int dy = -depth;
 		int exploreStartSlope = startSlope;
 
-		for (int dx = -depth; dx <= 0; ++dx) {
+		for (int dx = ceil(-depth * nextStart); dx <= 0; ++dx) {
 			// 1) 슬로프 계산
 			float leftSlope = (dx - 0.5f) / (dy + 0.5f);
 			float rightSlope = (dx + 0.5f) / (dy - 0.5f);
@@ -57,6 +57,7 @@ void FieldOfView::Calculate(Map(&map)[TILE_Y][TILE_X], int viewRange, int tileId
 			// 4) 벽 발견 시 재귀 분기
 			if (tile.type == 0) {
 				blocked = true;
+				tile.visible = true;
 				Calculate(map, viewRange, tileIdX, tileIdY,
 					depth + 1, exploreStartSlope, leftSlope, direction);
 				nextStart = rightSlope;
