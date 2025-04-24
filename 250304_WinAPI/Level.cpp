@@ -14,6 +14,7 @@
 #include "TurnManager.h"
 #include "Camera.h"
 #include "FieldOfView.h"
+#include "FModSoundPlayer.h"
 #include "IDungeonGenerator.h"
 #include "UIManager.h"
 #include "UI/Test/UITestView.h"
@@ -107,6 +108,8 @@ void Level::Init()
     AddItem(potion1);
     AddItem(potion2);
 
+    FModSoundPlayer::GetInstance()->Play("descend");
+    FModSoundPlayer::GetInstance()->Play("sewers_1");
 }
 
 void Level::Release()
