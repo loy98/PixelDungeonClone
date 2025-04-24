@@ -27,7 +27,7 @@ private:
 public:
     MonsterAI();
     ~MonsterAI() {};
-    void Act(Level* level, Monster *monster, bool isAlert= false);
+    void Act(Level* level, Monster *monster, bool isInFov = true, bool isAlert= false);
     bool CanAttack(Level* level, Monster* monster);
     void Hunting(Level* level, Monster* monster);
     void Wandering(Level* level, Monster* monster);;

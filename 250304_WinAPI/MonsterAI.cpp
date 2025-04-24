@@ -9,7 +9,7 @@ MonsterAI::MonsterAI()
     target = nullptr;
 }
 
-void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
+void MonsterAI::Act(Level* level, Monster* monster, bool isInFov, bool isAlert)
 {
 
 
@@ -17,8 +17,11 @@ void MonsterAI::Act(Level* level, Monster* monster, bool isAlert)
 
     // 몬스터 destPos(hunting시) 바꿔줌
     // 타겟위치로 도착지 설정(findpath destPos 설정)
-   
-    if (target)
+    if (!isInFov)
+    {
+        Wandering(level, monster);
+    }
+    else if (target)
     {
         Hunting(level, monster);
     }
