@@ -85,9 +85,10 @@ void Inventory::UseItem(string name)
         indexMap[name] = -1;
     }
 
-    wstring eng = L"That food tasted delicious!";
-    wstring kor = L"이 음식은 매우 맛있었다!";
-    UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::Green));
-    UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::White));
+
+    // wstring eng = L"That food tasted delicious!";
+    // wstring kor = L"이 음식은 매우 맛있었다!";
+    // UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::Green));
+    // UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::White));
 	return;
 }

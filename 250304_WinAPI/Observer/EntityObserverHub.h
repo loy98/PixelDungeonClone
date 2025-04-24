@@ -24,6 +24,7 @@ public:
     void AddObserver(IEntityObserver* obs);
     void RemoveObserver(IEntityObserver* obs);
     void NotifyDamageTaken(Entity* e, int dmg, D2D1::ColorF color);
+    void NotifyHeal(Entity* e, int amount);
     void NotifyDeath(Entity* e);
     void NotifyChangePlayerInven(Player* p);
     

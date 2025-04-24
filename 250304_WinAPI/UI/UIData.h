@@ -2,6 +2,15 @@
 
 class D2DImage;
 
+struct ItemData
+{
+    string name = "";
+    string description = "";
+    D2DImage* origin = nullptr;
+    int frameX = 0;
+    int frameY = 0;
+};
+
 struct UIInventorySlotData
 {
     //int itemId = 0;
@@ -9,6 +18,7 @@ struct UIInventorySlotData
     D2DImage* icon = nullptr;
     int quantity = 0;
     int enhancement = 0;
+    const ItemData* info;
 };
 
 struct PlayerStatData {

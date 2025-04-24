@@ -12,6 +12,18 @@ public:
         style = s;
     }
 
+    void SetAlpha(float a) override
+    {
+        for (int y = 0; y < 3; ++y)
+        {
+            for (int x = 0; x < 3; ++x)
+            {
+                const int index = y * 3 + x;
+                style.regions[index].alpha = a;
+            }
+        }
+    }
+
     void Render(ID2D1HwndRenderTarget* rt) override {
         if (!isVisible || !isActive || !style.image || !rt) return;
 

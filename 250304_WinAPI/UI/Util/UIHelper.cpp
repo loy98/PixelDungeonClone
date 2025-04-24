@@ -227,7 +227,14 @@ namespace UIHelper {
 
         // 아이콘 이미지
         if (images.size() >= 2) {
-            images[1]->SetImage(data.icon);
+            int frameX = 0;
+            int frameY = 0;
+            if (data.info)
+            {
+                frameX = data.info->frameX;
+                frameY = data.info->frameY;
+            }
+            images[1]->SetImage(data.icon, frameX, frameY);
         }
 
         // 수량 텍스트

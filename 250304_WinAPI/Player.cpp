@@ -152,7 +152,7 @@ void Player::Heal(int healAmount)
 {
     hp += healAmount;
     if (hp >= maxHp) hp = maxHp;
-    entityObserver.NotifyDamageTaken(this, -healAmount, D2D1::ColorF(D2D1::ColorF::White));
+    entityObserver.NotifyHeal(this, healAmount);
 }
 
 void Player::UseItem(Level* level)

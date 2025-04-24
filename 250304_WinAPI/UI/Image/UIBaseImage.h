@@ -8,7 +8,7 @@ protected:
     D2D1_COLOR_F tint = D2D1::ColorF(1, 1, 1, 1);
 
 public:
-    void SetAlpha(float a) { alpha = a; }
+    virtual void SetAlpha(float a) { alpha = a; }
     void SetTint(D2D1_COLOR_F color) { tint = color; }
 
     float GetAlpha() const { return alpha; }

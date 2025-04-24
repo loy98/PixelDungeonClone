@@ -27,9 +27,29 @@ void EntityObserverHub::NotifyDamageTaken(Entity* e, int dmg, D2D1::ColorF color
     data.textStyle->verticalAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
     data.effectStyle = new EffectStyle;
         
-    for (auto* obs : observers)
+    for (auto obsit = observers.begin(); obsit != observers.end(); ++obsit)
     {
-        obs->OnEntityDamageTaken(data);
+        (*obsit)->OnEntityDamageTaken(data);
+    }
+}
+
+void EntityObserverHub::NotifyHeal(Entity* e, int amount)
+{
+    if (!e) return;
+
+    DamageTakenData data;
+    data.entity = e;
+    data.sendText = L"";
+    data.pos = e->GetPosition();
+    data.textStyle = new TextStyle;
+    data.textStyle->color;
+    data.textStyle->horizontalAlign = DWRITE_TEXT_ALIGNMENT_CENTER;
+    data.textStyle->verticalAlign = DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+    data.effectStyle = new EffectStyle;
+        
+    for (auto obsit = observers.begin(); obsit != observers.end(); ++obsit)
+    {
+        (*obsit)->OnEntityDamageTaken(data);
     }
 }
 

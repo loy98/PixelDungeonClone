@@ -242,10 +242,10 @@ void UIManager::Init()
     });
 
     /* Add UIContainers */
+    uiContainers.push_back(uiTextLogPanel);
     uiContainers.push_back(uiStatusToolbar);
     uiContainers.push_back(uiQuickSlotToolbar);
     uiContainers.push_back(uiTopRightUI);
-    uiContainers.push_back(uiTextLogPanel);
     uiContainers.push_back(uiStatusPanel);
     uiContainers.push_back(uiInventoryPanel);
     
