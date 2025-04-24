@@ -44,6 +44,7 @@ protected:
     FPOINT targetPos;
     float speed;
     bool isMoving;
+    string name;
 
     // 전투 속성
     int hp, maxHp;
