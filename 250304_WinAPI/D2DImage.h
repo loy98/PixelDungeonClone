@@ -75,15 +75,17 @@ public:
     void DrawRect(FPOINT leftUp,FPOINT rightDown, int color, float lineThickness);
     void DrawCircle(FPOINT center, float radius, int color, float lineThickness);
     void Middle_RenderRaw(
-        ID2D1HwndRenderTarget* rt, const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect,
+        const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect,
         float scaleX, float scaleY, float angle = 0.0f,
         bool flipX = false, bool flipY = false,
-        float alpha = 1.0f );
+        float alpha = 1.0f);
+    void RenderRaw(float x, float y, float width, float height, float scaleX, float scaleY,
+                   float angle, bool flipX, bool flipY, float alpha);
     void RenderRaw(
-        ID2D1HwndRenderTarget* rt, const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect,
+        const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect,
         float scaleX, float scaleY, float angle = 0.0f,
         bool flipX = false, bool flipY = false,
-        float alpha = 1.0f );
+        float alpha = 1.0f);
 
     D2D1_RECT_F GetFullSourceRect() const;
 

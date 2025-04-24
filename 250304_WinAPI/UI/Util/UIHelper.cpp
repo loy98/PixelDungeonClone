@@ -9,6 +9,21 @@
 #include "StyleUtil.h"
 
 namespace UIHelper {
+    UIValueBar* ApplyBarStyle(UIContainerBase* target, const D2D1_RECT_F localRect, const BarStyle& style)
+    {
+        auto& effectiveStyle = style;
+
+        auto valueBar = new UIValueBar();
+        
+        valueBar->Init(localRect, style);
+        valueBar->SetStyle(effectiveStyle);
+
+        if (target)
+            target->AddChild(valueBar);
+
+        return valueBar;
+    }
+
     UI9PatchImage* ApplyNinePathStyle(UIContainerBase* target, const D2D1_RECT_F& localRect, const NinePatchStyle& style)
     {
         auto& effectiveStyle = style;

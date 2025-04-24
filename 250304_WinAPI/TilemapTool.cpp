@@ -306,7 +306,7 @@ void TilemapTool::Render(HDC hdc)
 		rtd->DrawRectangle(rectToDraw, rectBrush, 1.0f);
 
 		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_RIGHT) == true) {
-			D2D1_RECT_F dragRect = { dragRc.left, dragRc.top, dragRc.right, dragRc.bottom };
+			D2D1_RECT_F dragRect = { (float)dragRc.left, (float)dragRc.top, (float)dragRc.right, (float)dragRc.bottom };
 			rectBrush->SetColor(dragRcColor);
 			rtd->DrawRectangle(dragRect, rectBrush, 1.0f);
 		}
@@ -511,7 +511,7 @@ void TilemapTool::MakeARoom() /////// 타일 인덱스 예외처리
 
 void TilemapTool::Test()
 {
-	//SceneManager::GetInstance()->ChangeScene("전투씬_1");
+	SceneManager::GetInstance()->ChangeScene("게임씬");
 }
 
 POINT TilemapTool::GetCurrentFrame(int tileType)

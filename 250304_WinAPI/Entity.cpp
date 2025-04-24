@@ -75,7 +75,14 @@ void Entity::TakeDamage(int dmg)
 {
 	hp -= dmg;
 	Stop();
-	entityObserver.NotifyDamageTaken(this, dmg, D2D1::ColorF(D2D1::ColorF::White));
+	if (type == EntityType::PLAYER)
+	{
+		entityObserver.NotifyDamageTaken(this, dmg, D2D1::ColorF(D2D1::ColorF::Red));
+	}
+	else
+	{
+		entityObserver.NotifyDamageTaken(this, dmg, D2D1::ColorF(D2D1::ColorF::White));
+	}
 	if (hp <= 0)
 	{
 		hp = 0;

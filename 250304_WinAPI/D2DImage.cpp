@@ -359,10 +359,10 @@ void D2DImage::DrawCircle(FPOINT center, float radius, int color, float lineThic
     renderTarget->DrawEllipse(ellipse, brushes[color], lineThickness);
 }
 
-void D2DImage::Middle_RenderRaw(ID2D1HwndRenderTarget* rt, const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect,
+void D2DImage::Middle_RenderRaw(const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect,
     float scaleX, float scaleY, float angle, bool flipX, bool flipY, float alpha)
 {
-    if (!bitmap || !rt) return;
+    if (!bitmap || !renderTarget) return;
 
     float halfWidth = (destRect.right - destRect.left) * 0.5f;
     float halfHeight = (destRect.bottom - destRect.top) * 0.5f;
@@ -390,15 +390,25 @@ void D2DImage::Middle_RenderRaw(ID2D1HwndRenderTarget* rt, const D2D1_RECT_F& de
         );
     }
 
-    rt->SetTransform(transform);
-    rt->DrawBitmap(bitmap, destRect, alpha, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, srcRect);
-    rt->SetTransform(D2D1::Matrix3x2F::Identity());
+    renderTarget->SetTransform(transform);
+    renderTarget->DrawBitmap(bitmap, destRect, alpha, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, srcRect);
+    renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 }
 
-void D2DImage::RenderRaw(ID2D1HwndRenderTarget* rt, const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect,
+void D2DImage::RenderRaw(float x, float y, float width, float height, float scaleX, float scaleY,
+     float angle, bool flipX, bool flipY, float alpha)
+{
+    if (!bitmap || !renderTarget) return;
+    D2D1_SIZE_F bmpSize = bitmap->GetSize();
+    D2D1_RECT_F srcRect = D2D1::RectF(0, 0, bmpSize.width, bmpSize.height);
+    D2D1_RECT_F destRect = D2D1::RectF(x, y, width, height);
+    RenderRaw(destRect, srcRect, scaleX, scaleY, angle, flipX, flipY, alpha);
+}
+
+void D2DImage::RenderRaw(const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect,
     float scaleX, float scaleY, float angle, bool flipX, bool flipY, float alpha)
 {
-    if (!bitmap || !rt) return;
+    if (!bitmap || !renderTarget) return;
 
     float x = destRect.left;
     float y = destRect.top;
@@ -423,9 +433,9 @@ void D2DImage::RenderRaw(ID2D1HwndRenderTarget* rt, const D2D1_RECT_F& destRect,
         );
     }
 
-    rt->SetTransform(transform);
-    rt->DrawBitmap(bitmap, destRect, alpha, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, srcRect);
-    rt->SetTransform(D2D1::Matrix3x2F::Identity());
+    renderTarget->SetTransform(transform);
+    renderTarget->DrawBitmap(bitmap, destRect, alpha, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, srcRect);
+    renderTarget->SetTransform(D2D1::Matrix3x2F::Identity());
 }
 
 D2D1_RECT_F D2DImage::GetFullSourceRect() const {
