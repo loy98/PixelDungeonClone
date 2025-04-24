@@ -18,10 +18,13 @@ void FModSoundPlayer::Init()
         LoadSound("death", "Sounds/Sfx/death.mp3", false);
         // 아이템
         LoadSound("item", "Sounds/Sfx/item.mp3", false);
+        // 클릭
+        LoadSound("click", "Sounds/Sfx/click.mp3", false);
     }
     //bmg
     {
         LoadSound("sewers_1", "Sounds/Bgm/sewers_1.ogg", true);
+        LoadSound("theme", "Sounds/Bgm/theme.mp3", true);
     }
 }
 
