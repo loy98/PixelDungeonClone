@@ -87,7 +87,9 @@ void TilemapTool::Release()
 		saveButton = nullptr;
 	}
 
-	rectBrush->Release();
+	if (rectBrush) {
+		rectBrush->Release();
+	}
 }
 
 void TilemapTool::Update()
@@ -163,10 +165,13 @@ void TilemapTool::Update()
 			int posY = clickP.y;
 			int tileX = (posX - mainOffset.x) / gridSize;
 			int tileY = (posY - mainOffset.y) / gridSize;
-			tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
+			if (tileX >= 0 && tileX < TILE_X && tileY >= 0 && tileY < TILE_Y) {
+				tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
 
-			MouseManager::GetInstance()->InitPoints();
-			MouseManager::GetInstance()->AlreadyClickUsed();
+				MouseManager::GetInstance()->InitPoints();
+				MouseManager::GetInstance()->AlreadyClickUsed();
+			}
+			
 		}
 
 		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT)==true) {
@@ -174,7 +179,9 @@ void TilemapTool::Update()
 			int posY = mouseP.y;
 			int tileX = (posX - mainOffset.x) / gridSize;
 			int tileY = (posY - mainOffset.y) / gridSize;
-			tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
+			if (tileX >= 0 && tileX < TILE_X && tileY >= 0 && tileY < TILE_Y) {
+				tileInfo[tileY * TILE_X + tileX].type = selectedTileType;
+			}
 		}
 
 		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_RIGHT) == true) {
@@ -301,7 +308,7 @@ void TilemapTool::Render(HDC hdc)
 		rtd->DrawRectangle(rectToDraw, rectBrush, 1.0f);
 
 		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_RIGHT) == true) {
-			D2D1_RECT_F dragRect = { dragRc.left, dragRc.top, dragRc.right, dragRc.bottom };
+			D2D1_RECT_F dragRect = { (float)dragRc.left, (float)dragRc.top, (float)dragRc.right, (float)dragRc.bottom };
 			rectBrush->SetColor(dragRcColor);
 			rtd->DrawRectangle(dragRect, rectBrush, 1.0f);
 		}
@@ -481,7 +488,7 @@ void TilemapTool::Paint()
 {
 }
 
-void TilemapTool::MakeARoom()
+void TilemapTool::MakeARoom() /////// 타일 인덱스 예외처리
 {
 	for (int i = 0; i < TILE_Y; ++i) {
 		for (int j = 0; j < TILE_X; ++j) {
@@ -506,7 +513,7 @@ void TilemapTool::MakeARoom()
 
 void TilemapTool::Test()
 {
-	//SceneManager::GetInstance()->ChangeScene("전투씬_1");
+	SceneManager::GetInstance()->ChangeScene("게임씬");
 }
 
 POINT TilemapTool::GetCurrentFrame(int tileType)

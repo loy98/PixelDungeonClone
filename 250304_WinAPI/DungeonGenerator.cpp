@@ -4,7 +4,6 @@
 #include <random>
 #include <algorithm>
 #include <ctime>
-#include <queue>
 
 DungeonGenerator::DungeonGenerator() {
     // 랜덤 시드 초기화
@@ -37,6 +36,7 @@ std::vector<std::vector<int>> DungeonGenerator::Generate(int width, int height) 
     
     // 3. 방 노드 생성
     std::vector<RoomNode> roomNodes;
+    roomNodes.reserve(rooms.size());
     for (const auto& room : rooms) {
         roomNodes.push_back(RoomNode(room, STANDARD));
     }
@@ -56,7 +56,7 @@ std::vector<std::vector<int>> DungeonGenerator::Generate(int width, int height) 
     PlaceSpecialRooms(map, roomNodes);
     
     // 8. 방과 복도 사이에 문 배치
-    PlaceDoorsAtRoomBorders(map, roomNodes);
+    // PlaceDoorsAtRoomBorders(map, roomNodes);
     
     // 9. 맵 정리
     CleanupWalls(map);
@@ -67,6 +67,29 @@ std::vector<std::vector<int>> DungeonGenerator::Generate(int width, int height) 
     return map;
 }
 
+std::vector<std::vector<int>> DungeonGenerator::GetTileVariations(std::vector<std::vector<int>>& map)
+{
+    int height = map.size();
+    int width = map[0].size();
+    
+    // 임시 맵에 변형을 저장 (원본 맵을 참조하면서 수정하기 위함)
+    std::vector<std::vector<int>> tempMap = map;
+    
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            if (map[y][x] == TILE_WALL) {
+                tempMap[y][x] = DetermineWallVariation(map, x, y);
+            }
+            else if (map[y][x] == TILE_FLOOR) {
+                tempMap[y][x] = DetermineFloorVariation(map, x, y);
+            }
+        }
+    }
+    
+    // 변형이 적용된 맵을 원본에 복사
+    return tempMap;
+}
+
 // 방 생성 메서드
 std::vector<DungeonGenerator::Room> DungeonGenerator::GenerateRooms(int width, int height, int minRooms, int maxRooms) {
     std::vector<Room> rooms;
@@ -75,7 +98,7 @@ std::vector<DungeonGenerator::Room> DungeonGenerator::GenerateRooms(int width, i
     int roomCount = GetRandomInt(minRooms, maxRooms);
     
     // 최대 시도 횟수 (무한 루프 방지)
-    const int MAX_ATTEMPTS = 300;
+    constexpr int MAX_ATTEMPTS = 300;
     int attempts = 0;
     
     while (rooms.size() < roomCount && attempts < MAX_ATTEMPTS) {
@@ -516,154 +539,157 @@ void DungeonGenerator::PlaceSpecialRooms(std::vector<std::vector<int>>& map, std
     int exitY = roomNodes[exitIdx].room.centerY();
     map[exitY][exitX] = TILE_EXIT;
     
-    // 문 배치 (방 연결 지점)
-    for (size_t i = 0; i < roomNodes.size(); i++) {
-        for (int connIdx : roomNodes[i].connections) {
-            // 중복 처리 방지
-            if (i < connIdx) {
-                // 두 방 사이의 중간 지점 찾기
-                int x1 = roomNodes[i].room.centerX();
-                int y1 = roomNodes[i].room.centerY();
-                int x2 = roomNodes[connIdx].room.centerX();
-                int y2 = roomNodes[connIdx].room.centerY();
-                
-                // 방 경계에 문 배치 (간단한 구현)
-                // 실제로는 더 복잡한 로직이 필요할 수 있음
-                if (std::abs(x1 - x2) > std::abs(y1 - y2)) {
-                    // 수평 방향으로 더 멀리 떨어져 있음
-                    int doorX = x2;
-                    int doorY = y1;
-                    
-                    // 문 주변이 바닥인지 확인
-                    if (map[doorY][doorX] == TILE_FLOOR) {
-                        // // 30% 확률로 문 배치
-                        // if (GetRandomBool(1.f)) {
-                        //     map[doorY][doorX] = TILE_DOOR;
-                        // }
-                    }
-                } else {
-                    // 수직 방향으로 더 멀리 떨어져 있음
-                    int doorX = x1;
-                    int doorY = y2;
-                    
-                    // 문 주변이 바닥인지 확인
-                    if (map[doorY][doorX] == TILE_FLOOR) {
-                        // // 30% 확률로 문 배치
-                        // if (GetRandomBool(1.f)) {
-                        //     map[doorY][doorX] = TILE_DOOR;
-                        // }
-                    }
-                }
-            }
-        }
-    }
+    // // 문 배치 (방 연결 지점)
+    // for (size_t i = 0; i < roomNodes.size(); i++) {
+    //     for (int connIdx : roomNodes[i].connections) {
+    //         // 중복 처리 방지
+    //         if (i < connIdx) {
+    //             // 두 방 사이의 중간 지점 찾기
+    //             int x1 = roomNodes[i].room.centerX();
+    //             int y1 = roomNodes[i].room.centerY();
+    //             int x2 = roomNodes[connIdx].room.centerX();
+    //             int y2 = roomNodes[connIdx].room.centerY();
+    //             
+    //             // 방 경계에 문 배치 (간단한 구현)
+    //             // 실제로는 더 복잡한 로직이 필요할 수 있음
+    //             if (std::abs(x1 - x2) > std::abs(y1 - y2)) {
+    //                 // 수평 방향으로 더 멀리 떨어져 있음
+    //                 int doorX = x2;
+    //                 int doorY = y1;
+    //                 
+    //                 // 문 주변이 바닥인지 확인
+    //                 if (map[doorY][doorX] == TILE_FLOOR) {
+    //                     // // 30% 확률로 문 배치
+    //                     // if (GetRandomBool(1.f)) {
+    //                     //     map[doorY][doorX] = TILE_DOOR;
+    //                     // }
+    //                 }
+    //             } else {
+    //                 // 수직 방향으로 더 멀리 떨어져 있음
+    //                 int doorX = x1;
+    //                 int doorY = y2;
+    //                 
+    //                 // 문 주변이 바닥인지 확인
+    //                 if (map[doorY][doorX] == TILE_FLOOR) {
+    //                     // // 30% 확률로 문 배치
+    //                     // if (GetRandomBool(1.f)) {
+    //                     //     map[doorY][doorX] = TILE_DOOR;
+    //                     // }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
 }
 
-// 숨겨진 방 배치 메서드
-void DungeonGenerator::PlaceHiddenRooms(std::vector<std::vector<int>>& map, std::vector<RoomNode>& roomNodes) {
-    // 숨겨진 방 개수 결정 (1-2개)
-    int hiddenRoomCount = GetRandomInt(1, 2);
-    
-    // 맵 크기 확인
-    int height = map.size();
-    int width = map[0].size();
-    
-    for (int i = 0; i < hiddenRoomCount; i++) {
-        // 숨겨진 방 크기 결정
-        int roomWidth = GetRandomInt(MIN_ROOM_SIZE, MAX_STANDARD_ROOM_SIZE);
-        int roomHeight = GetRandomInt(MIN_ROOM_SIZE, MAX_STANDARD_ROOM_SIZE);
-        
-        // 숨겨진 방 위치 결정 (기존 방과 겹치지 않도록)
-        int maxAttempts = 50;
-        int attempts = 0;
-        bool placed = false;
-        
-        while (!placed && attempts < maxAttempts) {
-            int left = GetRandomInt(1, width - roomWidth - 1);
-            int top = GetRandomInt(1, height - roomHeight - 1);
-            
-            Room hiddenRoom = {
-                left,
-                top,
-                left + roomWidth - 1,
-                top + roomHeight - 1
-            };
-            
-            // 기존 방과 겹치는지 확인
-            bool overlaps = false;
-            for (const auto& node : roomNodes) {
-                if (hiddenRoom.intersects(node.room, ROOM_MARGIN)) {
-                    overlaps = true;
-                    break;
-                }
-            }
-            
-            if (!overlaps) {
-                // 숨겨진 방 그리기
-                DrawRoom(map, hiddenRoom);
-                
-                // 가장 가까운 일반 방 찾기
-                int nearestRoomIdx = -1;
-                int minDistance = INT_MAX;
-                
-                for (size_t j = 0; j < roomNodes.size(); j++) {
-                    int distance = std::abs(hiddenRoom.centerX() - roomNodes[j].room.centerX()) +
-                                  std::abs(hiddenRoom.centerY() - roomNodes[j].room.centerY());
-                    
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        nearestRoomIdx = j;
-                    }
-                }
-                
-                if (nearestRoomIdx != -1) {
-                    // 숨겨진 방과 가장 가까운 방 사이에 숨겨진 문 생성
-                    int x1 = hiddenRoom.centerX();
-                    int y1 = hiddenRoom.centerY();
-                    int x2 = roomNodes[nearestRoomIdx].room.centerX();
-                    int y2 = roomNodes[nearestRoomIdx].room.centerY();
-                    
-                    // 복도 생성
-                    CreateCorridor(map, x1, y1, x2, y2);
-                    
-                    // 숨겨진 문 배치
-                    if (std::abs(x1 - x2) > std::abs(y1 - y2)) {
-                        // 수평 방향으로 더 멀리 떨어져 있음
-                        int doorX = (x1 + x2) / 2;
-                        int doorY = y1;
-                        
-                        // 문 주변이 바닥인지 확인
-                        if (map[doorY][doorX] == TILE_FLOOR) {
-                            map[doorY][doorX] = TILE_HIDDEN_DOOR;
-                        }
-                    } else {
-                        // 수직 방향으로 더 멀리 떨어져 있음
-                        int doorX = x1;
-                        int doorY = (y1 + y2) / 2;
-                        
-                        // 문 주변이 바닥인지 확인
-                        if (map[doorY][doorX] == TILE_FLOOR) {
-                            map[doorY][doorX] = TILE_HIDDEN_DOOR;
-                        }
-                    }
-                }
-                
-                // 숨겨진 방 노드 추가
-                RoomNode hiddenNode(hiddenRoom, HIDDEN);
-                roomNodes.push_back(hiddenNode);
-                
-                placed = true;
-            }
-            
-            attempts++;
-        }
-    }
-}
+// // 숨겨진 방 배치 메서드
+// void DungeonGenerator::PlaceHiddenRooms(std::vector<std::vector<int>>& map, std::vector<RoomNode>& roomNodes) {
+//     // 숨겨진 방 개수 결정 (1-2개)
+//     int hiddenRoomCount = GetRandomInt(1, 2);
+//     
+//     // 맵 크기 확인
+//     int height = map.size();
+//     int width = map[0].size();
+//     
+//     for (int i = 0; i < hiddenRoomCount; i++) {
+//         // 숨겨진 방 크기 결정
+//         int roomWidth = GetRandomInt(MIN_ROOM_SIZE, MAX_STANDARD_ROOM_SIZE);
+//         int roomHeight = GetRandomInt(MIN_ROOM_SIZE, MAX_STANDARD_ROOM_SIZE);
+//         
+//         // 숨겨진 방 위치 결정 (기존 방과 겹치지 않도록)
+//         int maxAttempts = 50;
+//         int attempts = 0;
+//         bool placed = false;
+//         
+//         while (!placed && attempts < maxAttempts) {
+//             int left = GetRandomInt(1, width - roomWidth - 1);
+//             int top = GetRandomInt(1, height - roomHeight - 1);
+//             
+//             Room hiddenRoom = {
+//                 left,
+//                 top,
+//                 left + roomWidth - 1,
+//                 top + roomHeight - 1
+//             };
+//             
+//             // 기존 방과 겹치는지 확인
+//             bool overlaps = false;
+//             for (const auto& node : roomNodes) {
+//                 if (hiddenRoom.intersects(node.room, ROOM_MARGIN)) {
+//                     overlaps = true;
+//                     break;
+//                 }
+//             }
+//             
+//             if (!overlaps) {
+//                 // 숨겨진 방 그리기
+//                 DrawRoom(map, hiddenRoom);
+//                 
+//                 // 가장 가까운 일반 방 찾기
+//                 int nearestRoomIdx = -1;
+//                 int minDistance = INT_MAX;
+//                 
+//                 for (size_t j = 0; j < roomNodes.size(); j++) {
+//                     int distance = std::abs(hiddenRoom.centerX() - roomNodes[j].room.centerX()) +
+//                                   std::abs(hiddenRoom.centerY() - roomNodes[j].room.centerY());
+//                     
+//                     if (distance < minDistance) {
+//                         minDistance = distance;
+//                         nearestRoomIdx = j;
+//                     }
+//                 }
+//                 
+//                 if (nearestRoomIdx != -1) {
+//                     // 숨겨진 방과 가장 가까운 방 사이에 숨겨진 문 생성
+//                     int x1 = hiddenRoom.centerX();
+//                     int y1 = hiddenRoom.centerY();
+//                     int x2 = roomNodes[nearestRoomIdx].room.centerX();
+//                     int y2 = roomNodes[nearestRoomIdx].room.centerY();
+//                     
+//                     // 복도 생성
+//                     CreateCorridor(map, x1, y1, x2, y2);
+//                     
+//                     // 숨겨진 문 배치
+//                     if (std::abs(x1 - x2) > std::abs(y1 - y2)) {
+//                         // 수평 방향으로 더 멀리 떨어져 있음
+//                         int doorX = (x1 + x2) / 2;
+//                         int doorY = y1;
+//                         
+//                         // 문 주변이 바닥인지 확인
+//                         if (map[doorY][doorX] == TILE_FLOOR) {
+//                             map[doorY][doorX] = TILE_HIDDEN_DOOR;
+//                         }
+//                     } else {
+//                         // 수직 방향으로 더 멀리 떨어져 있음
+//                         int doorX = x1;
+//                         int doorY = (y1 + y2) / 2;
+//                         
+//                         // 문 주변이 바닥인지 확인
+//                         if (map[doorY][doorX] == TILE_FLOOR) {
+//                             map[doorY][doorX] = TILE_HIDDEN_DOOR;
+//                         }
+//                     }
+//                 }
+//                 
+//                 // 숨겨진 방 노드 추가
+//                 RoomNode hiddenNode(hiddenRoom, HIDDEN);
+//                 roomNodes.push_back(hiddenNode);
+//                 
+//                 placed = true;
+//             }
+//             
+//             attempts++;
+//         }
+//     }
+// }
 
 // 맵 정리 메서드 (불필요한 벽 제거)
 void DungeonGenerator::CleanupWalls(std::vector<std::vector<int>>& map) {
     int height = map.size();
     int width = map[0].size();
+    
+    // 임시 맵에 변경사항을 저장
+    std::vector<std::vector<int>> tempMap = map;
     
     for (int y = 1; y < height - 1; y++) {
         for (int x = 1; x < width - 1; x++) {
@@ -687,11 +713,45 @@ void DungeonGenerator::CleanupWalls(std::vector<std::vector<int>>& map) {
                 
                 // 주변에 바닥이 없으면 불필요한 벽이므로 제거
                 if (!hasAdjacentFloor) {
-                    map[y][x] = TILE_NONE; // 또는 다른 타일로 변경 가능
+                    tempMap[y][x] = TILE_NONE;
                 }
             }
         }
     }
+    
+    // 최외각 벽 정리
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            // 맵 테두리만 처리
+            if (y == 0 || y == height - 1 || x == 0 || x == width - 1) {
+                if (map[y][x] == TILE_WALL) {
+                    // 테두리 벽이 방의 일부인지 확인
+                    bool isPartOfRoom = false;
+                    
+                    // 테두리 벽의 내부 방향 확인
+                    int checkY = (y == 0) ? 1 : (y == height - 1) ? height - 2 : y;
+                    int checkX = (x == 0) ? 1 : (x == width - 1) ? width - 2 : x;
+                    
+                    // 내부 방향에 바닥이 있는지 확인
+                    if (map[checkY][checkX] == TILE_FLOOR || 
+                        map[checkY][checkX] == TILE_DOOR || 
+                        map[checkY][checkX] == TILE_ENTRANCE || 
+                        map[checkY][checkX] == TILE_EXIT ||
+                        map[checkY][checkX] == TILE_HIDDEN_DOOR) {
+                        isPartOfRoom = true;
+                    }
+                    
+                    // 방의 일부가 아니면 제거
+                    if (!isPartOfRoom) {
+                        tempMap[y][x] = TILE_NONE;
+                    }
+                }
+            }
+        }
+    }
+    
+    // 변경사항을 원본 맵에 적용
+    map = tempMap;
 }
 
 // 방 그리기 함수
@@ -845,28 +905,88 @@ int DungeonGenerator::DetermineWallVariation(const std::vector<std::vector<int>>
     int height = map.size();
     int width = map[0].size();
     
+    // 현재 타일이 벽이 아니면 바로 리턴
+    if (map[y][x] != TILE_WALL) {
+        return map[y][x];
+    }
+    
     // 주변 8방향의 타일 확인
-    bool hasFloorAbove = (y > 0 && (map[y-1][x] == TILE_FLOOR || map[y-1][x] >= TILE_FLOOR_NORMAL));
-    bool hasFloorBelow = (y < height-1 && (map[y+1][x] == TILE_FLOOR || map[y+1][x] >= TILE_FLOOR_NORMAL));
-    bool hasFloorLeft = (x > 0 && (map[y][x-1] == TILE_FLOOR || map[y][x-1] >= TILE_FLOOR_NORMAL));
-    bool hasFloorRight = (x < width-1 && (map[y][x+1] == TILE_FLOOR || map[y][x+1] >= TILE_FLOOR_NORMAL));
+    auto isWall = [&](int x, int y) -> bool {
+        if (x < 0 || x >= width || y < 0 || y >= height) return true;
+        return map[y][x] == TILE_WALL || map[y][x] == TILE_NONE;
+    };
     
-    bool hasFloorTopLeft = (y > 0 && x > 0 && (map[y-1][x-1] == TILE_FLOOR || map[y-1][x-1] >= TILE_FLOOR_NORMAL));
-    bool hasFloorTopRight = (y > 0 && x < width-1 && (map[y-1][x+1] == TILE_FLOOR || map[y-1][x+1] >= TILE_FLOOR_NORMAL));
-    bool hasFloorBottomLeft = (y < height-1 && x > 0 && (map[y+1][x-1] == TILE_FLOOR || map[y+1][x-1] >= TILE_FLOOR_NORMAL));
-    bool hasFloorBottomRight = (y < height-1 && x < width-1 && (map[y+1][x+1] == TILE_FLOOR || map[y+1][x+1] >= TILE_FLOOR_NORMAL));
+    auto isFloor = [&](int x, int y) -> bool {
+        if (x < 0 || x >= width || y < 0 || y >= height) return false;
+        return map[y][x] == TILE_FLOOR || 
+               map[y][x] == TILE_DOOR || 
+               map[y][x] == TILE_ENTRANCE || 
+               map[y][x] == TILE_EXIT ||
+               map[y][x] == TILE_HIDDEN_DOOR;
+    };
     
-    // 모서리 벽 결정
-    if (hasFloorBelow && hasFloorRight && !hasFloorBottomRight) return TILE_WALL_CORNER_BR;
-    if (hasFloorBelow && hasFloorLeft && !hasFloorBottomLeft) return TILE_WALL_CORNER_BL;
-    if (hasFloorAbove && hasFloorRight && !hasFloorTopRight) return TILE_WALL_CORNER_TR;
-    if (hasFloorAbove && hasFloorLeft && !hasFloorTopLeft) return TILE_WALL_CORNER_TL;
+    // 주변 타일 상태 확인
+    bool hasFloorAbove = isFloor(x, y-1);
+    bool hasFloorBelow = isFloor(x, y+1);
+    bool hasFloorLeft = isFloor(x-1, y);
+    bool hasFloorRight = isFloor(x+1, y);
+    
+    bool hasFloorTopLeft = isFloor(x-1, y-1);
+    bool hasFloorTopRight = isFloor(x+1, y-1);
+    bool hasFloorBottomLeft = isFloor(x-1, y+1);
+    bool hasFloorBottomRight = isFloor(x+1, y+1);
+    
+    // 모서리 벽 결정 (우선순위가 높음)
+    // 우하단 모서리
+    if (hasFloorBelow && hasFloorRight && !hasFloorBottomRight) {
+        bool hasWallBelow = isWall(x, y+1);
+        bool hasWallRight = isWall(x+1, y);
+        if (hasWallBelow && hasWallRight) {
+            return TILE_WALL_CORNER_BR;
+        }
+    }
+    // 좌하단 모서리
+    if (hasFloorBelow && hasFloorLeft && !hasFloorBottomLeft) {
+        bool hasWallBelow = isWall(x, y+1);
+        bool hasWallLeft = isWall(x-1, y);
+        if (hasWallBelow && hasWallLeft) {
+            return TILE_WALL_CORNER_BL;
+        }
+    }
+    // 우상단 모서리
+    if (hasFloorAbove && hasFloorRight && !hasFloorTopRight) {
+        bool hasWallAbove = isWall(x, y-1);
+        bool hasWallRight = isWall(x+1, y);
+        if (hasWallAbove && hasWallRight) {
+            return TILE_WALL_CORNER_TR;
+        }
+    }
+    // 좌상단 모서리
+    if (hasFloorAbove && hasFloorLeft && !hasFloorTopLeft) {
+        bool hasWallAbove = isWall(x, y-1);
+        bool hasWallLeft = isWall(x-1, y);
+        if (hasWallAbove && hasWallLeft) {
+            return TILE_WALL_CORNER_TL;
+        }
+    }
     
     // 일반 벽 결정
-    if (hasFloorAbove && !hasFloorBelow) return TILE_WALL_BOTTOM;
-    if (!hasFloorAbove && hasFloorBelow) return TILE_WALL_TOP;
-    if (hasFloorLeft && !hasFloorRight) return TILE_WALL_RIGHT;
-    if (!hasFloorLeft && hasFloorRight) return TILE_WALL_LEFT;
+    // 위쪽 벽
+    if (hasFloorAbove && !hasFloorBelow && !hasFloorLeft && !hasFloorRight) {
+        return TILE_WALL_BOTTOM;
+    }
+    // 아래쪽 벽
+    if (!hasFloorAbove && hasFloorBelow && !hasFloorLeft && !hasFloorRight) {
+        return TILE_WALL_TOP;
+    }
+    // 왼쪽 벽
+    if (!hasFloorAbove && !hasFloorBelow && hasFloorLeft && !hasFloorRight) {
+        return TILE_WALL_RIGHT;
+    }
+    // 오른쪽 벽
+    if (!hasFloorAbove && !hasFloorBelow && !hasFloorLeft && hasFloorRight) {
+        return TILE_WALL_LEFT;
+    }
     
     // 기본 벽
     return TILE_WALL;

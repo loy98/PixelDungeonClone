@@ -6,6 +6,8 @@
 #include "../Core/UIContainerBase.h"
 
 
+struct BarStyle;
+class UIValueBar;
 class UI9PatchImage;
 class UIImage;
 class UIText;
@@ -22,6 +24,7 @@ struct NinePatchStyle;
 
 namespace UIHelper {
     /* 생성 코드 */
+    UIValueBar* ApplyBarStyle(UIContainerBase* target, D2D1_RECT_F localRect, const BarStyle& style);
     UI9PatchImage* ApplyNinePathStyle(UIContainerBase* target, const D2D1_RECT_F& localRect, const NinePatchStyle& style);
     UIText* ApplyTextStyle(UIContainerBase* target, const D2D1_RECT_F& localRect, const TextStyle& style);
     UIImage* ApplyImageStyle(UIContainerBase* target, const D2D1_RECT_F& localRect, const ImageStyle& style);
@@ -42,8 +45,9 @@ namespace UIHelper {
     void SetButtonImage(const UIImageTextButton& btn, const NinePatchStyle& style, size_t index = 0);
     /* 인벤 전용 */
     void SetInventorySlotData(const UIImageTextButton& target, const UIInventorySlotData* data);
-    void UpdateInventorySlot(UIImageTextButton& slot, const UIInventorySlotStyle& style,
+    void UpdateInventorySlot(UIImageTextButton& slot,
                              const UIInventorySlotData& data, const std::function<void()>& onClick = nullptr);
+    
 
     /* 공통 템플릿 및 수학용 */
     float Clamp(float value, float minVal, float maxVal);

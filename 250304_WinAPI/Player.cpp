@@ -8,6 +8,9 @@
 #include "TimerManager.h"
 #include "PathFinder.h"
 #include "CombatSyetem.h"
+#include "Item.h"
+#include "Inventory.h"
+#include "Animator.h"
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -20,6 +23,14 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     isMoving = false;
 
     isActive = true;
+    level = 1;
+    exp = 0;
+    maxExp = 5;
+
+    startFrame = 0;
+    endFrame = 1;
+    stayEndFrame = false;
+    maxAnimTime = 0.5f;
 
     type = EntityType::PLAYER;
     curState = EntityState::IDLE;
@@ -32,18 +43,51 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
     finder = new PathFinder();
     destPos = position;
 
-    //image = D2DImageManager::GetInstance()->AddImage("player", L"Image/warrior.png", 21, 7); 
+    inven = new Inventory(this);
 
+    image = D2DImageManager::GetInstance()->AddImage("warrior", L"Image/warrior.png", 21, 7);
+
+    animator->AddClip("Idle", { 0,  1, 0.5f, true,  nullptr });
+    animator->AddClip("Move", { 2,  8, 0.2f, true,  nullptr });
+    animator->AddClip("Attack", { 13, 15, 0.1f, false, [this]() {
+        // 공격 애니 끝나고 실행할 콜백
+        if (target)
+        {
+            CombatSyetem::GetInstance()->ProcessAttack(this, target);
+            Stop();
+            SetState(EntityState::DUMMY);
+        }
+    } });
+    animator->AddClip("Dead", { 8, 12, 0.3f, false, nullptr });
 }
 
 Player::~Player()
 {
 }
 
+void Player::Update()
+{
+    Super::Update();
+    switch (curState)
+    {
+    case EntityState::IDLE:
+        return;
+    case EntityState::MOVE:
+        return;
+    case EntityState::ATTACK:
+        //if (curAnimFrame == endFrame)
+        //    curState = EntityState::DUMMY;
+        return;
+    case EntityState::DEAD:
+        // player는 죽은채로 계속 애니메이션 돼야함
+        return;
+    }
+}
+
 void Player::Render(HDC hdc)
 {
     if (image)
-        image->Middle_RenderFrameScale(position.x, position.y, 2.f, 2.f, 1, 1);
+        image->Middle_RenderFrameScale(position.x, position.y, 2.f, 2.f, curAnimFrame, 1);
 }
 
 void Player::Act(Level* level)
@@ -62,40 +106,98 @@ void Player::Act(Level* level)
     case EntityState::DEAD:
         // player는 죽은채로 계속 애니메이션 돼야함
         return;
+    case EntityState::DUMMY:
+        SetState(EntityState::IDLE);
+        return;
     }
 }
 
 void Player::Attack(Level* level)
 {
-    if (target)
-    {
-        CombatSyetem::GetInstance()->ProcessAttack(this, target);
-        Stop();
-        curState = EntityState::IDLE;
-    }
+    //if (target)
+    //{
+    //    CombatSyetem::GetInstance()->ProcessAttack(this, target);
+    //    Stop();
+
+    //    //SetState(EntityState::IDLE);
+    //}
 }
 
 void Player::ActIdle(Level* level)
 {
+    // 테스트용
+    if (KeyManager::GetInstance()->IsOnceKeyDown('P'))
+    {
+        if (inven)
+        {
+            inven->UseItem("체력포션");
+        }
+    }
+
+    if (position == destPos) return;
     if (finder->FindPath(position, destPos, level, OUT path))
         targetPos = path[1];
-    if (position == destPos) return;
-
-    //isMoving = level->GetMap(targetPos.x, targetPos.y)->CanGo();
 
     target = level->GetActorAt(targetPos);
     if (target)
     {
-        curState = EntityState::ATTACK;
+        SetState(EntityState::ATTACK);
         return;
     }    
     if (!level->GetMap(targetPos.x, targetPos.y)->CanGo()) return;
 
-    curState = EntityState::MOVE;
+    SetState(EntityState::MOVE);
+}
+
+void Player::GetItem(Item* item)
+{
+    if (inven)
+    {
+        inven->AddItem(item);
+        entityObserver.NotifyChangePlayerInven(this);
+    }
+}
+
+void Player::Heal(int healAmount)
+{
+    hp += healAmount;
+    if (hp >= maxHp) hp = maxHp;
+    entityObserver.NotifyDamageTaken(this, -healAmount, D2D1::ColorF(D2D1::ColorF::White));
+}
+
+void Player::SetState(EntityState state)
+{
+    switch (state)
+    {
+    case EntityState::IDLE:
+        // SetAimData(0, 1, 2.0);
+        curState = EntityState::IDLE;
+        animator->Play("Idle");
+        break;
+    case EntityState::MOVE:
+        // SetAimData(2, 8, 0.1);
+        curState = EntityState::MOVE;
+        animator->Play("Move");
+        break;
+    case EntityState::ATTACK:
+        // SetAimData(13, 15, 0.1);
+        curState = EntityState::ATTACK;
+        animator->Play("Attack");
+        break;
+    case EntityState::DEAD:
+        // SetAimData(8, 12, 0.3);
+        curState = EntityState::DEAD;
+        animator->Play("Dead");
+        break;
+    case EntityState::DUMMY:
+        curState = EntityState::DUMMY;
+        break;
+    }
+
 }
 
 void Player::Move(Level* level)
-{
+{   
     //if (!level->GetMap(targetPos.x, targetPos.y)->CanGo())
     //{
     //    curState = EntityState::IDLE;
@@ -116,6 +218,6 @@ void Player::Move(Level* level)
     if (delta.Length() <= 10.f)
     {
         position = targetPos;
-        curState = EntityState::IDLE;
+        SetState(EntityState::IDLE);
     }
 }
