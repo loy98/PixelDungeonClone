@@ -73,7 +73,7 @@ void Level::Init()
 
 
     // Generate dungeon
-    dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
+    dungeonSystem.GenerateDungeon(true, this, mapWidth, mapHeight, 10, 8, 12);
 
     // Place player near entrance
     FPOINT playerPos = GetEntranceSpawnPosition();
@@ -154,12 +154,15 @@ void Level::Update()
         player->TakeDamage(30);
     }
     
-    if (player->GetState() == EntityState::MOVE) {
-        camera->UpdateCenter(player->GetPosition());
+    if (player) {
+        if (player->GetState() == EntityState::MOVE) {
+            camera->UpdateCenter(player->GetPosition());
+        }
+        else {
+            camera->Update();
+        }
     }
-    else {
-        camera->Update();
-    }
+    
   
 	for (int i = 0; i < TILE_Y; ++i)
 	{
@@ -870,3 +873,84 @@ void Level::Render8x8Tiles(HDC hdc)
 //     return bitmask;
 // }
 
+void TestLevel::Init()
+{
+    turnManager = new TurnManager();
+
+    sampleTile = D2DImageManager::GetInstance()->AddImage(
+        "배틀시티_샘플타일", L"Image/tiles_sewers.png",
+        16, 16);
+
+    wallTile = D2DImageManager::GetInstance()->AddImage("wallTile", L"Image/tiles_sewers.png", 32, 32);
+
+    for (int i = 0; i < TILE_Y; ++i)
+    {
+        for (int j = 0; j < TILE_X; ++j)
+        {
+            tempTile[TILE_X * i + j] =
+            {
+                GRID_POS_OFFSET.x + j * TILE_SIZE,
+                GRID_POS_OFFSET.y + i * TILE_SIZE,
+                GRID_POS_OFFSET.x + (j + 1) * TILE_SIZE,
+                GRID_POS_OFFSET.y + (i + 1) * TILE_SIZE
+            };
+        }
+    }
+
+    mapRc = { tempTile[0].left, tempTile[0].top, tempTile[TILE_X * TILE_Y - 1].right, tempTile[TILE_X * TILE_Y - 1].bottom };
+
+    for (auto& s : shouldBeRender)
+    {
+        s = true;
+    }
+    for (auto& h : hasExplored)
+    {
+        h = true;
+    }
+    for (auto& i : isSeen)
+    {
+        i = true;
+    }
+
+    FileLoad();
+
+    // Set map dimensions
+    mapWidth = TILE_X;
+    mapHeight = TILE_Y;
+
+
+    // Generate dungeon
+    dungeonSystem.GenerateDungeon(false, this, mapWidth, mapHeight, 10, 8, 12, filePath);
+
+    // Place player near entrance
+    FPOINT playerPos = GetEntranceSpawnPosition();
+    player = new Player(playerPos, 1000.f, 20, 50, 2);
+    AddActor(player);
+
+    camera = new Camera();
+    camera->Init(player->GetPosition());
+
+    // UI
+    uiManager = UIManager::GetInstance();
+    uiManager->Init();
+    uiManager->RegisterCamera(camera);
+    uiManager->RegisterPlayer(player);
+    //
+
+    for (auto actor : actors)
+    {
+        if (actor)
+        {
+            turnManager->AddActor(actor);
+            uiManager->RegisterEntity(actor);
+        }
+    }
+    turnManager->Init();
+
+
+    // Item
+    Item* potion1 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , TILE_SIZE });
+    Item* potion2 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , 0 });
+    AddItem(potion1);
+    AddItem(potion2);
+}

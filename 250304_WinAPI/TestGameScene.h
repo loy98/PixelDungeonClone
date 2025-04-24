@@ -1,21 +1,21 @@
 ﻿#pragma once
 #include "GameObject.h"
-class Level;
-class GameScene : public GameObject
+class TestLevel;
+
+class TestGameScene : public GameObject
 {
 private:
-	Level* levels[7];
-	int currLevel;
-	const int testLevel = 6;
+	TestLevel* testLevel;
 public:
 	virtual HRESULT Init();
 	virtual void Release();
 	virtual void Update();
 	virtual void Render(HDC hdc);
 
-	void Restart();
+	virtual void Restart();
+	void Exit();
 
-	GameScene();
-	virtual ~GameScene() {};
+	TestGameScene();
+	virtual ~TestGameScene() {};
 };
 
