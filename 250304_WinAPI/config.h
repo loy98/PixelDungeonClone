@@ -36,6 +36,7 @@ using namespace std;
 #include "MouseManager.h"
 #include "TimerManager.h"
 #include "SceneManager.h"
+#include "UIManager.h"
 
 // 랜덤
 #include <cstdlib>
