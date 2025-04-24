@@ -19,6 +19,7 @@ class UIEffectManager;
 class UIResourceSubManager;
 class UIInventory;
 class UITopRightUI;
+class UIGameOver;
 class UIMopHPManager;
 
 class Camera;
@@ -52,6 +53,7 @@ private:
 	UITopRightUI* uiTopRightUI;
 	UIStatusPanel* uiStatusPanel;
 	UIInventory* uiInventoryPanel;
+	UIGameOver* uiGameOver;
 
 	TextStyle defaultLogStyle{
 		L"pixel",
@@ -62,9 +64,14 @@ private:
 		DWRITE_PARAGRAPH_ALIGNMENT_NEAR
 	};
 
+
+	function<void()> restartCallback;
+
+public:
+
 protected:
 	float zoomScale{1.0f};
-	
+
 public:
 	void RegisterPlayer(Player* player);
 	void RegisterEntity(Entity* entity);
@@ -78,7 +85,15 @@ public:
 	void SetWorldUISCale(float scale);
 	void UseUIItem(int idx);
 	
+	void SetCurrentPlayer(Player* player) { currentPlayer = player; }
+
 	virtual ~UIManager();
+
+	void SetRestartCallback(std::function<void()> cb);
+
+	UIGameOver* GetUiGameOver() { return uiGameOver; }
+
+	void ClearUiContainers();
 
 	void Init();
 	void Update();

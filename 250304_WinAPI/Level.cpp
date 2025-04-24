@@ -20,6 +20,7 @@
 #include "HealPotion.h"
 
 
+
 void Level::Init()
 {
     turnManager = new TurnManager();
@@ -104,7 +105,7 @@ void Level::Init()
 void Level::Release()
 {
     
-	for (auto actor : actors)
+	for (auto& actor : actors)
 	{
 		if (actor)
 		{
@@ -115,11 +116,13 @@ void Level::Release()
     
     if (player)
     {
+        //delete player;
         player = nullptr;
+        uiManager->SetCurrentPlayer(nullptr);
     }
 
     // Items
-    for (auto item : items)
+    for (auto& item : items)
     {
         if (item)
         {
@@ -127,6 +130,7 @@ void Level::Release()
             item = nullptr;
         }
     }
+    
     uiManager = nullptr;
 
     if (camera) {
@@ -138,6 +142,10 @@ void Level::Release()
 void Level::Update()
 {
     uiManager->Update();
+
+    if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE)) {
+        player->TakeDamage(30);
+    }
     
     if (player->GetState() == EntityState::MOVE) {
         camera->UpdateCenter(player->GetPosition());
