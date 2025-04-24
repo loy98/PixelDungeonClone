@@ -17,7 +17,8 @@ class Camera;
 class UIManager;
 class Level
 {
-private:
+protected:
+	//filePath
 
 	//map
 	Map map[TILE_Y * TILE_X];
@@ -81,7 +82,7 @@ private:
 	UIManager* uiManager;;
 	
 public:
-	void Init();
+	virtual void Init();
 	void Release();
 	void Update();
 	void Render(HDC hdc);
@@ -159,5 +160,14 @@ public:
 
 	// AI
 	FPOINT GetPlayerPos();
+};
+
+class TestLevel : public Level {
+private:
+	WCHAR* filePath;
+public:
+	virtual void Init() override;
+
+	TestLevel(WCHAR* filepath) : filePath(filepath) {}
 };
 
