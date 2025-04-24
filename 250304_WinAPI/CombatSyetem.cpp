@@ -1,6 +1,7 @@
 ﻿#include "CombatSyetem.h"
 #include "Entity.h"
 #include "UIManager.h"
+#include "FModSoundPlayer.h"
 
 int CombatSyetem::CalculateDmg(Entity* attacker, Entity* defender)
 {
@@ -20,6 +21,9 @@ void CombatSyetem::ProcessAttack(Entity* attacker, Entity* defender)
 
 	int dmg = CalculateDmg(attacker, defender);
 	defender->TakeDamage(dmg);
+
+	// 공격소리
+	FModSoundPlayer::GetInstance()->Play("hit", 0.3f);
 
 	// 시스템 로그-공격
 	if (attacker->GetType() == EntityType::PLAYER)

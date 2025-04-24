@@ -140,6 +140,9 @@ void Player::GetItem(Item* item)
         inven->AddItem(item);
         entityObserver.NotifyChangePlayerInven(this);
 
+        // 아이템 획득 사운드
+        FModSoundPlayer::GetInstance()->Play("item", 0.3f);
+
         // 시스템 로그 출력-아이템 획득
         wstring label = cp949_to_wstring(item->GetName());
         // 영어
@@ -148,6 +151,8 @@ void Player::GetItem(Item* item)
         // 한글
         wstring kor = label + L"을(를) 얻었다.";
         UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::White));
+
+
     }
 }
 
