@@ -87,7 +87,7 @@ void TilemapTool::Release()
 		saveButton = nullptr;
 	}
 
-	rectBrush->Release();
+	//rectBrush->Release();
 }
 
 void TilemapTool::Update()

@@ -1,4 +1,4 @@
-#include "Level.h"
+﻿#include "Level.h"
 #include "DungeonGenerator.h"
 #include "config.h"
 #include <random>
@@ -25,7 +25,7 @@ void Level::Init()
     turnManager = new TurnManager();
 
     sampleTile = D2DImageManager::GetInstance()->AddImage(
-        "배틀시티_샘플타일", L"Image/tiles_sewers.png",
+        "배틀시티_샘플타일", L"Image/tiles_sewers.png", 
         16, 16);
     
     for (int i = 0; i < TILE_Y; ++i)
@@ -63,14 +63,13 @@ void Level::Init()
     mapWidth = TILE_X;
     mapHeight = TILE_Y;
 
+
     // Generate dungeon
     dungeonSystem.GenerateDungeon(this, mapWidth, mapHeight, 10, 8, 12);
 
     // Place player near entrance
     FPOINT playerPos = GetEntranceSpawnPosition();
-
-    player = new Player(playerPos, 300.f, 20, 5, 2);
-
+    player = new Player(playerPos, 1000.f, 20, 50, 2);
     AddActor(player);
     
     camera = new Camera();
@@ -207,11 +206,11 @@ void Level::Update()
     SetVisibleTile();
     
 
-    turnManager->ProcessTurns(this);
     for (auto actor : actors)
     {
         if (actor) actor->Update();
     }
+    turnManager->ProcessTurns(this);
 }
 
 void Level::Render(HDC hdc)
@@ -319,8 +318,9 @@ void Level::Render(HDC hdc)
     // Render actors
     for (auto actor : actors)
     {
-        if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
-        {
+        //if (map[GetMapIndex(actor->GetPosition().x, actor->GetPosition().y)].visible)
+        //{
+        //}
             if (actor->GetImage()) {
                 actor->GetImage()->
                     Middle_RenderFrameScale(
@@ -328,7 +328,6 @@ void Level::Render(HDC hdc)
                         camera->ConvertToRendererY(actor->GetPosition().y),
                         camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, actor->GetCurAnimIdx(), 0);
             }
-        }
     }
 
     // UI

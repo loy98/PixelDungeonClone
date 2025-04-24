@@ -22,7 +22,7 @@ void Inventory::AddItem(Item* item)
     // 장비... 같은 이름이면 indexMap 사용 불가,,, 같은 장비 못먹는다?
     if (it != indexMap.end() && indexMap[key] != -1)
     {
-        if (item->GetType() == ItemType::CONSUMABLE)
+        if (item->GetItemType() == ItemType::CONSUMABLE)
         {
             items[it->second].count++;
         }

@@ -4,12 +4,14 @@
 #include "D2DImageManager.h"
 #include "TimerManager.h"
 #include "UIManager.h"
+#include "Animator.h"
 
 Entity::Entity()
 {
 	image = D2DImageManager::GetInstance()->AddImage("warrior", L"Image/warrior.png", 21, 7);
 	//image = D2DImageManager::GetInstance()->AddImage("entityTest", L"Image/rat.png", 16, 3);
 	isActive = true;
+	animator = new Animator;
 }
 
 Entity::~Entity()
@@ -18,24 +20,28 @@ Entity::~Entity()
 
 void Entity::Update()
 {
-	curTime += TimerManager::GetInstance()->GetDeltaTime();
-	if (curTime > maxAnimTime)
-	{
-		if (!stayEndFrame)
-		{
-			if (curAnimFrame >= endFrame)
-			{
-				curAnimFrame = startFrame;
-			}
-		}
-		else if (curAnimFrame >= endFrame)
-		{
-			curAnimFrame = endFrame;
-			return;
-		}
-		curAnimFrame++;
-		curTime = 0;
-	}
+	//curTime += TimerManager::GetInstance()->GetDeltaTime();
+	//if (curTime > maxAnimTime)
+	//{
+	//	curAnimFrame++;
+	//	curTime = 0;
+	//	if (!stayEndFrame)
+	//	{
+	//		if (curAnimFrame > endFrame)
+	//		{
+	//			curAnimFrame = startFrame;
+	//		}
+	//	}
+	//	else if (curAnimFrame > endFrame)
+	//	{
+	//		curAnimFrame = endFrame;
+	//		return;
+	//	}
+	//	
+	//}
+	float delta = TimerManager::GetInstance()->GetDeltaTime();
+	animator->Update(delta);
+	curAnimFrame = animator->GetCurFrame();
 }
 
 void Entity::Render(HDC hdc)
@@ -55,6 +61,16 @@ void Entity::Act(Level* level)
 {
 }
 
+void Entity::SetAimData(int start, int end, float maxTime)
+{
+	startFrame = start;
+	endFrame = end;
+	maxAnimTime = maxTime;
+	curAnimFrame = startFrame;
+	stayEndFrame = false;
+	curTime = 0;
+}
+
 void Entity::TakeDamage(int dmg)
 {
 	hp -= dmg;
@@ -70,8 +86,9 @@ void Entity::TakeDamage(int dmg)
 	if (hp <= 0)
 	{
 		hp = 0;
-		isActive = false;
-		curState = EntityState::DEAD;
+		//isActive = false;
+		curState = EntityState::DEAD; // 몬스터 죽은거 확인용
+		SetState(EntityState::DEAD);
 		entityObserver.NotifyDeath(this);
 	}
 }
