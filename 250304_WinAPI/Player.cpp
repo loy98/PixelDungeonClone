@@ -16,21 +16,16 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
     position = pos;
     this->speed = speed;
-    this->hp = hp;
-    this->maxHp = hp;
-    this->attackDmg = attDmg;
-    this->defense = defense;
+    this->hp = 20;
+    this->maxHp = 20;
+    attackDmg = {1, 5};
+    this->defense = 2;
     isMoving = false;
 
     isActive = true;
     level = 1;
     exp = 0;
-    maxExp = 5;
-
-    startFrame = 0;
-    endFrame = 1;
-    stayEndFrame = false;
-    maxAnimTime = 0.5f;
+    maxExp = 10;
 
     type = EntityType::PLAYER;
     curState = EntityState::IDLE;
@@ -55,33 +50,16 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
         {
             CombatSyetem::GetInstance()->ProcessAttack(this, target);
             Stop();
-            SetState(EntityState::DUMMY);
+            SetState(EntityState::WAIT);
         }
     } });
     animator->AddClip("Dead", { 8, 12, 0.3f, false, nullptr });
+
+    animator->Play("Idle");
 }
 
 Player::~Player()
 {
-}
-
-void Player::Update()
-{
-    Super::Update();
-    switch (curState)
-    {
-    case EntityState::IDLE:
-        return;
-    case EntityState::MOVE:
-        return;
-    case EntityState::ATTACK:
-        //if (curAnimFrame == endFrame)
-        //    curState = EntityState::DUMMY;
-        return;
-    case EntityState::DEAD:
-        // player는 죽은채로 계속 애니메이션 돼야함
-        return;
-    }
 }
 
 void Player::Render(HDC hdc)
@@ -106,9 +84,13 @@ void Player::Act(Level* level)
     case EntityState::DEAD:
         // player는 죽은채로 계속 애니메이션 돼야함
         return;
-    case EntityState::DUMMY:
+    case EntityState::WAIT:
         SetState(EntityState::IDLE);
         return;
+        // 아이템때문에 고민중
+    //case EntityState::USING_ITEM:
+    //    UseItem()
+    //    return;
     }
 }
 
@@ -165,6 +147,11 @@ void Player::Heal(int healAmount)
     entityObserver.NotifyDamageTaken(this, -healAmount, D2D1::ColorF(D2D1::ColorF::White));
 }
 
+void Player::UseItem(Level* level)
+{
+    /*inven->Use(this, level);*/
+}
+
 void Player::SetState(EntityState state)
 {
     switch (state)
@@ -189,8 +176,8 @@ void Player::SetState(EntityState state)
         curState = EntityState::DEAD;
         animator->Play("Dead");
         break;
-    case EntityState::DUMMY:
-        curState = EntityState::DUMMY;
+    case EntityState::WAIT:
+        curState = EntityState::WAIT;
         break;
     }
 
