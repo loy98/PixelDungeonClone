@@ -29,7 +29,8 @@ HRESULT LobbyScene::Init()
 	exitButton = new ExitButton;
 	mainMapTXT = D2DImageManager::GetInstance()->AddImage("메인맵텍스트", L"Image/playtxt.png");
 	toolMapTXT = D2DImageManager::GetInstance()->AddImage("툴맵텍스트", L"Image/tooltxt.png");
-
+	team2TXT = D2DImageManager::GetInstance()->AddImage("팀2텍스트", L"Image/Team2txt.png");
+	
 	// 버튼 영역
 	dashboardRc.left = 216 * 2;
 	dashboardRc.top = WINSIZE_Y / 2 - 70;
@@ -115,6 +116,9 @@ void LobbyScene::Render(HDC hdc)
 	mainMapTXT->RenderFrameScale((mainRc.left+16), mainRc.bottom, 3, 3, 0, 0);
 
 	toolMapTXT->RenderFrameScale((toolRc.left +16), toolRc.bottom, 3, 3, 0, 0);
+
+
+	team2TXT->Middle_RenderFrameScale(WINSIZE_X - 50, WINSIZE_Y - 30, 2, 2, 0, 0);
 }
 
 LobbyScene::LobbyScene()

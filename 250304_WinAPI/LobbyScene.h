@@ -13,7 +13,8 @@ private:
 	D2DImage* mainMapTXT;
 	D2DImage* toolMapTXT;
 	D2DImage* fireball;
-
+	D2DImage* team2TXT;
+	
 	float elapsedTime;
 	int curFrame;
 
