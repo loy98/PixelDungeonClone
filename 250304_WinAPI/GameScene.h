@@ -17,5 +17,8 @@ public:
 
 	GameScene();
 	virtual ~GameScene() {};
+
+protected:
+	void LevelInit(int level);
 };
 

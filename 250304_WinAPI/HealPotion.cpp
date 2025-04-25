@@ -2,6 +2,7 @@
 #include "D2DImageManager.h"
 #include "D2DImage.h"
 #include "Entity.h"
+#include "UIManager.h"
 
 HealPotion::HealPotion(FPOINT position)
 {

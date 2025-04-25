@@ -12,7 +12,8 @@
 #include "../../Player.h"
 #include "../../Inventory.h"
 #include "../../Item.h"
-#include "UIManager.h"
+#include "../../UIManager.h"
+#include "../../CommonFunction.h"
 
 class UIInventory : public UIContainer, public IEntityObserver {
 private:
@@ -58,17 +59,26 @@ public:
         auto inven = entity->GetInven();
         if (inven)
         {
-            for (int idx = 0; idx < 25; ++idx)
+            for (int idx = 0; idx < 3; ++idx)
             {
                 auto slot = inven->GetSlot(idx);
 
                 if (slot.item)
                 {
-                    UIManager::GetInstance()->SendLog((L"Item IDX " + to_wstring(idx)), D2D1::ColorF(D2D1::ColorF::Blue));
-                    UIManager::GetInstance()->SendLog((L"Item 수량 " + to_wstring(slot.count)), D2D1::ColorF(D2D1::ColorF::Blue));
+                    
+                }
+            }
+            for (int idx = 3; idx < 25; ++idx)
+            {
+                auto slot = inven->GetSlot(idx);
+
+                if (slot.item)
+                {
+                    UIManager::GetInstance()->SendLog(cp949_to_wstring(slot.item->GetName()), D2D1::ColorF(D2D1::ColorF::White));
+                    auto* info = UIResourceSubManager::GetItemData(slot.item->GetName());
                     UpdateItemSlot(
                         idx,
-                        UIInventorySlotData{ slot.item->GetName(), slot.item->GetImage(), slot.count, 0},
+                        UIInventorySlotData{ slot.item->GetName(), slot.item->GetImage(), slot.count, 0, info},
                         [this, idx]() {UseItemSlot(idx); }
                     );
                 }
@@ -76,7 +86,7 @@ public:
                 {
                     UpdateItemSlot(
                         idx,
-                        UIInventorySlotData{ "", nullptr, 0, 0},
+                        UIInventorySlotData{ "", nullptr, 0, 0, nullptr},
                         [this, idx]() {UseItemSlot(idx); }
                     );
                 }
@@ -114,19 +124,54 @@ private:
 
         auto* exitBtn = UIHelper::ApplyIconStyle(this, dummyRect, defaultIconStyle);
         exitBtn->SetOnClick([this, exitBtn]() {
-            wstring debugString = (L"클릭 [닫기] 클릭\n");
-            UITestEffectManager::GetInstance()->AddEffect(debugString, exitBtn->GetWorldRect());
+
             this->SetActive(false);
             });
     }
 
     void AddGridSection() {
+        auto* gridAreaTop = new UIContainer();
+        gridAreaTop->SetRect({0, 50, GetWidth(), 110});
+        gridAreaTop->SetLayout(new UIGridLayout(numCols, gridSpacing, gridSpacing, padding.left, padding.top));
+        AddChild(gridAreaTop);
+        int idx = 0;
+        for (idx = 0; idx < 5; ++idx)
+        {
+            D2D1_RECT_F dummyRect = { 0, 0, slotSize.width, slotSize.height };
+            UIInventorySlotStyle inventorySlotStyle =
+                {
+                ImageStyle { D2DImageManager::GetInstance()->FindImage("inventory_slot"), {0,0,0,0},1.0f, {0.5f,0.5f,0.5f,1.0f}},
+                ImageStyle { nullptr },
+                TextStyle { L"pixel", 24.0f, D2D1::ColorF(D2D1::ColorF::White), true, DWRITE_TEXT_ALIGNMENT_LEADING, DWRITE_PARAGRAPH_ALIGNMENT_NEAR},
+                TextStyle { L"pixel", 24.0f, D2D1::ColorF(D2D1::ColorF::White), true, DWRITE_TEXT_ALIGNMENT_TRAILING, DWRITE_PARAGRAPH_ALIGNMENT_FAR }
+                };  // 예시 스타일
+            auto* slot = UIHelper::ApplyInventorySlotStyle(gridAreaTop, dummyRect, inventorySlotStyle);
+
+            slot->SetOnClick([this, idx, slot]()
+            {
+                UseItemSlot(idx);
+            });
+
+            // Magic Num (icon 기본 16px, slot 기본 64px이므로 x4 적용
+            slot->GetImages()[1]->SetRect({ 0,0,16,16 });
+            slot->GetImages()[1]->SetScale({4.f, 4.f});
+            itemSlots.push_back(slot);
+        }
+        gridAreaTop->UpdateLayout();
+
+        auto* weaponData = UIResourceSubManager::GetItemData("weaponIcon");
+        auto* armorData = UIResourceSubManager::GetItemData("armorIcon");
+        auto* accData = UIResourceSubManager::GetItemData("accIcon");
+        itemSlots[0]->GetImages()[1]->SetImage(weaponData->origin, weaponData->frameX, weaponData->frameY);
+        itemSlots[1]->GetImages()[1]->SetImage(armorData->origin, armorData->frameX, armorData->frameY);
+        itemSlots[2]->GetImages()[1]->SetImage(accData->origin, accData->frameX, accData->frameY);
+        
         gridArea = new UIContainer();
-        gridArea->SetRect({ 0, 50, GetWidth(), 50 + (slotSize.width + gridSpacing) * numRows } );
+        gridArea->SetRect({ 0, 110, GetWidth(), 50 + (slotSize.width + gridSpacing) * numRows } );
         gridArea->SetLayout(new UIGridLayout(numCols, gridSpacing, gridSpacing, padding.left, padding.top));
         AddChild(gridArea);
 
-        for (int i = 0; i < numCols * numRows; ++i) {
+        for (; idx < numCols * numRows; ++idx) {
             D2D1_RECT_F dummyRect = { 0, 0, slotSize.width, slotSize.height };
             UIInventorySlotStyle inventorySlotStyle =
                 {
@@ -137,10 +182,14 @@ private:
                 };  // 예시 스타일
             auto* slot = UIHelper::ApplyInventorySlotStyle(gridArea, dummyRect, inventorySlotStyle);
 
-            slot->SetOnClick([this, i, slot]()
+            slot->SetOnClick([this, idx, slot]()
             {
-                UseItemSlot(i);
+                UseItemSlot(idx);
             });
+
+            // Magic Num (icon 기본 16px, slot 기본 64px이므로 x4 적용
+            slot->GetImages()[1]->SetRect({ 0,0,16,16 });
+            slot->GetImages()[1]->SetScale({4.f, 4.f});
 
             itemSlots.push_back(slot);
         }
@@ -149,37 +198,36 @@ private:
     }
 
     void AddBottomSection() {
-        const int col = 2;
-        const float padding = 10.0f;
-        const float width = (GetWidth() - padding * (col + 1)) / col;
-
-        UIIconStyle defaultIconStyle =
-            {
-            { D2DImageManager::GetInstance()->FindImage("default_btn")},
-            { D2DImageManager::GetInstance()->FindImage(""), {62,0,width-62,0 }}
-            };
-        
-        bottomSection = new UIContainer();
-        bottomSection->SetRect({0, GetHeight() - 60, GetWidth(), GetHeight() });
-        bottomSection->SetLayout(new UIHorizontalLayout(9, 20));
-        AddChild(bottomSection);
-
-
-        D2D1_RECT_F dummyRect = { 0, 0, 164, 40 };
-        
-        auto* btn1 = UIHelper::ApplyIconStyle(bottomSection, dummyRect, defaultIconStyle);
-        btn1->SetOnClick([this, btn1]() {
-            wstring debugString = (L"클릭 [BTN1] 클릭\n");
-            UITestEffectManager::GetInstance()->AddEffect(debugString, btn1->GetWorldRect());
-            });
-
-        auto* btn2 = UIHelper::ApplyIconStyle(bottomSection, dummyRect, defaultIconStyle);
-        btn2->SetOnClick([this, btn2]() {
-            wstring debugString = (L"클릭 [BTN2] 클릭\n");
-            UITestEffectManager::GetInstance()->AddEffect(debugString, btn2->GetWorldRect());
-            });
-
-
-        bottomSection->UpdateLayout();
+        // const int col = 2;
+        // const float padding = 10.0f;
+        // const float width = (GetWidth() - padding * (col + 1)) / col;
+        //
+        // UIIconStyle defaultIconStyle =
+        //     {
+        //     { D2DImageManager::GetInstance()->FindImage("default_btn")},
+        //     { D2DImageManager::GetInstance()->FindImage(""), {62,0,width-62,0 }}
+        //     };
+        //
+        // bottomSection = new UIContainer();
+        // bottomSection->SetRect({0, GetHeight() - 60, GetWidth(), GetHeight() });
+        // bottomSection->SetLayout(new UIHorizontalLayout(9, 20));
+        // AddChild(bottomSection);
+        //
+        //
+        // D2D1_RECT_F dummyRect = { 0, 0, 164, 40 };
+        //
+        // auto* btn1 = UIHelper::ApplyIconStyle(bottomSection, dummyRect, defaultIconStyle);
+        // btn1->SetOnClick([this, btn1]() {
+        //     wstring debugString = (L"클릭 [BTN1] 클릭\n");
+        //     UITestEffectManager::GetInstance()->AddEffect(debugString, btn1->GetWorldRect());
+        //     });
+        //
+        // auto* btn2 = UIHelper::ApplyIconStyle(bottomSection, dummyRect, defaultIconStyle);
+        // btn2->SetOnClick([this, btn2]() {
+        //     wstring debugString = (L"클릭 [BTN2] 클릭\n");
+        //     UITestEffectManager::GetInstance()->AddEffect(debugString, btn2->GetWorldRect());
+        //     });
+        //
+        // bottomSection->UpdateLayout();
     }
 };

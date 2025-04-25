@@ -91,6 +91,8 @@ HRESULT D2DImage::LoadFromFile(const wchar_t* filePath, int maxFrameX, int maxFr
     this->frameWidth = static_cast<int>(size.width) / maxFrameX;
     this->frameHeight = static_cast<int>(size.height) / maxFrameY;
 
+    imgName = ExtractFileName(filePath);
+
     return S_OK;
 }
 
@@ -440,6 +442,17 @@ void D2DImage::RenderRaw(const D2D1_RECT_F& destRect, const D2D1_RECT_F& srcRect
 
 D2D1_RECT_F D2DImage::GetFullSourceRect() const {
     return D2D1::RectF(0, 0, static_cast<float>(GetWidth()), static_cast<float>(GetHeight()));
+}
+
+wstring D2DImage::ExtractFileName(const std::wstring& path)
+{
+    size_t lastSlash = path.find_last_of(L"/\\");
+    size_t dot = path.find_last_of(L".");
+
+    if (lastSlash == std::wstring::npos) lastSlash = -1; // 없으면 -1로 처리
+    if (dot == std::wstring::npos || dot < lastSlash) dot = path.length(); // 확장자 없거나 위치가 이상하면 전체
+
+    return path.substr(lastSlash + 1, dot - lastSlash - 1);
 }
 
 void D2DImage::Release() {

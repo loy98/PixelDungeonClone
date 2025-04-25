@@ -1,4 +1,6 @@
 ﻿#include "Inventory.h"
+
+#include "CommonFunction.h"
 #include "Item.h"
 #include "Equipment.h"
 #include "Entity.h"
@@ -60,17 +62,12 @@ Item* Inventory::GetItem(string name)
 
 void Inventory::UseItem(int idx)
 {
-
     if (idx > 0 && idx < 2) return;
+
     if (items[idx].item == nullptr) return;
     UIManager::GetInstance()->SendLog((L"Item 사용 " + to_wstring(idx)), D2D1::ColorF(D2D1::ColorF::Blue));
     UseItem(items[idx].item->GetName());
-
-    //auto str = items[idx].item->GetName();
-    //int size_needed = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, nullptr, 0);
-    //std::wstring wstr(size_needed, 0);
-    //MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, &wstr[0], size_needed);
-    //UIManager::GetInstance()->SendLog((L"Item 사용 " + wstr), D2D1::ColorF(D2D1::ColorF::Blue));
+    
 }
 void Inventory::UseItem(string name)
 {
