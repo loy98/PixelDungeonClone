@@ -30,7 +30,9 @@ Rat::Rat(FPOINT pos, float speed) : Monster()
             SetState(EntityState::WAIT);
         }
     } });
-    animator->AddClip("Dead", { 11, 14, 0.3f, false, nullptr });
+    animator->AddClip("Dead", { 11, 14, 0.3f, false, [this]() {
+        scale = 0;
+    } });
 }
 
 Rat::~Rat()

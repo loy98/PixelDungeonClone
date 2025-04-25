@@ -131,7 +131,7 @@ void Player::ActIdle(Level* level)
     else	isFlip = false;
 
     target = level->GetActorAt(targetPos);
-    if (target)
+    if (target && target->IsAlive())
     {
         SetState(EntityState::ATTACK);
         return;
