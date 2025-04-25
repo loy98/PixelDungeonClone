@@ -69,6 +69,7 @@ protected:
     FPOINT targetPos;
     float speed;
     bool isMoving;
+    bool isFlip;
 
     // 전투 속성
     int baseHp, baseMaxHp, hp, maxHp;
@@ -129,6 +130,7 @@ public:
     void SetBonusStats(EqStat stat) { return eqStat = stat; }
     inline int GetFrameY() { return frameY; }
     inline void SetFrameY(int y) { frameY = y; }
+    inline bool GetIsFlip() { return isFlip; }
 
 
     //에너지 관련 함수
