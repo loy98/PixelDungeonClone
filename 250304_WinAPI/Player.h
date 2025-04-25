@@ -17,8 +17,6 @@ public:
     virtual void Attack(Level* level) override;
     void Heal(int healAmount) override;
     void UseItem(Level* level);
-
-    void SetState(EntityState state) override;
     
     void Move(Level* level);
     void ActIdle(Level* level);

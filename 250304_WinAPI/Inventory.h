@@ -23,6 +23,8 @@ public:
 	void AddItem(Item* item);
 	void UseItem(int idx);
 	void UseItem(string name);
+	void Swap(int src, int dest);
+	void UpdateEqStats();
 
 	slot GetSlot(int idx);
 

@@ -21,6 +21,9 @@
 #include "Item.h"
 #include "HealPotion.h"
 #include "TileMapping8x8.h"
+#include "Weapon.h"
+#include "Armor.h"
+#include "Shield.h"
 
 
 void Level::Init()
@@ -105,11 +108,21 @@ void Level::Init()
     // Item
     Item* potion1 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , TILE_SIZE });
     Item* potion2 = new HealPotion(playerPos + FPOINT{ TILE_SIZE , 0 });
+    Item* weapon = new Weapon(playerPos + FPOINT{ 0, TILE_SIZE }, "검1");
+    Item* weapon1 = new Weapon(playerPos + FPOINT{ -TILE_SIZE, TILE_SIZE }, "검2");
+    Item* armor = new Armor(playerPos + FPOINT{ -TILE_SIZE, -TILE_SIZE }, "갑옷1");
+    Item* armor1 = new Armor(playerPos + FPOINT{ -TILE_SIZE, 0 }, "갑옷2");
+    Item* shield = new Shield(playerPos + FPOINT{ TILE_SIZE, -TILE_SIZE }, "방패");
     AddItem(potion1);
     AddItem(potion2);
+    AddItem(weapon);
+    AddItem(weapon1);
+    AddItem(armor);
+    AddItem(armor1);
+    AddItem(shield);
 
-    FModSoundPlayer::GetInstance()->Play("descend");
-    FModSoundPlayer::GetInstance()->Play("sewers_1");
+    FModSoundPlayer::GetInstance()->Play("descend", 0.3f);
+    FModSoundPlayer::GetInstance()->Play("sewers_1", 0.3f);
 }
 
 void Level::Release()
@@ -210,6 +223,7 @@ void Level::Update()
                     {
                         player->GetItem(item);
                         MoveItemToInven(item);
+                        player->SetState(EntityState::GET_ITEM);
                     }
                 }
                 // 플레이어 도착지 설정
@@ -340,7 +354,7 @@ void Level::Render(HDC hdc)
                     Middle_RenderFrameScale(
                         camera->ConvertToRendererX(item->GetPosition().x),
                         camera->ConvertToRendererY(item->GetPosition().y),
-                        camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f,
+                        camera->GetZoomScale() * 1.5f, camera->GetZoomScale() * 1.5f,
                         item->GetImgIdX(), item->GetImgIdY());
             }
         }
@@ -366,7 +380,7 @@ void Level::Render(HDC hdc)
 					Middle_RenderFrameScale(
 						camera->ConvertToRendererX(actor->GetPosition().x), 
 						camera->ConvertToRendererY(actor->GetPosition().y),
-						camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, actor->GetCurAnimIdx(), 0);
+						camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, actor->GetCurAnimIdx(), actor->GetFrameY());
 			}
 		}
 	}

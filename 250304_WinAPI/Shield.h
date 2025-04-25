@@ -1,13 +1,13 @@
 ﻿#pragma once
 #include "Equipment.h"
-class Weapon : public Equipment
+class Shield : public Equipment
 {
 private:
 
 
 public:
-	Weapon(FPOINT position, string name);
-	virtual ~Weapon();
+	Shield(FPOINT position, string name);
+	virtual ~Shield();
 
 	void Render(HDC hdc) override;
 };

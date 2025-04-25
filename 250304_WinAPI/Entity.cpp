@@ -5,6 +5,7 @@
 #include "TimerManager.h"
 #include "UIManager.h"
 #include "Animator.h"
+#include "FModSoundPlayer.h"
 
 Entity::Entity()
 {
@@ -20,25 +21,6 @@ Entity::~Entity()
 
 void Entity::Update()
 {
-	//curTime += TimerManager::GetInstance()->GetDeltaTime();
-	//if (curTime > maxAnimTime)
-	//{
-	//	curAnimFrame++;
-	//	curTime = 0;
-	//	if (!stayEndFrame)
-	//	{
-	//		if (curAnimFrame > endFrame)
-	//		{
-	//			curAnimFrame = startFrame;
-	//		}
-	//	}
-	//	else if (curAnimFrame > endFrame)
-	//	{
-	//		curAnimFrame = endFrame;
-	//		return;
-	//	}
-	//	
-	//}
 	float delta = TimerManager::GetInstance()->GetDeltaTime();
 	animator->Update(delta);
 	curAnimFrame = animator->GetCurFrame();
@@ -88,10 +70,18 @@ void Entity::TakeExp(int exp)
 void Entity::LevelUp()
 {
 	level++;
-	attackDmg.min += 1;
-	attackDmg.min += 1;
-	maxHp += 5;
+	baseDmg.min += 1;
+	baseDmg.min += 1;
 	hp += 5;
+	baseDf += 1;
+	UpdateStat();
+}
+
+void Entity::UpdateStat()
+{
+	attackDmg = baseDmg + eqStat.bonusDmg;
+	maxHp = baseMaxHp + eqStat.bonusHp;
+	defense = baseDf + eqStat.bonusDf;
 }
 
 void Entity::SetState(EntityState state)
@@ -99,22 +89,20 @@ void Entity::SetState(EntityState state)
 	switch (state)
 	{
 	case EntityState::IDLE:
-		// SetAimData(0, 1, 2.0);
 		curState = EntityState::IDLE;
 		animator->Play("Idle");
 		break;
 	case EntityState::MOVE:
-		// SetAimData(2, 8, 0.1);
 		curState = EntityState::MOVE;
 		animator->Play("Move");
+		FModSoundPlayer::GetInstance()->Play("step", 0.3f);
 		break;
 	case EntityState::ATTACK:
-		// SetAimData(13, 15, 0.1);
 		curState = EntityState::ATTACK;
 		animator->Play("Attack");
+		FModSoundPlayer::GetInstance()->Play("hit", 0.3f);
 		break;
 	case EntityState::DEAD:
-		// SetAimData(8, 12, 0.3);
 		curState = EntityState::DEAD;
 		animator->Play("Dead");
 		break;
@@ -123,6 +111,15 @@ void Entity::SetState(EntityState state)
 		break;
 	case EntityState::SLEEP:
 		curState = EntityState::SLEEP;
+		break;
+	case EntityState::GET_ITEM:
+		curState = EntityState::GET_ITEM;
+		animator->Play("GetItem");
+		FModSoundPlayer::GetInstance()->Play("get_item", 0.3f);
+		break;
+	case EntityState::USING_ITEM:
+		curState = EntityState::USING_ITEM;
+		animator->Play("UsingItem");
 		break;
 	}
 

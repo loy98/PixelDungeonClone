@@ -17,10 +17,10 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
     position = pos;
     this->speed = speed;
-    this->hp = 20;
+    baseHp = baseMaxHp = this->hp = 20;
+    baseDf = this->defense = 2;
     this->maxHp = 20;
-    attackDmg = {1, 5};
-    this->defense = 2;
+    baseDmg = attackDmg = {1, 5};
     isMoving = false;
 
     isActive = true;
@@ -55,7 +55,14 @@ Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
         }
     } });
     animator->AddClip("Dead", { 8, 12, 0.3f, false, nullptr });
-
+    animator->AddClip("GetItem", { 16, 17, 0.3f, false, [this]() {
+            Stop();
+            SetState(EntityState::WAIT);
+    } });
+    animator->AddClip("UsingItem", { 18, 20, 0.3f, false, [this]() {
+            Stop();
+            SetState(EntityState::WAIT);
+    } });
     animator->Play("Idle");
 }
 
@@ -88,22 +95,17 @@ void Player::Act(Level* level)
     case EntityState::WAIT:
         SetState(EntityState::IDLE);
         return;
-        // 아이템때문에 고민중
-    //case EntityState::USING_ITEM:
-    //    UseItem()
-    //    return;
+    case EntityState::GET_ITEM:
+        
+        return;
+    case EntityState::USING_ITEM:
+        UseItem(level);
+        return;
     }
 }
 
 void Player::Attack(Level* level)
 {
-    //if (target)
-    //{
-    //    CombatSyetem::GetInstance()->ProcessAttack(this, target);
-    //    Stop();
-
-    //    //SetState(EntityState::IDLE);
-    //}
 }
 
 void Player::ActIdle(Level* level)
@@ -153,37 +155,6 @@ void Player::UseItem(Level* level)
     /*inven->Use(this, level);*/
 }
 
-void Player::SetState(EntityState state)
-{
-    switch (state)
-    {
-    case EntityState::IDLE:
-        // SetAimData(0, 1, 2.0);
-        curState = EntityState::IDLE;
-        animator->Play("Idle");
-        break;
-    case EntityState::MOVE:
-        // SetAimData(2, 8, 0.1);
-        curState = EntityState::MOVE;
-        animator->Play("Move");
-        break;
-    case EntityState::ATTACK:
-        // SetAimData(13, 15, 0.1);
-        curState = EntityState::ATTACK;
-        animator->Play("Attack");
-        break;
-    case EntityState::DEAD:
-        // SetAimData(8, 12, 0.3);
-        curState = EntityState::DEAD;
-        animator->Play("Dead");
-        break;
-    case EntityState::WAIT:
-        curState = EntityState::WAIT;
-        break;
-    }
-
-}
-
 void Player::Move(Level* level)
 {   
     //if (!level->GetMap(targetPos.x, targetPos.y)->CanGo())
@@ -191,7 +162,7 @@ void Player::Move(Level* level)
     //    curState = EntityState::IDLE;
     //    return;
     //}
-    FModSoundPlayer::GetInstance()->Play("step", 0.3f);
+    
     FPOINT delta = targetPos - position;
 
     float deltaTime = TimerManager::GetInstance()->GetDeltaTime();
