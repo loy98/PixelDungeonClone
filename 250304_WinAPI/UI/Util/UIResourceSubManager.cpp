@@ -1,6 +1,7 @@
 ﻿#include "UIResourceSubManager.h"
 #include "../../D2DImageManager.h"
 #include "../UIData.h"
+#include <unordered_map>
 
 std::unordered_map<std::string, ItemData*> UIResourceSubManager::itemDatas;
 

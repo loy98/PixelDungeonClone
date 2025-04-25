@@ -63,6 +63,8 @@
     <ClCompile Include="LobbyScene.cpp" />
     <ClCompile Include="LobbyBackground.cpp" />
     <ClCompile Include="LobbyButton.cpp" />
+    <ClCompile Include="UI\Bar\UIMopBar.cpp" />
+    <ClCompile Include="UI\UIMopHPManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animator.h" />

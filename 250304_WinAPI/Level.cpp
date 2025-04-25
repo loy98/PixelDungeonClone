@@ -10,7 +10,6 @@
 #include "IntegratedDungeonSystem.h"
 #include "Monster.h"
 #include "Player.h"
-#include "TileVariationManager.h"
 #include "TurnManager.h"
 #include "Camera.h"
 #include "FieldOfView.h"
@@ -20,7 +19,6 @@
 #include "UI/Test/UITestView.h"
 #include "Item.h"
 #include "HealPotion.h"
-#include "TileMapping8x8.h"
 #include "Weapon.h"
 #include "Armor.h"
 #include "Shield.h"
@@ -729,7 +727,7 @@ FPOINT Level::GetEntranceSpawnPosition() const
             }
 
             // Check if it's a floor tile
-            if (mapData[newY][newX] == TileVariationManager::TILE_FLOOR)
+            if (mapData[newY][newX] == 2)
             {
                 validPositions.push_back({newX, newY});
             }
@@ -827,93 +825,6 @@ void Level::SetVisibleTile()
                        1.0f, 0.0f, scanDirection);
     }
 }
-
-
-void Level::Render8x8Tiles(HDC hdc)
-{
-    // 기본 TILE_SIZE는 90으로 유지
-    // const int TILE_SIZE = 90;
-    // 8x8 타일 크기는 기본 타일 크기의 절반
-    const int SUBTILE_SIZE = TILE_SIZE / 2;
-    
-    // TileMapping8x8 인스턴스 생성
-    TileMapping8x8 tileMapping;
-    
-    // 16x16 맵을 8x8 맵으로 변환
-    std::vector<std::vector<int>> map8x8 = tileMapping.ApplyEdgeTiles(mapData);
-    
-    // 맵 크기 계산
-    int height8x8 = map8x8.size();
-    int width8x8 = map8x8[0].size();
-    
-    // 8x8 타일 렌더링
-    for (int y = 0; y < height8x8; y++)
-    {
-        for (int x = 0; x < width8x8; x++)
-        {
-            // 타일 ID 가져오기
-            int tileID = map8x8[y][x];
-            
-            // 타일 위치 계산 (SUBTILE_SIZE 사용)
-            int tileX = GRID_POS_OFFSET.x + x * SUBTILE_SIZE;
-            int tileY = GRID_POS_OFFSET.y + y * SUBTILE_SIZE;
-            
-            // 화면 밖의 타일은 렌더링하지 않음
-            if (!shouldBeRender[y / 2 * TILE_X + x / 2]) continue;
-            
-            // 타일 가시성 확인
-            bool isVisible = map[y / 2 * TILE_X + x / 2].visible;
-            
-            // 타일 이미지 위치 가져오기
-            POINT frame = tileMapping.GetImagePosition(tileID);
-            
-            // 타일 렌더링 (SUBTILE_SIZE에 맞게 스케일 조정)
-            sampleTile->RenderFrameScale(
-                camera->ConvertToRendererX(tileX),
-                camera->ConvertToRendererY(tileY),
-                camera->GetZoomScale() * 2.f *(SUBTILE_SIZE / 16.0f),
-                camera->GetZoomScale()* 2.f * (SUBTILE_SIZE / 16.0f),
-                frame.x, frame.y);
-            
-            // 가시성에 따른 어두운 오버레이 렌더링
-            if (!isVisible) {
-                sampleTile->RenderFrameScale(
-                    camera->ConvertToRendererX(tileX),
-                    camera->ConvertToRendererY(tileY),
-                    camera->GetZoomScale() * 2.f* (SUBTILE_SIZE / 16.0f),
-                    camera->GetZoomScale() * 2.f* (SUBTILE_SIZE / 16.0f),
-                    0, 9, 0, false, false, 0.5f);
-            }
-        }
-    }
-}
-
-// unsigned char CalculateBitmask(const std::vector<std::vector<int>>& map, int x, int y) {
-//     // 8방향 오프셋 (시계 방향으로 좌상, 상, 우상, 우, 우하, 하, 좌하, 좌)
-//     const int dx[8] = {-1, 0, 1, 1, 1, 0, -1, -1};
-//     const int dy[8] = {-1, -1, -1, 0, 1, 1, 1, 0};
-//     
-//     unsigned char bitmask = 0;
-//     
-//     for (int i = 0; i < 8; i++) {
-//         int nx = x + dx[i];
-//         int ny = y + dy[i];
-//         
-//         // 맵 범위 확인
-//         if (nx < 0 || nx >= map[0].size() || ny < 0 || ny >= map.size()) {
-//             // 맵 밖은 벽으로 처리
-//             bitmask |= (1 << i);
-//             continue;
-//         }
-//         
-//         // 벽 타일 확인
-//         if (IsWall(map[ny][nx])) {
-//             bitmask |= (1 << i);
-//         }
-//     }
-//     
-//     return bitmask;
-// }
 
 void TestLevel::Init()
 {

@@ -2,7 +2,7 @@
 #include "ProceduralDungeonGenerator.h"
 #include <algorithm>
 #include <ctime>
-
+#include <utility>
 #include "D2DImage.h"
 
 ProceduralDungeonGenerator::ProceduralDungeonGenerator() {
@@ -580,81 +580,6 @@ bool ProceduralDungeonGenerator::GetRandomBool(float probability) {
     return (static_cast<float>(rand()) / RAND_MAX) < probability;
 }
 
-// 개선된 DetermineWallVariation 함수 - 내부 코너 감지 추가
-// int ProceduralDungeonGenerator::DetermineWallVariation(const std::vector<std::vector<int>>& map, int x, int y) {
-//     int height = map.size();
-//     int width = map[0].size();
-//     
-//     auto isWall = [&](int x, int y) -> bool {
-//         if (x < 0 || x >= width || y < 0 || y >= height) return true;
-//         return map[y][x] == TILE_WALL || map[y][x] == TILE_NONE;
-//     };
-//     
-//     auto isFloor = [&](int x, int y) -> bool {
-//         if (x < 0 || x >= width || y < 0 || y >= height) return false;
-//         return map[y][x] == TILE_FLOOR || 
-//                map[y][x] == TILE_DOOR || 
-//                map[y][x] == TILE_ENTRANCE || 
-//                map[y][x] == TILE_EXIT ||
-//                map[y][x] == TILE_HIDDEN_DOOR;
-//     };
-//     
-//     bool hasFloorAbove = isFloor(x, y-1);
-//     bool hasFloorBelow = isFloor(x, y+1);
-//     bool hasFloorLeft = isFloor(x-1, y);
-//     bool hasFloorRight = isFloor(x+1, y);
-//     
-//     bool hasFloorTopLeft = isFloor(x-1, y-1);
-//     bool hasFloorTopRight = isFloor(x+1, y-1);
-//     bool hasFloorBottomLeft = isFloor(x-1, y+1);
-//     bool hasFloorBottomRight = isFloor(x+1, y+1);
-//     
-//     // 내부 모서리 벽 결정 (세 방향이 바닥인 경우)
-//     // 이 부분이 기존 코드에 없었던 내부 코너 감지 로직입니다
-//     if (hasFloorAbove && hasFloorLeft && hasFloorTopLeft) {
-//         return TILE_WALL_INNER_CORNER_TL; // 내부 좌상단 모서리 (새로운 타일 타입 필요)
-//     }
-//     if (hasFloorAbove && hasFloorRight && hasFloorTopRight) {
-//         return TILE_WALL_INNER_CORNER_TR; // 내부 우상단 모서리 (새로운 타일 타입 필요)
-//     }
-//     if (hasFloorBelow && hasFloorLeft && hasFloorBottomLeft) {
-//         return TILE_WALL_INNER_CORNER_BL; // 내부 좌하단 모서리 (새로운 타일 타입 필요)
-//     }
-//     if (hasFloorBelow && hasFloorRight && hasFloorBottomRight) {
-//         return TILE_WALL_INNER_CORNER_BR; // 내부 우하단 모서리 (새로운 타일 타입 필요)
-//     }
-//     
-//     // 외부 모서리 벽 결정 (두 방향이 바닥인 경우)
-//     // 기존 코드는 여기서 추가 검사를 했지만, 실제로는 불필요합니다
-//     if (hasFloorBelow && hasFloorRight && !hasFloorBottomRight) {
-//         return TILE_WALL_CORNER_BR;
-//     }
-//     if (hasFloorBelow && hasFloorLeft && !hasFloorBottomLeft) {
-//         return TILE_WALL_CORNER_BL;
-//     }
-//     if (hasFloorAbove && hasFloorRight && !hasFloorTopRight) {
-//         return TILE_WALL_CORNER_TR;
-//     }
-//     if (hasFloorAbove && hasFloorLeft && !hasFloorTopLeft) {
-//         return TILE_WALL_CORNER_TL;
-//     }
-//     
-//     // 일반 벽 결정 (한 방향만 바닥인 경우)
-//     if (hasFloorAbove && !hasFloorBelow && !hasFloorLeft && !hasFloorRight) {
-//         return TILE_WALL_BOTTOM;
-//     }
-//     if (!hasFloorAbove && hasFloorBelow && !hasFloorLeft && !hasFloorRight) {
-//         return TILE_WALL_TOP;
-//     }
-//     if (!hasFloorAbove && !hasFloorBelow && hasFloorLeft && !hasFloorRight) {
-//         return TILE_WALL_RIGHT;
-//     }
-//     if (!hasFloorAbove && !hasFloorBelow && !hasFloorLeft && hasFloorRight) {
-//         return TILE_WALL_LEFT;
-//     }
-//     
-//     return TILE_WALL;
-// }
 int ProceduralDungeonGenerator::DetermineWallVariation(const std::vector<std::vector<int>>& map, int x, int y) {
     int height = map.size();
     int width = map[0].size();
