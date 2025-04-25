@@ -58,6 +58,7 @@ protected:
     D2DImage* image;
     int curAnimFrame;
     int frameY = 0;
+    float scale = 2.f;
 
     // animation
     Animator* animator;
@@ -131,6 +132,7 @@ public:
     inline int GetFrameY() { return frameY; }
     inline void SetFrameY(int y) { frameY = y; }
     inline bool GetIsFlip() { return isFlip; }
+    inline float Scale() { return scale; }
 
 
     //에너지 관련 함수

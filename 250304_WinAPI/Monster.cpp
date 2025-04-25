@@ -55,7 +55,7 @@ void Monster::Act(Level* level)
     case EntityState::DEAD:
         isActive = false;
         // 애니메이션 끝나면 actor 목록에서 지워야함
-        break;
+        return;
     }
 
     // 새로운 destPos로 길찾기-move State에서는 targetPos가 여기서 결정됨.
