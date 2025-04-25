@@ -6,7 +6,6 @@
 class UIImage : public UIBaseImage {
 protected:
     ImageStyle style;
-
 public:
     void SetStyle(const ImageStyle& s) {
         style = s;
@@ -23,14 +22,25 @@ public:
         SetRect(rect);
     }
 
-    void SetImage(D2DImage* image) {
+    void SetImage(D2DImage* image, int frameIdx = 0, int frameIdy = 0) {
         style.image = image;
+        style.frameIdx = frameIdx;
+        style.frameIdy = frameIdy;
     }
 
     POINT GetImgSize() {
         if (style.image)
             return { style.image->GetWidth(), style.image->GetHeight() };
         return { 0, 0 };
+    }
+
+    void SetAlignCenter()
+    {
+        if (!parent) return;
+
+        FPOINT parentCenter = { parent->GetWidth() * 0.5f, parent->GetHeight() * 0.5f };
+        FPOINT halfSize = { GetWidth() * 0.5f, GetHeight() * 0.5f };
+        SetRect({parentCenter.x - halfSize.x, parentCenter.y - halfSize.y, parentCenter.x + halfSize.x, parentCenter.y + halfSize.y});
     }
 
     void Render(ID2D1HwndRenderTarget* rt) override {
@@ -40,7 +50,7 @@ public:
         FPOINT ws = GetWorldScale();
 
         style.image->RenderFrameScale(
-            rect.left, rect.top, ws.x, ws.y, 0, 0,
+            rect.left, rect.top, ws.x, ws.y, style.frameIdx, style.frameIdy,
             0.0f, false, false, alpha
         );
 

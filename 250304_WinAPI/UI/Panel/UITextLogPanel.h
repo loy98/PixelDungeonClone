@@ -2,11 +2,16 @@
 #include "../Core/UIContainer.h"
 #include "../Text/UIText.h"
 #include "../Util/UITextPool.h"
+#include "../Util/UIHelper.h"
+#include "../Util/UIResourceSubManager.h"
+#include "../Image/UI9PatchImage.h"
 #include <deque>
 #include <string>
 
 class UITextLogPanel : public UIContainer {
 private:
+    UI9PatchImage* background;
+    
     int maxLines = 10;
     D2D_RECT_F lineRect;
     UITextPool pool;
@@ -14,7 +19,7 @@ private:
 public:
     ~UITextLogPanel() override
     {
-        Clear();
+        DeleteAll();
     }
 
     void Init(const D2D1_RECT_F& area = { 20, 400, 375, 400 + 200 }, int maxLine = 6, float lineHeight = 20.0f, float spacing = 2.0f) {
@@ -22,6 +27,8 @@ public:
         SetMaxLineAndHeight(maxLine, lineHeight);
         // 세로 정렬, 아래에서 위로 쌓이도록 역순 삽입
         SetLayout(new UIVerticalLayout(spacing, spacing));
+
+        AddBackGround();
     }
     void SetMaxLineAndHeight(int maxLine, float lineHeight)
     {
@@ -36,15 +43,6 @@ public:
         text->SetLocalRect(lineRect);
         text->SetText(content, true);
         
-        // auto curStyle = text->GetStyle();
-        // if (style.fontSize != curStyle.fontSize ||
-        //     style.color.r != curStyle.color.r || style.color.g != curStyle.color.g || style.color.b != curStyle.color.b || style.color.a != curStyle.color.a ||
-        //     style.horizontalAlign != curStyle.horizontalAlign || style.verticalAlign != curStyle.verticalAlign)
-        // {
-        //     TextStyle newStyle = style;
-        //     text->SetStyle(newStyle);
-        // }
-
         // UIContainer가 자식 자동 정렬
         AddChild(text);
 
@@ -59,10 +57,32 @@ public:
 
     }
 
-    void Clear() {
+    void AddBackGround() {
+        UIResourceSubManager::Preload_NinePatch();
+        NinePatchStyle defaultNinePatchStyle =
+            UIHelper::CreateNinePatchFromSheet("chrome", "quest", {6.0f, 11.0f});
+
+        
+        background = UIHelper::ApplyNinePathStyle(nullptr, {GetWorldRect().left-10,GetWorldRect().top-10, GetWorldRect().right + 10, GetWorldRect().bottom + 100}, defaultNinePatchStyle);
+        background->SetAlpha(0.3f);
+    }
+
+    // void Clear() {
+    //     for (auto* c : GetChildren()) {
+    //         RemoveChild(c, false);
+    //         pool.Recycle(dynamic_cast<UIText*>(c));
+    //     }
+    // }
+
+    void Render(ID2D1HwndRenderTarget* rt) override {
+        background->Render(rt);
+        
+        UIContainer::Render(rt);
+    }
+
+    void DeleteAll() {
         for (auto* c : GetChildren()) {
             RemoveChild(c);
-            pool.Recycle(dynamic_cast<UIText*>(c));
         }
     }
 };

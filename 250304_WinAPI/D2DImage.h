@@ -26,6 +26,10 @@ private:
     int currFrameY = 0;
 
     // unordered_map<std::string, D2DAnimationClip> animationClips;
+
+public:
+    // 이미지 이름: 자동화 이름 및 각 객체 이름 구조변경 없이 추가하기위해 사용
+    wstring imgName = L"무명";
     
 public:
 #pragma region D2D_LifeCycle
@@ -88,6 +92,8 @@ public:
         float alpha = 1.0f);
 
     D2D1_RECT_F GetFullSourceRect() const;
+
+    wstring ExtractFileName(const std::wstring& path);
 
     void Release();
     inline int GetMaxFrameX() const { return maxFrameX; }
