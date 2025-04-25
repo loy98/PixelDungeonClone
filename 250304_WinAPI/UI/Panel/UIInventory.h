@@ -74,7 +74,7 @@ public:
 
                 if (slot.item)
                 {
-                    UIManager::GetInstance()->SendLog(cp949_to_wstring(slot.item->GetName()), D2D1::ColorF(D2D1::ColorF::White));
+                    // UIManager::GetInstance()->SendLog(cp949_to_wstring(slot.item->GetName()), D2D1::ColorF(D2D1::ColorF::White));
                     auto* info = UIResourceSubManager::GetItemData(slot.item->GetName());
                     UpdateItemSlot(
                         idx,

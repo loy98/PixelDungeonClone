@@ -17,7 +17,7 @@ Crab::Crab(FPOINT pos, float speed) : Monster()
     actionCost = 10.f;
     energyPerTurn = 20.0f;
 
-    image = D2DImageManager::GetInstance()->AddImage("놀", L"Image\\crab.png", 16, 1);
+    image = D2DImageManager::GetInstance()->AddImage("게", L"Image\\crab.png", 16, 1);
 
     animator->AddClip("Idle", { 0,  2, 0.5f, true,  nullptr });
     animator->AddClip("Move", { 3,  6, 0.2f, true,  nullptr });

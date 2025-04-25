@@ -89,7 +89,7 @@ void GameScene::LevelInit(int testLevel)
 	if (levels[testLevel]) {
 		levels[testLevel]->Init();
 		UIManager::GetInstance()->SendLog(
-		L"Wellcom To " + to_wstring(testLevel + 1) + L" of Pixel Dungeon!",
+		L"Welcome To " + to_wstring(testLevel + 1) + L" of Pixel Dungeon!",
 		D2D1::ColorF(D2D1::ColorF::White));
 		wstring kor = L"던전의 " + to_wstring(testLevel + 1) + L"층으로 내려왔다.";
 		UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::Yellow));
