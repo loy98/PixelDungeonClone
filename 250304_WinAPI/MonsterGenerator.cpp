@@ -125,7 +125,7 @@ std::vector<FPOINT> MonsterGenerator::DetermineMonsterPositions(Level* level, co
     }
     
     // 입구/출구 주변 타일 제외 (플레이어 시작 지점 보호)
-    const int SAFE_RADIUS = 10; // 안전 반경
+    const int SAFE_RADIUS = 5; // 안전 반경
     std::vector<std::pair<int, int>> safeTiles = floorTiles;
     
     if (entrancePos.first != -1 && entrancePos.second != -1) {
