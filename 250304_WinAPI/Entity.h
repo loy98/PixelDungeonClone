@@ -58,6 +58,7 @@ protected:
     D2DImage* image;
     int curAnimFrame;
     int frameY = 0;
+    float scale = 2.f;
 
     // animation
     Animator* animator;
@@ -69,7 +70,8 @@ protected:
     FPOINT targetPos;
     float speed;
     bool isMoving;
-
+    string name;
+    bool isFlip;
     // 전투 속성
     int baseHp, baseMaxHp, hp, maxHp;
     Damage baseDmg, attackDmg;
@@ -90,6 +92,10 @@ protected:
 
     //Observer
     EntityObserverHub entityObserver;
+
+    // AI, Item
+    bool isAlert = false;
+
 public:
     int graphicID;
     bool isActive;
@@ -129,6 +135,8 @@ public:
     void SetBonusStats(EqStat stat) { return eqStat = stat; }
     inline int GetFrameY() { return frameY; }
     inline void SetFrameY(int y) { frameY = y; }
+    inline bool GetIsFlip() { return isFlip; }
+    inline float Scale() { return scale; }
 
 
     //에너지 관련 함수
@@ -148,5 +156,6 @@ public:
 
     // AI
     FPOINT GetTargetPos() { return targetPos; }
-
+    void SetIsAlert(bool isAlert) { this->isAlert = isAlert; }
+    bool GetIsAlert() { return isAlert; }
 };

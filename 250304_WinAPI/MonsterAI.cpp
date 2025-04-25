@@ -150,11 +150,25 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
 
     if (slopeFlag)
     {
-        for (int i = 0; i< 20 && curX != endPosX; ++i)
+        for (int i = 0; i< 5 && curX != endPosX; ++i)
         {
             int check = level->GetTileType(curX, curY);
             if (level->IsSolid(curX, curY))
                 return false;
+
+            //Entity* actor = level->GetActorAt({ (float)curX * TILE_SIZE + (TILE_SIZE / 2) , (float)curY * TILE_SIZE + (TILE_SIZE / 2) });
+            //if (actor)
+            //{
+            //    if (actor->GetType() == EntityType::MONSTER)
+            //    {
+            //        if (level->GetActorIsAlert(actor))
+            //        {
+            //            target = level->GetActorAt(level->GetPlayerPos());
+            //            monster->SetTarget(target);  // 이게 맞나..
+            //            return true;
+            //        }
+            //    }
+            //}
 
             if (f >= 0)
             {
@@ -176,11 +190,26 @@ bool MonsterAI::InFov(Level* level, Monster* monster)
     }
     else
     {
-        for (int i = 0; i < 20 && curY != endPosY; ++i)
+        for (int i = 0; i < 5 && curY != endPosY; ++i)
         {
             int check = level->GetTileType(curX, curY);
             if (level->IsSolid(curX, curY))
                 return false;
+
+            //Entity* actor = level->GetActorAt({ (float)curX * TILE_SIZE + (TILE_SIZE / 2) , (float)curY * TILE_SIZE + (TILE_SIZE / 2) });
+            //if (actor)
+            //{
+            //    if (actor->GetType() == EntityType::MONSTER)
+            //    {
+            //        if (level->GetActorIsAlert(actor))
+            //        {
+            //            target = level->GetActorAt(level->GetPlayerPos());
+            //            monster->SetTarget(target);  // 이게 맞나..
+            //            return true;
+            //        }
+            //    }
+            //}
+           
 
             if (f >= 0)
             {

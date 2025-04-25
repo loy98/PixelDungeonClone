@@ -60,6 +60,9 @@
     <ClCompile Include="WallTileRenderer.cpp" />
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Shield.cpp" />
+    <ClCompile Include="LobbyScene.cpp" />
+    <ClCompile Include="LobbyBackground.cpp" />
+    <ClCompile Include="LobbyButton.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Animator.h" />
@@ -161,6 +164,9 @@
     <ClInclude Include="WallTileRenderer.h" />
     <ClInclude Include="Armor.h" />
     <ClInclude Include="Shield.h" />
+    <ClInclude Include="LobbyScene.h" />
+    <ClInclude Include="LobbyBackground.h" />
+    <ClInclude Include="LobbyButton.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="250304_WinAPI.rc" />

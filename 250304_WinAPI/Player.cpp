@@ -14,6 +14,8 @@
 #include "CommonFunction.h"
 #include "FModSoundPlayer.h"
 #include "UIManager.h"
+#include "CommonFunction.h"
+
 
 Player::Player(FPOINT pos, float speed, int hp, int attDmg, int defense)
 {
@@ -125,8 +127,11 @@ void Player::ActIdle(Level* level)
     if (finder->FindPath(position, destPos, level, OUT path))
         targetPos = path[1];
 
+    if (targetPos.x < position.x)	isFlip = true;
+    else	isFlip = false;
+
     target = level->GetActorAt(targetPos);
-    if (target)
+    if (target && target->IsAlive())
     {
         SetState(EntityState::ATTACK);
         return;
@@ -143,10 +148,13 @@ void Player::GetItem(Item* item)
         inven->AddItem(item);
         entityObserver.NotifyChangePlayerInven(this);
 
+
         wstring eng = L"You Now Have " + cp949_to_wstring(item->GetName());
         wstring kor = cp949_to_wstring(item->GetName()) + L"을(를) 얻었다.";
         UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::Green));
         UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::White));
+        // // 아이템 획득 사운드
+        // FModSoundPlayer::GetInstance()->Play("item", 0.3f);
     }
 }
 
@@ -169,7 +177,7 @@ void Player::Move(Level* level)
     //    curState = EntityState::IDLE;
     //    return;
     //}
-    
+
     FPOINT delta = targetPos - position;
 
     float deltaTime = TimerManager::GetInstance()->GetDeltaTime();

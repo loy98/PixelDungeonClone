@@ -7,6 +7,7 @@
 #include "UI/Bar/UIValueBar.h"
 #include "UI/Util/UIHelper.h"
 #include "UI/VisualStyle.h"
+#include "FModSoundPlayer.h"
 
 class UIGameOver : public UIContainer, public IEntityObserver {
 private:
@@ -79,6 +80,8 @@ public:
     }
 
     void OnEntityDied(Entity* entity) override {
+        // 게임오버 사운드
+        FModSoundPlayer::GetInstance()->Play("death", 0.6f);
         ///게임 오버 화면 나오게 하기
         SetActive(true);
         ///다시 시작, 게임 종료 버튼 나오게 하기

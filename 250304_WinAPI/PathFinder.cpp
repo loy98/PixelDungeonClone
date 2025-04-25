@@ -1,4 +1,4 @@
-#include "PathFinder.h"
+ï»¿#include "PathFinder.h"
 #include "Level.h"
 
 bool PathFinder::FindPath(FPOINT src, FPOINT dest, Level* level, vector<FPOINT>& path)
@@ -9,7 +9,7 @@ bool PathFinder::FindPath(FPOINT src, FPOINT dest, Level* level, vector<FPOINT>&
 
     priority_queue<PQNode, vector<PQNode>, greater<PQNode>> openSet;
 
-    // 8¹æÇâ(´ë°¢ Æ÷ÇÔ) ÀÌµ¿ º¤ÅÍ
+    // 8ë°©í–¥(ëŒ€ê° í¬í•¨) ì´ë™ ë²¡í„°
     static const FPOINT dirs[8] = {
         {0,-TILE_SIZE},{0,TILE_SIZE},
         {-TILE_SIZE,0},{TILE_SIZE,0},
@@ -17,7 +17,7 @@ bool PathFinder::FindPath(FPOINT src, FPOINT dest, Level* level, vector<FPOINT>&
         {-TILE_SIZE,TILE_SIZE},{-TILE_SIZE,-TILE_SIZE}
     };
 
-    // 1) ÃÊ±âÈ­
+    // 1) ì´ˆê¸°í™”
     gScore[src] = 0;
     float h0 = Heuristic(src, dest);
     openSet.push(PQNode{ src, 0, h0 });
@@ -26,36 +26,37 @@ bool PathFinder::FindPath(FPOINT src, FPOINT dest, Level* level, vector<FPOINT>&
     bool found = false;
     PQNode current;
 
-    // 2) A* ¸ŞÀÎ ·çÇÁ
+    // 2) A* ë©”ì¸ ë£¨í”„
     while (!openSet.empty())
     {
         current = openSet.top();
         openSet.pop();
 
-        // ÀÌ¹Ì ´õ ÁÁÀº °æ·Î·Î Ã³¸®Çß´Ù¸é ¹«½Ã
+        // ì´ë¯¸ ë” ì¢‹ì€ ê²½ë¡œë¡œ ì²˜ë¦¬í–ˆë‹¤ë©´ ë¬´ì‹œ
         if (current.f > gScore[current.pos] + Heuristic(current.pos, dest))
             continue;
 
-        // ¸ñÀûÁö µµÂø
+        // ëª©ì ì§€ ë„ì°©
         if (current.pos.x == dest.x && current.pos.y == dest.y) {
             found = true;
             break;
         }
 
-        // 3) ÀÌ¿ô ³ëµå °Ë»ç
+        // 3) ì´ì›ƒ ë…¸ë“œ ê²€ì‚¬
         for (auto& d : dirs)
         {
             FPOINT next = { current.pos.x + d.x, current.pos.y + d.y };
 
-            // ÀÌµ¿ ºÒ°¡ Å¸ÀÏÀÌ¸é °Ç³Ê¶Ù±â
+            // ì´ë™ ë¶ˆê°€ íƒ€ì¼ì´ë©´ ê±´ë„ˆë›°ê¸°
             if (!level->GetMap(next.x, next.y)->CanGo())
                 continue;
-            if (level->GetActorAt({ next.x, next.y }) && next != dest)
+            if (level->GetActorAt({ next.x, next.y }) &&
+                level->GetActorAt({ next.x, next.y })->IsAlive() && next != dest)
                 continue;
 
             bool isDiag = (d.x != 0 && d.y != 0);
 
-            // ÄÚ³Ê ÀÚ¸£±â ¹æÁö
+            // ì½”ë„ˆ ìë¥´ê¸° ë°©ì§€
             if (isDiag) {
                 FPOINT s1{ current.pos.x + d.x, current.pos.y };
                 FPOINT s2{ current.pos.x, current.pos.y + d.y };
@@ -64,14 +65,14 @@ bool PathFinder::FindPath(FPOINT src, FPOINT dest, Level* level, vector<FPOINT>&
                     continue;
             }
 
-            // ÀÌµ¿ ºñ¿ë
+            // ì´ë™ ë¹„ìš©
             float moveCost = isDiag ? 1.41421356f : 1.0f;
             float nextG = current.g + moveCost;
 
             auto it = gScore.find(next);
             if (it == gScore.end() || nextG < it->second)
             {
-                // ´õ ÁÁÀº °æ·Î ¹ß°ß
+                // ë” ì¢‹ì€ ê²½ë¡œ ë°œê²¬
                 gScore[next] = nextG;
                 float fScore = nextG + Heuristic(next, dest);
                 openSet.push({ next, nextG, fScore });
@@ -80,7 +81,7 @@ bool PathFinder::FindPath(FPOINT src, FPOINT dest, Level* level, vector<FPOINT>&
         }
     }
 
-    // 4) °æ·Î Àç±¸¼º
+    // 4) ê²½ë¡œ ì¬êµ¬ì„±
     path.clear();
     if (!found) return false;
 
@@ -98,13 +99,13 @@ bool PathFinder::FindPath(FPOINT src, FPOINT dest, Level* level, vector<FPOINT>&
 
 float PathFinder::Heuristic(FPOINT& a, FPOINT b)
 {
-    // ¿ùµå ÁÂÇ¥ ¡æ Å¸ÀÏ ÁÂÇ¥
+    // ì›”ë“œ ì¢Œí‘œ â†’ íƒ€ì¼ ì¢Œí‘œ
     float dx = abs(a.x - b.x) / TILE_SIZE;
     float dy = abs(a.y - b.y) / TILE_SIZE;
 
     // diagonal distance
     float diag = min(dx, dy);
     float straight = dx + dy;
-    // ½ÇÁ¦ ÃÖ´Ü °æ·Î ºñ¿ë
+    // ì‹¤ì œ ìµœë‹¨ ê²½ë¡œ ë¹„ìš©
     return straight + (1.41421356f - 2.f) * diag;
 }

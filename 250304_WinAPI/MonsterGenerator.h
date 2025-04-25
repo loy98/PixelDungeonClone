@@ -58,8 +58,8 @@ private:
     bool GetRandomBool(float probability = 0.5f);
     
     // 상수 정의
-    const int BASE_MONSTER_COUNT = 3;  // 기본 몬스터 수
+    const int BASE_MONSTER_COUNT = 5;  // 기본 몬스터 수
     const float MONSTER_COUNT_SCALE = 0.5f;  // 층별 몬스터 수 증가 비율
-    const float RARE_MONSTER_CHANCE = 0.2f;  // 희귀 몬스터 등장 확률
+    const float RARE_MONSTER_CHANCE = 0.35f;  // 희귀 몬스터 등장 확률
     const float BOSS_MONSTER_CHANCE = 0.05f;  // 보스 몬스터 등장 확률 (일반 층)
 };
