@@ -378,13 +378,15 @@ void Level::Render(HDC hdc)
       //                   0, 0);
 		    // }
 		    
-			if (actor->GetImage()) {
-				actor->GetImage()->
-					Middle_RenderFrameScale(
-						camera->ConvertToRendererX(actor->GetPosition().x), 
-						camera->ConvertToRendererY(actor->GetPosition().y),
-						camera->GetZoomScale() * 2.f, camera->GetZoomScale() * 2.f, actor->GetCurAnimIdx(), actor->GetFrameY(),0, actor->GetIsFlip());
-			}
+            if (actor->GetImage()) {
+                actor->GetImage()->
+                    Middle_RenderFrameScale(
+                        camera->ConvertToRendererX(actor->GetPosition().x),
+                        camera->ConvertToRendererY(actor->GetPosition().y),
+                        camera->GetZoomScale() * actor->Scale(),
+                        camera->GetZoomScale() * actor->Scale(),
+                        actor->GetCurAnimIdx(), actor->GetFrameY(), 0, actor->GetIsFlip());
+            }
 		}
 	}
     // UI
