@@ -18,10 +18,10 @@ HRESULT GameScene::Init()
 		PostQuitMessage(0); });
 
 	// 시스템 로그-던전 입장
-	wstring floor = to_wstring(testLevel);
-	// 한글
-	wstring kor = L"던전의 " + floor  + L"층으로 내려왔다.";
-	UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::Yellow));
+	// wstring floor = to_wstring(testLevel);
+	// // 한글
+	// wstring kor = L"던전의 " + floor  + L"층으로 내려왔다.";
+	// UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::Yellow));
 	// 영어
 	//wstring eng = L"Welcome to the level " + floor + L" of Pixel Dungeon!";
 	//UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::White));
@@ -31,7 +31,7 @@ HRESULT GameScene::Init()
 
 void GameScene::Release()
 {
-	for (auto& l : levels) {
+	for (Level* l : levels) {
 		if (l != nullptr) {
 			l->Release();
 			delete l;
@@ -42,17 +42,19 @@ void GameScene::Release()
 
 void GameScene::Update()
 {
-	levels[currLevel]->Update();
+	if (levels[currLevel])
+		levels[currLevel]->Update();
 }
 
 void GameScene::Render(HDC hdc)
 {
-	levels[currLevel]->Render(hdc);
+	if (levels[currLevel])
+		levels[currLevel]->Render(hdc);
 }
 
 void GameScene::Restart()
 {
-	for (auto& l : levels) {
+	for (Level* l : levels) {
 		if (l != nullptr)
 		{
 			l->Release();
@@ -60,13 +62,15 @@ void GameScene::Restart()
 			l = nullptr;
 		}
 	}
-
+	// SceneManager::GetInstance()->ChangeScene("로비씬");
+	
+	
 	currLevel = testLevel;
 	LevelInit(currLevel);
-
+	
 	UIManager::GetInstance()->GetUiGameOver()->SetRestartCallBack([this]() {
 		this->Restart(); UIManager::GetInstance()->SendLog(L"Click", D2D1::ColorF(D2D1::ColorF::Blue)); });
-
+	
 	UIManager::GetInstance()->GetUiGameOver()->SetExitCallBack([]() {
 		PostQuitMessage(0); });
 
@@ -74,7 +78,7 @@ void GameScene::Restart()
 
 GameScene::GameScene()
 {
-	for (auto& l : levels) {
+	for (Level* l : levels) {
 		l = nullptr;
 	}
 }

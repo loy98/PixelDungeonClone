@@ -3,6 +3,7 @@
   <component name="Encoding" addBOMForNewFiles="with BOM under Windows, with no BOM otherwise">
     <file url="file://$PROJECT_DIR$/250304_WinAPI/BattleScene.cpp" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/Button.h" charset="EUC-KR" />
+    <file url="file://$PROJECT_DIR$/250304_WinAPI/LoadingScene.cpp" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/MainGame.cpp" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/PathFinder.cpp" charset="EUC-KR" />
     <file url="file://$PROJECT_DIR$/250304_WinAPI/SceneManager.cpp" charset="EUC-KR" />

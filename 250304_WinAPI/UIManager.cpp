@@ -17,7 +17,7 @@ void UIManager::RegisterPlayer(Player* player)
 {
     if (!player) return;
     
-    if (currentPlayer == player) return;
+    // if (currentPlayer == player) return;
 
     SetCurrentPlayer(player);
     

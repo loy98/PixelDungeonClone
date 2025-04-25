@@ -4,6 +4,7 @@
 #include "CommonFunction.h"
 #include "Button.h"
 #include "Tiles.h"
+#include "LobbyButton.h"
 #include <functional>
 
 HRESULT TilemapTool::Init()
@@ -65,7 +66,12 @@ HRESULT TilemapTool::Init()
 	saveButton->SetFunction([this]() {
 		this->Save();
 		});
-
+	GoLobbyButton = new ExitButton;
+	GoLobbyButton->Init(800, 600);
+	GoLobbyButton->SetFunction([this]() {
+		this->Exit();
+		});
+	
 	gridColor = D2D1::ColorF(D2D1::ColorF::ForestGreen);
 	selectedTileColor = D2D1::ColorF(D2D1::ColorF::Red);
 	dragRcColor = D2D1::ColorF(D2D1::ColorF::Blue);
@@ -87,6 +93,13 @@ void TilemapTool::Release()
 		saveButton = nullptr;
 	}
 
+
+	if (GoLobbyButton)
+	{
+		GoLobbyButton->Release();
+		delete GoLobbyButton;
+		GoLobbyButton = nullptr;
+	}
 	if (rectBrush) {
 		rectBrush->Release();
 	}
@@ -231,6 +244,7 @@ void TilemapTool::Update()
 	}
 
 	if (saveButton)	saveButton->Update();
+	if (GoLobbyButton) GoLobbyButton->Update();
 
 	/*if (KeyManager::GetInstance()->IsOnceKeyUp(VK_LBUTTON)) {
 		AutoSave();
@@ -321,6 +335,7 @@ void TilemapTool::Render(HDC hdc)
 	}
 
 	if (saveButton) saveButton->Render(hdc);
+	if (GoLobbyButton) GoLobbyButton->Render(hdc);
 }
 
 void TilemapTool::AutoSave()
@@ -491,6 +506,12 @@ void TilemapTool::Erase()
 
 void TilemapTool::Paint()
 {
+}
+
+void TilemapTool::Exit()
+{
+	SceneManager::GetInstance()->ChangeScene("로비씬");
+
 }
 
 void TilemapTool::MakeARoom() /////// 타일 인덱스 예외처리

@@ -4,9 +4,9 @@ class Level;
 class GameScene : public GameObject
 {
 private:
-	Level* levels[7];
+	Level* levels[1];
 	int currLevel;
-	const int testLevel = 6;
+	const int testLevel = 0;
 public:
 	virtual HRESULT Init();
 	virtual void Release();

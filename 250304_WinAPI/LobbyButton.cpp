@@ -115,24 +115,19 @@ void ExitButton::Update()
 {
 	if (PtInRect(&rc, g_ptMouse))
 	{
-		if (KeyManager::GetInstance()->IsOnceKeyDown(VK_LBUTTON))
+		if (MouseManager::GetInstance()->GetIsDragging(MOUSE_LEFT) == true)
 		{
 			state = ButtonState::Down;
 		}
 		else if (state == ButtonState::Down &&
-			KeyManager::GetInstance()->IsOnceKeyUp(VK_LBUTTON))
+			MouseManager::GetInstance()->GetClickValueUsed()==false)
 		{
 			state = ButtonState::Up;
-			FModSoundPlayer::GetInstance()->Play("click", 0.3f);
 			// 기능 수행
 			// TilemapTool::Save()
 			//if (buttonFunc && obj)	obj->buttonFunc();
 			if (buttonFunc) buttonFunc();
 		}
-	}
-	else
-	{
-		state = ButtonState::None;
 	}
 }
 

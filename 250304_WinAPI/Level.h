@@ -81,7 +81,7 @@ protected:
 	};
 
 	// UI Sample
-	UIManager* uiManager;;
+	// UIManager* uiManager;;
 	
 public:
 	virtual void Init();

@@ -88,10 +88,10 @@ void Level::Init()
     camera->Init(player->GetPosition());
 
     // UI
-    uiManager = UIManager::GetInstance();
-    uiManager->Init();
-    uiManager->RegisterCamera(camera);
-    uiManager->RegisterPlayer(player);
+    // uiManager = ;
+    UIManager::GetInstance()->Init();
+    UIManager::GetInstance()->RegisterCamera(camera);
+    UIManager::GetInstance()->RegisterPlayer(player);
     //
     
     for (auto actor : actors)
@@ -99,7 +99,7 @@ void Level::Init()
         if (actor)
         {
             turnManager->AddActor(actor);
-            uiManager->RegisterEntity(actor);
+            UIManager::GetInstance()->RegisterEntity(actor);
         }
     }
     turnManager->Init();
@@ -127,13 +127,16 @@ void Level::Init()
 
 void Level::Release()
 {
-    if (uiManager)
-    {
-        uiManager->DeleteLevelUI();
-        uiManager = nullptr;
-    }
+    UIManager::GetInstance()->DeleteLevelUI();
+    // if (uiManager)
+    // {
+    //     uiManager->DeleteLevelUI();
+    //     uiManager = nullptr;
+    // }
+
+
     
-	for (auto& actor : actors)
+	for (Entity* actor : actors)
 	{
 		if (actor)
 		{
@@ -146,7 +149,7 @@ void Level::Release()
     {
         //delete player;
         player = nullptr;
-        uiManager->SetCurrentPlayer(nullptr);
+        UIManager::GetInstance()->SetCurrentPlayer(nullptr);
     }
 
     // Items
@@ -167,7 +170,7 @@ void Level::Release()
 
 void Level::Update()
 {
-    uiManager->Update();
+    UIManager::GetInstance()->Update();
 
     if (KeyManager::GetInstance()->IsOnceKeyDown(VK_SPACE)) {
         player->TakeDamage(30);
@@ -390,7 +393,7 @@ void Level::Render(HDC hdc)
 		}
 	}
     // UI
-    uiManager->Render();
+    UIManager::GetInstance()->Render();
 }
 
 void Level::FileLoad()
@@ -418,7 +421,7 @@ Level::Level()
 
 Level::~Level()
 {
-    Release();
+    // Release();
 }
 
 FPOINT Level::GetPlayerPos()
@@ -970,10 +973,10 @@ void TestLevel::Init()
     camera->Init(player->GetPosition());
 
     // UI
-    uiManager = UIManager::GetInstance();
-    uiManager->Init();
-    uiManager->RegisterCamera(camera);
-    uiManager->RegisterPlayer(player);
+    // uiManager = UIManager::GetInstance();
+    UIManager::GetInstance()->Init();
+    UIManager::GetInstance()->RegisterCamera(camera);
+    UIManager::GetInstance()->RegisterPlayer(player);
     //
 
     for (auto actor : actors)
@@ -981,7 +984,7 @@ void TestLevel::Init()
         if (actor)
         {
             turnManager->AddActor(actor);
-            uiManager->RegisterEntity(actor);
+            UIManager::GetInstance()->RegisterEntity(actor);
         }
     }
     turnManager->Init();

@@ -41,7 +41,7 @@ void UIMopBar::OnEntityDamageTaken(DamageTakenData data)
     if (curHP != maxHP)
     {
         SetActive(true);
-        UIManager::GetInstance()->SendLog(L"Attach Target : " + to_wstring(bar->GetFillPercent()), D2D1::ColorF(D2D1::ColorF::ColorF::Green));
+        //UIManager::GetInstance()->SendLog(L"Attach Target : " + to_wstring(bar->GetFillPercent()), D2D1::ColorF(D2D1::ColorF::ColorF::Green));
     }
 }
 
