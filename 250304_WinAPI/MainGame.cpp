@@ -12,6 +12,7 @@
 #include "GameScene.h"
 #include "TestGameScene.h"
 #include "resource4.h"
+#include "LobbyScene.h"
 
 
 HRESULT MainGame::Init()
@@ -29,7 +30,11 @@ HRESULT MainGame::Init()
 	SceneManager::GetInstance()->AddScene("게임씬", new GameScene());
 	SceneManager::GetInstance()->AddScene("테스트게임씬", new TestGameScene());
 	SceneManager::GetInstance()->AddLoadingScene("로딩_1", new LoadingScene());
-	SceneManager::GetInstance()->ChangeScene("게임씬");
+
+	SceneManager::GetInstance()->AddScene("로비씬", new LobbyScene());
+	SceneManager::GetInstance()->ChangeScene("로비씬");
+	//SceneManager::GetInstance()->ChangeScene("게임씬");
+	//SceneManager::GetInstance()->ChangeScene("테스트게임씬");
 
 	hdc = GetDC(g_hWnd);
 #pragma endregion

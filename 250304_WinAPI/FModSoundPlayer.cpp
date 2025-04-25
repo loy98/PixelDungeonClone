@@ -12,10 +12,19 @@ void FModSoundPlayer::Init()
     {
         LoadSound("step", "Sounds/Sfx/step.mp3", false);
         LoadSound("descend", "Sounds/Sfx/descend.mp3", false);
+        // 공격, 먹기, 죽음
+        LoadSound("hit", "Sounds/Sfx/hit.mp3", false);
+        LoadSound("eat", "Sounds/Sfx/eat.mp3", false);
+        LoadSound("death", "Sounds/Sfx/death.mp3", false);
+        // 아이템
+        LoadSound("item", "Sounds/Sfx/item.mp3", false);
+        // 클릭
+        LoadSound("click", "Sounds/Sfx/click.mp3", false);
     }
     //bmg
     {
         LoadSound("sewers_1", "Sounds/Bgm/sewers_1.ogg", true);
+        LoadSound("theme", "Sounds/Bgm/theme.mp3", true);
     }
 }
 

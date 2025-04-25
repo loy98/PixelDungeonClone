@@ -36,6 +36,7 @@ using namespace std;
 #include "MouseManager.h"
 #include "TimerManager.h"
 #include "SceneManager.h"
+//#include "UIManager.h" // 추가하면 오류남(순환참조 문제일 가능성)
 
 // 랜덤
 #include <cstdlib>
