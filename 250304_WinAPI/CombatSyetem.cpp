@@ -44,7 +44,7 @@ void CombatSyetem::ProcessAttack(Entity* attacker, Entity* defender)
 		UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::White));
 		UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::Yellow));
 
-		if (defender->GetHP() < dmg)
+		if (defender->GetHP() + dmg < dmg)
 		{
 			wstring eng = attacker->GetImage()->imgName + L" killed you...";
 			wstring kor = L"당신은 " + attacker->GetImage()->imgName + L" 에 의해 죽었습니다....";
