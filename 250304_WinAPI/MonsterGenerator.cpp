@@ -17,9 +17,9 @@ MonsterGenerator::MonsterGenerator() {
     regionMonsters.resize(5); // 5개 지역 (하수도, 감옥, 동굴, 도시, 지옥)
     
     // 하수도 지역 몬스터
-    regionMonsters[0].commonMonsters = {RAT, CRAB};
+    regionMonsters[0].commonMonsters = {RAT};
     regionMonsters[0].rareMonsters = {GNOLL};
-    regionMonsters[0].bossMonsters = {GNOLL}; // 임시 보스
+    regionMonsters[0].bossMonsters = {CRAB}; // 임시 보스
     
     // 감옥 지역 몬스터
     regionMonsters[1].commonMonsters = {SKELETON, THIEF};
@@ -53,7 +53,7 @@ std::vector<Monster*> MonsterGenerator::GenerateMonsters(Level* level, const std
     int mapSize = map.size() * map[0].size();
     
     // 몬스터 수 결정
-    int monsterCount = 5; // DetermineMonsterCount(floorLevel, mapSize);
+    int monsterCount = DetermineMonsterCount(floorLevel, mapSize);
     
     // 몬스터 유형 결정
     std::vector<MonsterType> monsterTypes = DetermineMonsterTypes(floorLevel, monsterCount);
@@ -75,7 +75,21 @@ std::vector<Monster*> MonsterGenerator::GenerateMonsters(Level* level, const std
 // 몬스터 생성 함수
 Monster* MonsterGenerator::CreateMonster(MonsterType type, FPOINT position, float speed) {
     // 몬스터 생성
-    Monster* monster = new Rat(position, 1000.f);
+    Monster* monster;
+    switch (type)
+    {
+        case CRAB:
+            monster = new Crab(position, 1000.f);            
+            break;
+        case GNOLL:
+            monster = new Gnoll(position, 1000.f);
+            break;
+        default:
+            monster = new Rat(position, 1000.f);
+            break;
+    }
+    
+
     
     // 몬스터 유형에 따른 추가 설정 (향후 확장)
     // 현재는 기본 Monster 클래스만 사용
@@ -111,7 +125,7 @@ std::vector<FPOINT> MonsterGenerator::DetermineMonsterPositions(Level* level, co
     }
     
     // 입구/출구 주변 타일 제외 (플레이어 시작 지점 보호)
-    const int SAFE_RADIUS = 3; // 안전 반경
+    const int SAFE_RADIUS = 10; // 안전 반경
     std::vector<std::pair<int, int>> safeTiles = floorTiles;
     
     if (entrancePos.first != -1 && entrancePos.second != -1) {
@@ -165,7 +179,7 @@ std::vector<MonsterGenerator::MonsterType> MonsterGenerator::DetermineMonsterTyp
     std::vector<MonsterType> types;
     
     // 지역 결정 (층 레벨에 따라)
-    int region = (std::min)(4, floorLevel / 5); // 5층마다 새로운 지역
+    int region = 0; //(std::min)(4, floorLevel / 5); // 5층마다 새로운 지역
     
     for (int i = 0; i < count; i++) {
         float roll = static_cast<float>(rand()) / RAND_MAX;
