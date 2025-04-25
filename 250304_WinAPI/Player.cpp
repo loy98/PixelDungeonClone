@@ -125,6 +125,9 @@ void Player::ActIdle(Level* level)
     if (finder->FindPath(position, destPos, level, OUT path))
         targetPos = path[1];
 
+    if (targetPos.x < position.x)	isFlip = true;
+    else	isFlip = false;
+
     target = level->GetActorAt(targetPos);
     if (target)
     {
@@ -169,7 +172,7 @@ void Player::Move(Level* level)
     //    curState = EntityState::IDLE;
     //    return;
     //}
-    
+
     FPOINT delta = targetPos - position;
 
     float deltaTime = TimerManager::GetInstance()->GetDeltaTime();

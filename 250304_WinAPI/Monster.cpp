@@ -60,8 +60,11 @@ void Monster::Act(Level* level)
 
     // 새로운 destPos로 길찾기-move State에서는 targetPos가 여기서 결정됨.
     finder->FindPath(position, destPos, level, OUT path);
-
-
+    if (target)
+    {
+        if (target->GetPosition().x < position.x)	isFlip = true;
+        else	isFlip = false;
+    }
 }
 
 void Monster::Attack(Level* level)
@@ -100,6 +103,9 @@ void Monster::Move(Level* level)// 한 턴 이동
     {
         targetPos = path[1];
     }
+
+    if (targetPos.x <= position.x)	isFlip = true;
+    else	isFlip = false;
 
     auto map = level->GetMap(targetPos.x, targetPos.y);
     
