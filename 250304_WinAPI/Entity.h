@@ -70,7 +70,7 @@ protected:
     float speed;
     bool isMoving;
     string name;
-
+    bool isFlip;
     // 전투 속성
     int baseHp, baseMaxHp, hp, maxHp;
     Damage baseDmg, attackDmg;
@@ -134,6 +134,7 @@ public:
     void SetBonusStats(EqStat stat) { return eqStat = stat; }
     inline int GetFrameY() { return frameY; }
     inline void SetFrameY(int y) { frameY = y; }
+    inline bool GetIsFlip() { return isFlip; }
 
 
     //에너지 관련 함수
