@@ -150,8 +150,8 @@ void Player::GetItem(Item* item)
         wstring kor = cp949_to_wstring(item->GetName()) + L"을(를) 얻었다.";
         UIManager::GetInstance()->SendLog(eng, D2D1::ColorF(D2D1::ColorF::Green));
         UIManager::GetInstance()->SendLog(kor, D2D1::ColorF(D2D1::ColorF::White));
-        // 아이템 획득 사운드
-        FModSoundPlayer::GetInstance()->Play("item", 0.3f);
+        // // 아이템 획득 사운드
+        // FModSoundPlayer::GetInstance()->Play("item", 0.3f);
     }
 }
 
