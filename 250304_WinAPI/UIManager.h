@@ -100,6 +100,7 @@ public:
 
 	void DeleteLevelUI();
 	void OnRelaseEntity(Entity* entity) override;
+	Camera* GetCamera() {return camera;}
 
 	void Reset();
 

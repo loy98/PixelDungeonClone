@@ -1,6 +1,7 @@
 ﻿#include "CombatSyetem.h"
 #include "Entity.h"
 #include "UIManager.h"
+#include "Camera.h"
 
 int CombatSyetem::CalculateDmg(Entity* attacker, Entity* defender)
 {

@@ -94,7 +94,7 @@ void UIManager::SendLog(const wstring& msg, D2D1_COLOR_F color)
 }
 
 void UIManager::SendTextEffect(const std::wstring& text, const D2D1_RECT_F& rect,
-    TextStyle* textStyle, EffectStyle* effectStyle)
+    TextStyle* textStyle , EffectStyle* effectStyle )
 {
     if (uiEffectManager)
     {
@@ -138,6 +138,11 @@ void UIManager::SetCurrentPlayer(Player* player)
     if (uiStatusToolbar)
     {
         uiStatusToolbar->UpdateStat(player);
+    }
+
+    if (uiInventoryPanel)
+    {
+        uiInventoryPanel->OnChangePlayerInven(player);
     }
 }
 

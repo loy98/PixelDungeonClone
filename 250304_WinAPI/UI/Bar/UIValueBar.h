@@ -8,6 +8,7 @@ class UIValueBar : public UIComponent {
 protected:
     BarStyle style;
     float maxValue = 10.0f;
+    float curValue = 0.0f;
     ValueAnimator animator;
     float fillPercent = 1.0f;
 
@@ -20,7 +21,7 @@ public:
     void SetMaxValue(float max);
     void SetAnimator(float max);
     inline float GetMaxValue() {return maxValue;}
-    inline float GetValue() {return animator.GetValue();}
+    inline float GetValue() {return curValue;}
     inline float GetFillPercent() {return fillPercent;}
 
     void Update(float deltaTime) override;
@@ -37,6 +38,17 @@ inline void UIValueBar::Init(const D2D1_RECT_F& layout, const BarStyle& s, float
     animator.SetGoal(max);
 }
 
+inline void ApplyMaxValueChange(ValueAnimator& animator, float oldMax, float newMax) {
+    if (oldMax <= 0.0f || newMax <= 0.0f)
+        return;
+
+    float currentRatio = animator.GetValue() / oldMax;
+    float goalRatio = animator.GetTarget() / oldMax;
+
+    animator.SetInstant(currentRatio * newMax);      // currentValue 보정
+    animator.SetGoal(goalRatio * newMax);            // goalValue 보정
+}
+
 inline void UIValueBar::SetStyle(const BarStyle& style)
 {
     if (!style.fill.image) return;
@@ -51,8 +63,8 @@ inline void UIValueBar::SetValue(float value) {
 inline void UIValueBar::SetMaxValue(float max) {
     if (max == maxValue) return;
     
+    ApplyMaxValueChange(animator, maxValue, max);
     maxValue = max;
-    animator.SetInstant(max);
 }
 
 inline void UIValueBar::SetAnimator(float max)
@@ -63,8 +75,8 @@ inline void UIValueBar::SetAnimator(float max)
 
 inline void UIValueBar::Update(float deltaTime) {
     if (!isActive || !isVisible) return;
-    float current = animator.Update(deltaTime);
-    fillPercent = max(0.0f, min(current / maxValue, 1.0f));
+    curValue = animator.Update(deltaTime);
+    fillPercent = max(0.0f, min(curValue / maxValue, 1.0f));
 }
 
 inline void UIValueBar::Render(ID2D1HwndRenderTarget* rt) {

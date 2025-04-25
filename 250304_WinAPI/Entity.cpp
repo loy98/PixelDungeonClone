@@ -83,6 +83,7 @@ void Entity::UpdateStat()
 	attackDmg = baseDmg + eqStat.bonusDmg;
 	maxHp = baseMaxHp + eqStat.bonusHp;
 	defense = baseDf + eqStat.bonusDf;
+	entityObserver.NotifyHeal(this, 0);
 }
 
 void Entity::SetState(EntityState state)

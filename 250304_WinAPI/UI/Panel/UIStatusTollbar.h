@@ -94,7 +94,7 @@ private:
         expBar->Init({ 73, 69, 396.5f, 101.13f });
         expBar->SetStyle(expBarBgStyle, expBarStyle, textStyle);
         expBar->SetMaxValue(10);
-        expBar->SetValue(10);
+        expBar->SetValue(0);
         AddChild(expBar);
     }
 

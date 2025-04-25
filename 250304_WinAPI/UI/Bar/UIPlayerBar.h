@@ -60,7 +60,7 @@ inline void UIPlayerBar::SetMaxValue(float max) {
 
 inline void UIPlayerBar::UpdateSetTextValue() const
 {
-    int curValue = bar->GetValue();
+    int curValue = round(bar->GetValue());
     int maxValue = bar->GetMaxValue();
     wstring text = to_wstring(curValue) + L" / " + to_wstring(maxValue);
     valueText->SetText(text);
