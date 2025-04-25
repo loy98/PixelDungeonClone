@@ -53,7 +53,7 @@ std::vector<Monster*> MonsterGenerator::GenerateMonsters(Level* level, const std
     int mapSize = map.size() * map[0].size();
     
     // 몬스터 수 결정
-    int monsterCount = 1; // DetermineMonsterCount(floorLevel, mapSize);
+    int monsterCount = 5; // DetermineMonsterCount(floorLevel, mapSize);
     
     // 몬스터 유형 결정
     std::vector<MonsterType> monsterTypes = DetermineMonsterTypes(floorLevel, monsterCount);

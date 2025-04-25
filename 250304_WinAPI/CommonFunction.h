@@ -164,4 +164,3 @@ inline std::wstring cp949_to_wstring(const std::string& str)
 {
 	return convert_to_wstring(str, 949);
 }
-

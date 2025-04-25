@@ -69,6 +69,7 @@ protected:
     FPOINT targetPos;
     float speed;
     bool isMoving;
+    string name;
 
     // 전투 속성
     int baseHp, baseMaxHp, hp, maxHp;
@@ -90,6 +91,10 @@ protected:
 
     //Observer
     EntityObserverHub entityObserver;
+
+    // AI, Item
+    bool isAlert = false;
+
 public:
     int graphicID;
     bool isActive;
@@ -148,5 +153,6 @@ public:
 
     // AI
     FPOINT GetTargetPos() { return targetPos; }
-
+    void SetIsAlert(bool isAlert) { this->isAlert = isAlert; }
+    bool GetIsAlert() { return isAlert; }
 };

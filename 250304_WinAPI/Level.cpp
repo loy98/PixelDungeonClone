@@ -424,6 +424,22 @@ FPOINT Level::GetPlayerPos()
     return player->GetPosition();
 }
 
+// monster AI
+bool Level::GetPlayerIsFov()
+{
+    return player->GetisFov();
+}
+
+bool Level::GetPlayerIsAlert()
+{
+    return player->GetIsAlert();
+}
+
+bool Level::GetActorIsAlert(Entity* actor)
+{
+    return actor->GetIsAlert();
+}
+
 
 Entity* Level::GetActorAt(FPOINT pos)
 {
