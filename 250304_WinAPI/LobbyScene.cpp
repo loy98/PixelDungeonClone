@@ -27,7 +27,7 @@ HRESULT LobbyScene::Init()
 	mainMapButton = new MapButton;
 	toolMapButton = new MapButton;
 	exitButton = new ExitButton;
-	mainMapTXT = D2DImageManager::GetInstance()->AddImage("메인맵텍스트", L"Image/maintxt.png");
+	mainMapTXT = D2DImageManager::GetInstance()->AddImage("메인맵텍스트", L"Image/playtxt.png");
 	toolMapTXT = D2DImageManager::GetInstance()->AddImage("툴맵텍스트", L"Image/tooltxt.png");
 
 	// 버튼 영역
@@ -46,16 +46,14 @@ HRESULT LobbyScene::Init()
 	toolMapButton->SetFunction([]()
 		{
 			FModSoundPlayer::GetInstance()->Stop("theme");
-			SceneManager::GetInstance()->ChangeScene("테스트게임씬");
+			SceneManager::GetInstance()->ChangeScene("타일맵툴");
 		});
 
 	exitButton->Init(WINSIZE_X - 30, 10);
 	exitButton->SetFunction([]()
 		{
 			// 끝내기
-			FModSoundPlayer::GetInstance()->Stop("theme");
-			SceneManager::GetInstance()->ChangeScene("테스트게임씬");
-
+			PostQuitMessage(0);
 		});
 
 	// 메인
