@@ -3,6 +3,7 @@
 #include "UIManager.h"
 #include "FModSoundPlayer.h"
 
+
 int CombatSyetem::CalculateDmg(Entity* attacker, Entity* defender)
 {
 	// 공격자 데미지 min ~ max 사이 랜덤값으로 설정

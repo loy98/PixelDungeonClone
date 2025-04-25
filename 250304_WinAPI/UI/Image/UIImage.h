@@ -54,10 +54,10 @@ public:
             0.0f, false, false, alpha
         );
 
-        // 🔸 출력 디버그용 외곽선
-        ID2D1SolidColorBrush* debugBrush = nullptr;
-        rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &debugBrush);
-        rt->DrawRectangle(rect, debugBrush, 1.0f);
-        if (debugBrush) debugBrush->Release();
+        // // 🔸 출력 디버그용 외곽선
+        // ID2D1SolidColorBrush* debugBrush = nullptr;
+        // rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Red), &debugBrush);
+        // rt->DrawRectangle(rect, debugBrush, 1.0f);
+        // if (debugBrush) debugBrush->Release();
     }
 };

@@ -75,6 +75,7 @@ std::vector<Monster*> MonsterGenerator::GenerateMonsters(Level* level, const std
 // 몬스터 생성 함수
 Monster* MonsterGenerator::CreateMonster(MonsterType type, FPOINT position, float speed) {
     // 몬스터 생성
+
     Monster* monster;
     switch (type)
     {
@@ -88,7 +89,6 @@ Monster* MonsterGenerator::CreateMonster(MonsterType type, FPOINT position, floa
             monster = new Rat(position, 1000.f);
             break;
     }
-    
 
     
     // 몬스터 유형에 따른 추가 설정 (향후 확장)

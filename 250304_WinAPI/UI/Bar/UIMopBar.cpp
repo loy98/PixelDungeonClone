@@ -45,8 +45,13 @@ void UIMopBar::OnEntityDamageTaken(DamageTakenData data)
     }
 }
 
+void UIMopBar::OnEntityDied(Entity* entity)
+{
+    SetActive(false);
+}
+
 void UIMopBar::Init(const D2D1_RECT_F& layout, const ImageStyle& bgs,
-                const BarStyle& s, float max)
+                    const BarStyle& s, float max)
 {
     SetRect(layout);
     bar = UIHelper::ApplyBarStyle(this, GetSizeRect(), barStyle);
@@ -100,11 +105,11 @@ void UIMopBar::Render(ID2D1HwndRenderTarget* rt)
 
     bar->Render(rt);
 
-    // 🔸 출력 디버그용 외곽선
-    ID2D1SolidColorBrush* debugBrush = nullptr;
-    rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &debugBrush);
-    rt->DrawRectangle(rect, debugBrush, 1.0f);
-    if (debugBrush) debugBrush->Release();
+    // // 🔸 출력 디버그용 외곽선
+    // ID2D1SolidColorBrush* debugBrush = nullptr;
+    // rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &debugBrush);
+    // rt->DrawRectangle(rect, debugBrush, 1.0f);
+    // if (debugBrush) debugBrush->Release();
 }
 
 void UIMopBar::ChaseTargetPos()
