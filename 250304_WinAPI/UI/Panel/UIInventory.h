@@ -59,16 +59,16 @@ public:
         auto inven = entity->GetInven();
         if (inven)
         {
-            for (int idx = 0; idx < 3; ++idx)
-            {
-                auto slot = inven->GetSlot(idx);
-
-                if (slot.item)
-                {
-                    
-                }
-            }
-            for (int idx = 3; idx < 25; ++idx)
+            // for (int idx = 0; idx < 3; ++idx)
+            // {
+            //     auto slot = inven->GetSlot(idx);
+            //
+            //     if (slot.item)
+            //     {
+            //         
+            //     }
+            // }
+            for (int idx = 0; idx < 25; ++idx)
             {
                 auto slot = inven->GetSlot(idx);
 
