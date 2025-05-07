@@ -1,5 +1,7 @@
 # PixelDungeonClone
 
+![image](https://raw.githubusercontent.com/alzseven/PixelDungeonClone/refs/heads/master/250304_WinAPI/pixeldungeonclone_screenshot.png)
+
 이 프로젝트는 인기 로그라이크 게임인 [**Pixel Dungeon**](https://pixeldungeon.watabou.ru/)과 그 파생작인 [**Shattered Pixel Dungeon**](https://shatteredpixel.com/)에 깊은 영감을 받아 개발된 **C++ 및 WinAPI 기반의 로그라이크 게임 클론** 프로젝트입니다.
 
 ###  개요
